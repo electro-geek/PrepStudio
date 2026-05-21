@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import AuthGuard from "../../../../../components/auth/AuthGuard";
-import { useVoice } from "../../../../../hooks/useVoice";
-import { useInterviewStore } from "../../../../../store/interviewStore";
-import api from "../../../../../lib/api";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { useVoice } from "@/hooks/useVoice";
+import { useInterviewStore } from "@/store/interviewStore";
+import api from "@/lib/api";
 import { ArrowLeft, Mic, MicOff, Volume2, Sparkles, AlertCircle, RefreshCw, ChevronRight, Award, Trophy, ListChecks } from "lucide-react";
 
 export default function VoiceInterview() {
