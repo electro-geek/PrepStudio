@@ -20,7 +20,7 @@ export default function SignupPage() {
     if (password.length < 6) { setError("Password must be at least 6 characters."); return; }
     setError(""); setLoading(true);
     try {
-      await signUp(email, password, name);
+      await signUp(email, password);
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Signup failed. Please try again.");
