@@ -141,3 +141,43 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# ── SQLite (local dev only — not used on Vercel) ──────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Vercel ────────────────────────────────────────────────────────────────────
+.vercel/
+
+# ── OS Generated Files ────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ── IDEs and Editors ──────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Project Config ────────────────────────────────────────────────────────────
+config.properties
+backend/prepstudio-16c39-firebase-adminsdk-fbsvc-04d14beb33.json

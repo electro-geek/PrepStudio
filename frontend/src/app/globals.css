@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --bg-base:    #080c14;
+  --bg-surface: #0d1421;
+  --bg-card:    #111827;
+  --border:     #1e2d45;
+  --border-alt: #243045;
+  --accent:     #6366f1;
+  --accent-2:   #3b82f6;
+  --accent-glow:rgba(99,102,241,0.15);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-base);
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+}
+
+code, pre {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Glassmorphism card ───────────────────────────────────── */
+.glass {
+  background: rgba(13, 20, 33, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+}
+
+/* ── Gradient text shortcut ──────────────────────────────── */
+.grad-text {
+  background: linear-gradient(135deg, #818cf8 0%, #60a5fa 50%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glow button ─────────────────────────────────────────── */
+.btn-glow {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  box-shadow: 0 0 20px rgba(99,102,241,0.35), 0 4px 16px rgba(0,0,0,0.4);
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.btn-glow:hover {
+  box-shadow: 0 0 32px rgba(99,102,241,0.55), 0 6px 20px rgba(0,0,0,0.5);
+  transform: translateY(-1px);
+}
+
+/* ── Progress bar glow ───────────────────────────────────── */
+.progress-bar {
+  background: linear-gradient(90deg, #6366f1, #3b82f6, #34d399);
+  box-shadow: 0 0 8px rgba(99,102,241,0.5);
+}
+
+/* ── Scrollbar styling ───────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1e2d45; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #2d3f5a; }
+
+/* ── Grid pattern background ─────────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Noise texture overlay ───────────────────────────────── */
+.noise::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px;
+}
+
+/* ── Animation utilities ─────────────────────────────────── */
+@keyframes wave-bounce {
+  0%, 100% { transform: scaleY(0.2); }
+  50% { transform: scaleY(1.0); }
+}
+.wave-bar { transform-origin: center; animation: wave-bounce 1s ease-in-out infinite; }
+.wave-bar:nth-child(2) { animation-delay: 0.15s; }
+.wave-bar:nth-child(3) { animation-delay: 0.30s; }
+.wave-bar:nth-child(4) { animation-delay: 0.45s; }
+.wave-bar:nth-child(5) { animation-delay: 0.60s; }
+.wave-bar:nth-child(6) { animation-delay: 0.75s; }
+.wave-bar:nth-child(7) { animation-delay: 0.90s; }
+.wave-bar:nth-child(8) { animation-delay: 1.05s; }
+.wave-bar:nth-child(9) { animation-delay: 1.20s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.float { animation: float 4s ease-in-out infinite; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #1e2d45 25%, #243a58 50%, #1e2d45 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up 0.5s ease forwards; }
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
