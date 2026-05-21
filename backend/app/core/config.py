@@ -59,21 +59,18 @@ class Settings:
                 key = key.strip()
                 val = val.strip()
 
-                mapping = {
-                    "database.url": "DATABASE_URL",
-                    "gemini.api_key": "GEMINI_API_KEY",
-                    "firebase.project_id": "FIREBASE_PROJECT_ID",
-                    "firebase.private_key": "FIREBASE_PRIVATE_KEY",
-                    "firebase.client_email": "FIREBASE_CLIENT_EMAIL",
-                    "cors.origins": "CORS_ORIGINS",
+                valid_keys = {
+                    "DATABASE_URL", "GEMINI_API_KEY", "FIREBASE_PROJECT_ID", 
+                    "FIREBASE_PRIVATE_KEY", "FIREBASE_CLIENT_EMAIL", "CORS_ORIGINS",
+                    "AUTH_BYPASS"
                 }
 
-                if key in mapping:
-                    attr = mapping[key]
-                    value = val.replace("\\n", "\n") if attr == "FIREBASE_PRIVATE_KEY" else val
-                    setattr(self, attr, value)
-                elif key == "auth.bypass":
-                    self.AUTH_BYPASS = val.lower() in ("true", "1", "yes")
+                if key in valid_keys:
+                    if key == "AUTH_BYPASS":
+                        self.AUTH_BYPASS = val.lower() in ("true", "1", "yes")
+                    else:
+                        value = val.replace("\\n", "\n") if key == "FIREBASE_PRIVATE_KEY" else val
+                        setattr(self, key, value)
 
     @property
     def cors_origins_list(self) -> list[str]:
