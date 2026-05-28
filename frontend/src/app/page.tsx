@@ -281,7 +281,7 @@ export default function LandingPage() {
             {/* H1 — 2 lines max, ultra-wide container */}
             <h1
               className="hero-anim w-full max-w-5xl font-black tracking-tighter leading-[0.87] mb-7"
-              style={{ fontSize: "clamp(3rem, 5.5vw, 6rem)" }}
+              style={{ fontSize: "clamp(3.8rem, 7vw, 7.5rem)" }}
             >
               Study smarter.<br />
               Speak sharper.
