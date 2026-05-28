@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, load_only
 from typing import List
 from app.core.database import get_db
 from app.core.auth import get_current_user, UserPayload
 from app.models.all import Plan, PlanDay, Topic
-from app.schemas.all import PlanCreate, PlanResponse
+from app.schemas.all import PlanCreate, PlanResponse, PlanSummaryResponse
 from app.services.plan_service import plan_service
 
 router = APIRouter(tags=["plans"])
@@ -31,16 +31,21 @@ async def create_plan(
             detail=f"Failed to generate study plan: {str(e)}"
         )
 
-@router.get("/plans", response_model=List[PlanResponse])
+@router.get("/plans", response_model=List[PlanSummaryResponse])
 async def list_plans(
     db: AsyncSession = Depends(get_db),
     user: UserPayload = Depends(get_current_user)
 ):
+    # Only load the columns the dashboard actually needs (id + is_complete per
+    # topic).  Skipping content (Text) and article_ideas (JSON) cuts the payload
+    # from potentially hundreds of KB down to a few KB.
     stmt = (
         select(Plan)
         .filter(Plan.user_id == user.uid)
         .options(
-            selectinload(Plan.days).selectinload(PlanDay.topics)
+            selectinload(Plan.days).selectinload(PlanDay.topics).load_only(
+                Topic.id, Topic.is_complete
+            )
         )
         .order_by(Plan.created_at.desc())
     )

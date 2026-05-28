@@ -1,8 +1,10 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt
 import firebase_admin
 from firebase_admin import credentials, auth
 from app.core.config import settings
+from app.core.jwt_utils import decode_access_token
 
 security = HTTPBearer(auto_error=False)
 
@@ -24,20 +26,20 @@ if not settings.AUTH_BYPASS:
     except Exception as e:
         print(f"Firebase Admin SDK initialization skipped/failed: {e}. Falling back to default auth config.")
 
+
 class UserPayload:
     def __init__(self, uid: str, email: str, name: str = None):
         self.uid = uid
         self.email = email
         self.name = name or (email.split("@")[0].capitalize() if email else "Learner")
 
+
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> UserPayload:
-    # If auth bypass is enabled, return a mock user payload
     if settings.AUTH_BYPASS:
         uid = "mock-user-123"
         email = "user@learnforge.com"
         name = "Mock Learner"
-        
-        # If token format is "Bearer <uid>:<email>", parse it to support multiple mock users
+
         if credentials and credentials.credentials:
             token = credentials.credentials
             if ":" in token:
@@ -49,7 +51,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
                 uid = token
                 email = f"{token}@learnforge.com"
                 name = token.replace("mock-", "").capitalize() + " Learner"
-                
+
         return UserPayload(uid=uid, email=email, name=name)
 
     if not credentials:
@@ -59,14 +61,30 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         )
 
     token = credentials.credentials
+
+    # Fast path: our own JWT (no network call)
+    try:
+        payload = decode_access_token(token)
+        return UserPayload(
+            uid=payload["sub"],
+            email=payload.get("email", ""),
+            name=payload.get("name", ""),
+        )
+    except jwt.InvalidTokenError:
+        pass
+
+    # Legacy path: Firebase ID token (only reached by old clients that haven't
+    # exchanged for a backend JWT yet).  Verify once here; the client should
+    # call POST /auth/token to get a backend JWT for future requests.
     try:
         decoded_token = auth.verify_id_token(token)
-        uid = decoded_token.get("uid")
-        email = decoded_token.get("email", "")
-        name = decoded_token.get("name", "")
-        return UserPayload(uid=uid, email=email, name=name)
+        return UserPayload(
+            uid=decoded_token.get("uid"),
+            email=decoded_token.get("email", ""),
+            name=decoded_token.get("name", ""),
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid or expired Firebase ID token: {str(e)}",
+            detail=f"Invalid or expired token: {str(e)}",
         )

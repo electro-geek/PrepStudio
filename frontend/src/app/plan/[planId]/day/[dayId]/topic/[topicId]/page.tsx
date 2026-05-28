@@ -17,6 +17,7 @@ export default function TopicView() {
 
   const [topic, setTopic] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [error, setError] = useState("");
   const [lessonLoading, setLessonLoading] = useState(false);
@@ -33,13 +34,19 @@ export default function TopicView() {
   const isLessonActive = lessonStatus === "connected" || lessonStatus === "connecting";
 
   const fetchTopic = async () => {
+    setLoading(true);
+    // After 2 s with no response, the backend is calling Gemini (first visit).
+    // Show the generation message so the user knows to wait.
+    const generatingTimer = setTimeout(() => setIsGenerating(true), 2000);
     try {
       const res = await api.get(`/topics/${topicId}`);
       setTopic(res.data);
     } catch (e: any) {
       setError("Failed to fetch lecture contents.");
     } finally {
+      clearTimeout(generatingTimer);
       setLoading(false);
+      setIsGenerating(false);
     }
   };
 
@@ -89,10 +96,16 @@ export default function TopicView() {
       <div className="min-h-screen flex items-center justify-center bg-[#0F172A] text-white">
         <div className="flex flex-col items-center space-y-4 max-w-sm text-center px-6">
           <RefreshCw className="h-10 w-10 text-indigo-500 animate-spin" />
-          <h3 className="font-bold text-lg text-white">Forging Topic Material...</h3>
-          <p className="text-slate-400 text-xs leading-relaxed animate-pulse">
-            Please be patient. Gemini is composing a premium technical guide.
-          </p>
+          {isGenerating ? (
+            <>
+              <h3 className="font-bold text-lg text-white">Generating Lecture...</h3>
+              <p className="text-slate-400 text-xs leading-relaxed animate-pulse">
+                First visit — Gemini is composing a premium technical guide. This takes 5–15 seconds and is only done once.
+              </p>
+            </>
+          ) : (
+            <h3 className="font-bold text-lg text-white">Loading Lecture...</h3>
+          )}
         </div>
       </div>
     );

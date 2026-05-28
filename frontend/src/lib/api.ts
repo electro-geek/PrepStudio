@@ -1,35 +1,28 @@
 import axios from "axios";
-import { auth } from "./firebase";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const api = axios.create({
   baseURL: API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
 });
 
-// Auto-inject Firebase/Mock authentication token on every API call
-api.interceptors.request.use(
-  async (config) => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        // getIdToken is async and works on both real Firebase user and mock auth user
-        const token = await user.getIdToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-      }
-    } catch (e) {
-      console.error("Failed to inject auth token:", e);
+// Attach the backend JWT on every request.
+// getBackendToken() returns the cached token immediately when valid, and only
+// hits Firebase + the /auth/token exchange when the token is missing or about
+// to expire — which is at most once every 24 hours instead of once per request.
+api.interceptors.request.use(async (config) => {
+  try {
+    // Lazy-import to avoid a circular dependency (authStore imports api indirectly)
+    const { useAuthStore } = await import("../store/authStore");
+    const token = await useAuthStore.getState().getBackendToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+  } catch (e) {
+    console.error("Failed to attach auth token:", e);
   }
-);
+  return config;
+});
 
 export default api;

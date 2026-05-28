@@ -49,6 +49,43 @@ class PlanResponse(BaseModel):
     class Config:
         from_attributes = True
 
+# ── Lightweight summary schemas for the dashboard list ──────────────────────
+# These exclude heavy fields (topic.content, topic.article_ideas) so the
+# GET /plans endpoint only fetches what the progress bar actually needs.
+
+class TopicSummaryResponse(BaseModel):
+    id: str
+    is_complete: bool
+
+    class Config:
+        from_attributes = True
+
+class PlanDaySummaryResponse(BaseModel):
+    id: str
+    topics: List[TopicSummaryResponse] = []
+
+    class Config:
+        from_attributes = True
+
+class PlanSummaryResponse(BaseModel):
+    id: str
+    user_id: str
+    topic: str
+    total_days: int
+    status: str
+    created_at: datetime
+    days: Optional[List[PlanDaySummaryResponse]] = []
+
+    class Config:
+        from_attributes = True
+
+# ── Auth ─────────────────────────────────────────────────────────────────────
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int  # seconds
+
 class ArticleCreate(BaseModel):
     topic_id: str
     raw_text: str

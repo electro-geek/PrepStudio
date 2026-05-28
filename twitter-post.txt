@@ -1,0 +1,15 @@
+Built an AI interview prep platform for the @ElevenLabs Hackathon 🎯
+
+The problem: reading about a topic ≠ being able to explain it under pressure.
+
+So I built PrepStudio — where your entire prep is voice-first.
+
+🎧 Audio Lessons — an AI tutor (Nova) teaches each topic to you by voice. You can interrupt and ask questions mid-lesson. Real two-way conversation, not a recording.
+
+🎙 Voice Interviews — an AI interviewer (Alex) asks you technical questions by voice, one at a time. When done, you get a full score report broken down question by question.
+
+No more practicing in your head.
+
+🔗 prepstudio.mritunjay.live
+
+#ElevenLabs #ElevenLabsHackathon #BuildInPublic #AITools
