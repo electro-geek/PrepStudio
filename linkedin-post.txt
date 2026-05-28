@@ -1,0 +1,21 @@
+I just shipped something I'm genuinely excited about for the ElevenLabs Hackathon 🎯
+
+Most people prepare for technical interviews by reading articles and hoping it sticks. But there's a massive difference between understanding something and being able to explain it under pressure.
+
+So I built PrepStudio — a platform where your entire prep journey is voice-first.
+
+Here's how it works:
+
+You pick a topic, set your timeline, and the AI builds you a complete day-by-day study plan. For each topic, instead of just reading an article, you can start an Audio Lesson — a real-time voice conversation with an AI tutor called Nova. She teaches the concept to you, uses analogies, gives examples, and you can literally interrupt her and ask questions. It feels like having a tutor on call.
+
+Once you've studied, you take a Voice Interview with Alex — an AI interviewer who asks you technical questions by voice, one at a time, waits for your spoken answer, and moves through the full interview naturally. When you're done, you get a complete report: your score, what you did well, and exactly where you need to improve — broken down question by question.
+
+No more practicing in your head. You practice the real thing.
+
+The voice features are powered by @ElevenLabs Conversational AI — and honestly, the quality of the voice interaction is what makes this feel real rather than gimmicky.
+
+Would love to hear your thoughts — drop a comment or DM me if you want to try it out!
+
+🔗 prepstudio.mritunjay.live
+
+#ElevenLabs #ElevenLabsHackathon #AITools #TechInterviewPrep #BuildInPublic #MachineLearning #ArtificialIntelligence #ProductivityTools #Hackathon #SideProject

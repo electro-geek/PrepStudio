@@ -92,6 +92,37 @@ class InterviewResponse(BaseModel):
     answers: Optional[List[str]] = []
     created_at: datetime
 
-
     class Config:
         from_attributes = True
+
+# ── ElevenLabs Voice Feature Schemas ────────────────────────────────────────
+
+class LessonSessionResponse(BaseModel):
+    signed_url: str
+    agent_id: str
+    topic_title: str
+
+class VoiceInterviewSessionRequest(BaseModel):
+    question_count: int = 8
+
+class VoiceInterviewSessionResponse(BaseModel):
+    signed_url: str
+    agent_id: str
+    interview_id: str
+    questions: List[str]
+
+class EvaluateTranscriptRequest(BaseModel):
+    transcript: str
+
+class QuestionFeedback(BaseModel):
+    question: str
+    score: int
+    assessment: str
+
+class TranscriptEvaluationResponse(BaseModel):
+    overall_score: int
+    overall_grade: str
+    summary: str
+    strengths: List[str]
+    improvements: List[str]
+    question_feedback: List[QuestionFeedback]

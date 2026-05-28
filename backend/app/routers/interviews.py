@@ -6,8 +6,14 @@ from sqlalchemy.orm import selectinload
 from app.core.database import get_db
 from app.core.auth import get_current_user, UserPayload
 from app.models.all import Interview, Plan, PlanDay, Topic
-from app.schemas.all import InterviewStart, InterviewStartResponse, InterviewAnswerSubmit, InterviewAnswerResponse, InterviewResponse
+from app.schemas.all import (
+    InterviewStart, InterviewStartResponse, InterviewAnswerSubmit,
+    InterviewAnswerResponse, InterviewResponse,
+    VoiceInterviewSessionRequest, VoiceInterviewSessionResponse,
+    EvaluateTranscriptRequest, TranscriptEvaluationResponse,
+)
 from app.services.gemini_service import gemini
+from app.services.elevenlabs_service import elevenlabs_service
 
 router = APIRouter(tags=["interviews"])
 
@@ -209,3 +215,112 @@ async def list_plan_interviews(
     )
     result = await db.execute(stmt)
     return result.scalars().all()
+
+
+@router.post(
+    "/plans/{plan_id}/voice-interview-session",
+    response_model=VoiceInterviewSessionResponse,
+)
+async def start_voice_interview_session(
+    plan_id: str,
+    payload: VoiceInterviewSessionRequest = VoiceInterviewSessionRequest(),
+    db: AsyncSession = Depends(get_db),
+    user: UserPayload = Depends(get_current_user),
+):
+    stmt = (
+        select(Plan)
+        .filter(Plan.id == plan_id, Plan.user_id == user.uid)
+        .options(selectinload(Plan.days).selectinload(PlanDay.topics))
+    )
+    result = await db.execute(stmt)
+    plan = result.scalar_one_or_none()
+
+    if not plan:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Plan not found")
+
+    topics_list = [t.title for day in plan.days for t in day.topics]
+    if not topics_list:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Study plan has no topics to interview on",
+        )
+
+    count = max(1, min(payload.question_count, 10))
+    questions = await gemini.generate_interview_questions(
+        plan_topic=plan.topic, topics_list=topics_list
+    )
+    questions = questions[:count]
+    while len(questions) < count:
+        questions.append(f"Explain a core concept you learned in {plan.topic}.")
+
+    interview = Interview(
+        plan_id=plan.id,
+        user_id=user.uid,
+        questions=questions,
+        answers=[],
+        score=None,
+        feedback={},
+    )
+    db.add(interview)
+    await db.commit()
+    await db.refresh(interview)
+
+    try:
+        session = await elevenlabs_service.create_interview_session(
+            plan_topic=plan.topic, questions=questions
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create interview session: {str(e)}",
+        )
+
+    return {
+        "signed_url": session["signed_url"],
+        "agent_id": session["agent_id"],
+        "interview_id": interview.id,
+        "questions": questions,
+    }
+
+
+@router.post(
+    "/interviews/{interview_id}/evaluate-transcript",
+    response_model=TranscriptEvaluationResponse,
+)
+async def evaluate_interview_transcript(
+    interview_id: str,
+    payload: EvaluateTranscriptRequest,
+    db: AsyncSession = Depends(get_db),
+    user: UserPayload = Depends(get_current_user),
+):
+    stmt = (
+        select(Interview)
+        .filter(Interview.id == interview_id, Interview.user_id == user.uid)
+        .options(selectinload(Interview.plan))
+    )
+    result = await db.execute(stmt)
+    interview = result.scalar_one_or_none()
+
+    if not interview:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Interview not found")
+
+    evaluation = await gemini.evaluate_interview_transcript(
+        plan_topic=interview.plan.topic,
+        questions=interview.questions or [],
+        transcript=payload.transcript,
+    )
+
+    interview.score = evaluation["overall_score"]
+    interview.feedback = {
+        "overall_grade": evaluation["overall_grade"],
+        "summary": evaluation["summary"],
+        "strengths": evaluation["strengths"],
+        "improvements": evaluation["improvements"],
+        "question_feedback": evaluation["question_feedback"],
+        "transcript": payload.transcript[:6000],
+    }
+    await db.commit()
+
+    return evaluation

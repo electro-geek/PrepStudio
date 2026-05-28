@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PrepStudio — Demo Script</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080d17;
+    --surface: #0f172a;
+    --border: rgba(99,102,241,0.15);
+    --indigo: #6366f1;
+    --indigo-light: #818cf8;
+    --violet: #8b5cf6;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --white: #f8fafc;
+    --emerald: #34d399;
+    --amber: #fbbf24;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── Progress bar ── */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--indigo), var(--violet));
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    z-index: 100;
+    box-shadow: 0 0 12px rgba(99,102,241,0.6);
+  }
+
+  /* ── Header strip ── */
+  #header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 20px 40px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+  }
+
+  #brand {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--indigo-light);
+    opacity: 0.7;
+  }
+
+  #slide-counter {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--slate-500);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Timer ── */
+  #timer {
+    position: fixed;
+    bottom: 28px;
+    right: 40px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--slate-500);
+    letter-spacing: 0.08em;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #timer-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--emerald);
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ── Nav hints ── */
+  #nav-hint {
+    position: fixed;
+    bottom: 28px;
+    left: 40px;
+    font-size: 11px;
+    color: var(--slate-500);
+    letter-spacing: 0.05em;
+    z-index: 50;
+  }
+
+  /* ── Slide wrapper ── */
+  #slide-viewport {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 80px 80px;
+  }
+
+  .slide {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    max-width: 860px;
+    animation: fadeIn 0.35s ease;
+  }
+
+  .slide.active {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Slide number badge ── */
+  .slide-num {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--indigo);
+    margin-bottom: 18px;
+    opacity: 0.7;
+  }
+
+  /* ── Section label ── */
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    width: fit-content;
+  }
+
+  .label-say {
+    background: rgba(99,102,241,0.1);
+    color: var(--indigo-light);
+    border: 1px solid rgba(99,102,241,0.25);
+  }
+
+  .label-action {
+    background: rgba(251,191,36,0.08);
+    color: var(--amber);
+    border: 1px solid rgba(251,191,36,0.2);
+  }
+
+  .label-both {
+    background: rgba(139,92,246,0.1);
+    color: #c4b5fd;
+    border: 1px solid rgba(139,92,246,0.25);
+  }
+
+  /* ── Main script text ── */
+  .script-text {
+    font-size: clamp(22px, 2.8vw, 30px);
+    font-weight: 500;
+    line-height: 1.65;
+    color: var(--white);
+    letter-spacing: -0.01em;
+  }
+
+  .script-text em {
+    font-style: normal;
+    color: var(--indigo-light);
+    font-weight: 600;
+  }
+
+  .script-text strong {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  /* ── Action cue box ── */
+  .action-cue {
+    margin-top: 28px;
+    background: rgba(251,191,36,0.05);
+    border: 1px solid rgba(251,191,36,0.15);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .action-cue .cue-icon {
+    font-size: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .action-cue .cue-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--amber);
+    line-height: 1.55;
+  }
+
+  /* ── Answer box ── */
+  .answer-box {
+    margin-top: 24px;
+    background: rgba(99,102,241,0.06);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 16px;
+    padding: 22px 26px;
+  }
+
+  .answer-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--indigo-light);
+    margin-bottom: 12px;
+    opacity: 0.7;
+  }
+
+  .answer-text {
+    font-size: clamp(14px, 1.6vw, 17px);
+    font-weight: 400;
+    line-height: 1.75;
+    color: #cbd5e1;
+  }
+
+  .answer-text strong {
+    color: #e2e8f0;
+    font-weight: 600;
+  }
+
+  /* ── Question pill ── */
+  .question-pill {
+    background: rgba(139,92,246,0.08);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 18px;
+  }
+
+  .question-pill .q-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #c4b5fd;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  .question-pill .q-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #e2e8f0;
+    font-style: italic;
+    line-height: 1.55;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* ── Intro title card ── */
+  .hero-title {
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--indigo-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--slate-400);
+    line-height: 1.6;
+  }
+
+  .hero-meta {
+    margin-top: 32px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .meta-pill {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--slate-400);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 6px 14px;
+    border-radius: 999px;
+  }
+
+  .meta-pill span {
+    color: var(--indigo-light);
+    font-weight: 700;
+  }
+
+  /* ── Timing bar ── */
+  .timing-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 10px 16px;
+    background: rgba(52,211,153,0.06);
+    border: 1px solid rgba(52,211,153,0.15);
+    border-radius: 10px;
+    width: fit-content;
+  }
+
+  .timing-bar .t-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--emerald);
+    flex-shrink: 0;
+  }
+
+  .timing-bar .t-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--emerald);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── End card ── */
+  .end-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+
+  /* keyboard shortcut indicator */
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border: 1px solid var(--slate-500);
+    border-radius: 5px;
+    color: var(--slate-400);
+    background: rgba(255,255,255,0.04);
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div id="header">
+  <div id="brand">PrepStudio · Demo Script</div>
+  <div id="slide-counter">1 / 11</div>
+</div>
+
+<div id="slide-viewport">
+
+  <!-- ── SLIDE 1: Title ── -->
+  <div class="slide active" id="s1">
+    <div class="hero-title">PrepStudio<br/>Demo Script</div>
+    <div class="hero-sub">Your full walkthrough — read line by line, page by page.</div>
+    <div class="hero-meta">
+      <div class="meta-pill">Topic: <span>REST APIs</span></div>
+      <div class="meta-pill">Questions: <span>2</span></div>
+      <div class="meta-pill">Target time: <span>4 min 20 sec</span></div>
+    </div>
+    <div class="timing-bar" style="margin-top:28px">
+      <div class="t-dot"></div>
+      <div class="t-text">Press → or Space to advance &nbsp;·&nbsp; ← to go back</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: Hook ── -->
+  <div class="slide" id="s2">
+    <div class="section-label label-say">🎙 Say this</div>
+    <div class="script-text">
+      "Studying for a technical interview is painful.
+      You read articles, watch videos, maybe do some practice questions —
+      but none of it actually prepares you for the moment
+      someone puts you on the spot and asks you to
+      <em>explain things out loud.</em>"
+    </div>
+    <div class="divider"></div>
+    <div class="script-text" style="font-size:clamp(20px,2.4vw,26px); color:#94a3b8;">
+      "<strong>PrepStudio fixes that.</strong> Let me show you how."
+    </div>
+    <div class="timing-bar">
+      <div class="t-dot"></div>
+      <div class="t-text">0:00 – 0:15</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: Create Plan ── -->
+  <div class="slide" id="s3">
+    <div class="section-label label-both">⚡ Do + Say</div>
+    <div class="action-cue">
+      <div class="cue-icon">🖱</div>
+      <div class="cue-text">Click <strong>New Plan</strong> → type <strong>"REST APIs"</strong> → set <strong>3 days</strong> → hit Generate. Wait for the plan to load.</div>
+    </div>
+    <div style="margin-top: 26px"></div>
+    <div class="script-text">
+      "I'll create a new study plan.
+      Topic — <em>REST APIs</em>. Three days."
+    </div>
+    <div class="divider"></div>
+    <div class="script-text" style="font-size:clamp(18px,2.2vw,24px); color:#94a3b8;">
+      "Gemini builds a full day-by-day curriculum —
+      each day breaks down into specific topics I need to cover."
+    </div>
+    <div class="timing-bar" style="margin-top:20px">
+      <div class="t-dot"></div>
+      <div class="t-text">0:15 – 0:40</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: Open Topic ── -->
+  <div class="slide" id="s4">
+    <div class="section-label label-both">⚡ Do + Say</div>
+    <div class="action-cue">
+      <div class="cue-icon">🖱</div>
+      <div class="cue-text">Click into <strong>Day 1</strong> → open the first topic. Wait for the article to fully load.</div>
+    </div>
+    <div style="margin-top: 26px"></div>
+    <div class="script-text">
+      "I'll open the first topic.
+      Gemini writes a full technical article on demand —
+      proper explanations, code examples, analogies.
+      <em>This only gets generated once and is cached after that.</em>"
+    </div>
+    <div class="divider"></div>
+    <div class="script-text" style="font-size:clamp(20px,2.4vw,26px);">
+      "Now here's where it gets interesting."
+    </div>
+    <div class="timing-bar" style="margin-top:20px">
+      <div class="t-dot"></div>
+      <div class="t-text">0:40 – 1:05</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: Audio Lesson ── -->
+  <div class="slide" id="s5">
+    <div class="section-label label-both">⚡ Do + Say</div>
+    <div class="action-cue">
+      <div class="cue-icon">🖱</div>
+      <div class="cue-text">Click the <strong>Audio Lesson</strong> button in the header. The floating player will appear at the bottom.</div>
+    </div>
+    <div style="margin-top:24px"></div>
+    <div class="script-text">
+      "I click <em>Audio Lesson</em>.
+      PrepStudio takes this entire article,
+      wraps it inside a teaching persona called <em>Nova</em>,
+      and spins up a live <em>ElevenLabs voice agent</em> in real time."
+    </div>
+    <div class="divider"></div>
+    <div class="script-text" style="font-size:clamp(18px,2.1vw,23px); color:#94a3b8;">
+      "Nova doesn't read the article to me —
+      she's instructed to <strong>teach it</strong>.
+      Analogies, examples, real-world context."
+    </div>
+    <div class="timing-bar" style="margin-top:20px">
+      <div class="t-dot"></div>
+      <div class="t-text">1:05 – 1:35</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6: Interrupt Nova ── -->
+  <div class="slide" id="s6">
+    <div class="section-label label-both">⚡ Do + Say</div>
+    <div class="action-cue">
+      <div class="cue-icon">⏳</div>
+      <div class="cue-text">Let Nova speak for ~20 seconds. Then speak into your mic:</div>
+    </div>
+    <div class="question-pill" style="margin-top:20px">
+      <div class="q-label">You say to Nova →</div>
+      <div class="q-text">"Can you give me a real-world example of that?"</div>
+    </div>
+    <div class="action-cue" style="margin-top:0">
+      <div class="cue-icon">⏳</div>
+      <div class="cue-text">Let Nova respond. Then click <strong>End Lesson</strong>.</div>
+    </div>
+    <div style="margin-top: 20px"></div>
+    <div class="script-text" style="font-size:clamp(18px,2.2vw,24px);">
+      "And because this is a full Conversational AI agent,
+      I can <em>interrupt her</em>."
+    </div>
+    <div class="divider"></div>
+    <div class="script-text" style="font-size:clamp(17px,2vw,22px); color:#94a3b8;">
+      "She answers, then picks the lesson back up.
+      It's a <strong>two-way session</strong>, not a recording."
+    </div>
+    <div class="timing-bar" style="margin-top:16px">
+      <div class="t-dot"></div>
+      <div class="t-text">1:35 – 2:10</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7: Start Interview ── -->
+  <div class="slide" id="s7">
+    <div class="section-label label-both">⚡ Do + Say</div>
+    <div class="action-cue">
+      <div class="cue-icon">🖱</div>
+      <div class="cue-text">Navigate to the <strong>Interview</strong> page from the plan view. Select <strong>2</strong> on the question picker. Click <strong>Start Voice Interview</strong>.</div>
+    </div>
+    <div style="margin-top:24px"></div>
+    <div class="script-text">
+      "Now for the interview.
+      I'll select <em>2 questions</em> for this demo."
+    </div>
+    <div class="divider"></div>
+    <div class="script-text" style="font-size:clamp(17px,2vw,22px); color:#94a3b8;">
+      "The backend generates technical questions based on my study plan,
+      creates a second ElevenLabs agent — an interviewer named <strong>Alex</strong> —
+      with those exact questions embedded in his instructions,
+      and gives me a <em>live signed WebSocket URL</em> to connect to."
+    </div>
+    <div class="timing-bar" style="margin-top:16px">
+      <div class="t-dot"></div>
+      <div class="t-text">2:10 – 2:40</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8: Intro + Q1 ── -->
+  <div class="slide" id="s8">
+    <div class="section-label label-both">⚡ Do + Say</div>
+    <div class="action-cue">
+      <div class="cue-icon">🎙</div>
+      <div class="cue-text">Alex will introduce himself and ask for your background. Respond naturally:</div>
+    </div>
+    <div class="question-pill" style="margin-top:16px">
+      <div class="q-label">Your intro →</div>
+      <div class="q-text">"Hi, I'm Mritunjay — a developer currently studying REST API design."</div>
+    </div>
+    <div class="action-cue" style="margin-top:0">
+      <div class="cue-icon">⏳</div>
+      <div class="cue-text">Alex transitions: <em>"Perfect. Let's move into the technical questions."</em> Then asks Q1.</div>
+    </div>
+    <div style="margin-top:16px"></div>
+    <div class="script-text" style="font-size:clamp(17px,2vw,22px);">
+      "Alex starts by asking for my introduction."
+    </div>
+    <div class="timing-bar" style="margin-top:16px">
+      <div class="t-dot"></div>
+      <div class="t-text">2:40 – 3:00</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 9: Answer Q1 ── -->
+  <div class="slide" id="s9">
+    <div class="section-label label-action">🎙 Your Answer — Q1</div>
+    <div class="question-pill">
+      <div class="q-label">Alex asks →</div>
+      <div class="q-text">"Can you explain what REST is and describe the key principles that make an API RESTful?"</div>
+    </div>
+    <div class="answer-box">
+      <div class="answer-label">Your answer</div>
+      <div class="answer-text">
+        "REST stands for <strong>Representational State Transfer</strong>.
+        The key principles are: <strong>statelessness</strong> — each request contains all the info the server needs,
+        no session stored between calls.
+        A <strong>uniform interface</strong> using HTTP methods —
+        GET for reading, POST for creating, PUT or PATCH for updating, DELETE for removing.
+        Resources are identified by URLs. So instead of slash-getUser,
+        a REST API says <strong>GET slash users slash 1</strong>."
+      </div>
+    </div>
+    <div class="timing-bar" style="margin-top:18px">
+      <div class="t-dot"></div>
+      <div class="t-text">3:00 – 3:20</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 10: Answer Q2 ── -->
+  <div class="slide" id="s10">
+    <div class="section-label label-action">🎙 Your Answer — Q2</div>
+    <div class="question-pill">
+      <div class="q-label">Alex asks →</div>
+      <div class="q-text">"What is the difference between PUT and PATCH, and what HTTP status codes would you use for a successful creation versus a bad request?"</div>
+    </div>
+    <div class="answer-box">
+      <div class="answer-label">Your answer</div>
+      <div class="answer-text">
+        "<strong>PUT</strong> replaces the entire resource.
+        <strong>PATCH</strong> is for partial updates — I only send the fields I want to change.
+        On status codes: <strong>201 Created</strong> for a successful POST,
+        <strong>200 OK</strong> for a successful GET or PUT,
+        <strong>204 No Content</strong> for a successful DELETE.
+        For errors — <strong>400</strong> for invalid data,
+        <strong>401</strong> when there's no auth token,
+        <strong>403</strong> when the token is valid but lacks permission,
+        and <strong>404</strong> when the resource doesn't exist."
+      </div>
+    </div>
+    <div class="timing-bar" style="margin-top:18px">
+      <div class="t-dot"></div>
+      <div class="t-text">3:20 – 3:42</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 11: Report Card ── -->
+  <div class="slide" id="s11">
+    <div class="section-label label-both">⚡ Do + Say</div>
+    <div class="action-cue">
+      <div class="cue-icon">⏳</div>
+      <div class="cue-text">Alex wraps up. Wait for the <strong>"Analysing your performance"</strong> screen. Then the report card appears — scroll through it slowly.</div>
+    </div>
+    <div style="margin-top:22px"></div>
+    <div class="script-text">
+      "The full conversation transcript gets sent to <em>Gemini</em>,
+      which scores every answer and generates a personalised report."
+    </div>
+    <div class="divider"></div>
+    <div class="script-text" style="font-size:clamp(18px,2.1vw,23px); color:#94a3b8;">
+      "Overall score, grade, what I did well, what to improve —
+      and a <strong>breakdown of every single answer</strong>."
+    </div>
+    <div class="timing-bar" style="margin-top:18px">
+      <div class="t-dot"></div>
+      <div class="t-text">3:42 – 4:05</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 12: Closing ── -->
+  <div class="slide" id="s12">
+    <div class="section-label label-say">🎙 Closing</div>
+    <div class="action-cue">
+      <div class="cue-icon">🖱</div>
+      <div class="cue-text">Navigate back to the dashboard for a clean ending shot.</div>
+    </div>
+    <div style="margin-top:22px"></div>
+    <div class="script-text">
+      "PrepStudio uses <em>ElevenLabs Conversational AI</em>
+      to turn passive studying into active practice —
+      a tutor that explains concepts out loud,
+      and an interviewer that puts you under <em>real pressure</em>."
+    </div>
+    <div class="divider"></div>
+    <div class="script-text" style="font-size:clamp(18px,2.1vw,23px); color:#94a3b8;">
+      "Every agent is created <strong>dynamically per session</strong>,
+      personalised to exactly what you're studying."
+    </div>
+    <div class="timing-bar" style="margin-top:18px">
+      <div class="t-dot"></div>
+      <div class="t-text">4:05 – 4:20 · Done ✓</div>
+    </div>
+  </div>
+
+</div><!-- /slide-viewport -->
+
+<div id="timer">
+  <div id="timer-dot"></div>
+  <span id="timer-display">0:00</span>
+</div>
+
+<div id="nav-hint">
+  <kbd>←</kbd> prev &nbsp; <kbd>→</kbd> next &nbsp; <kbd>Space</kbd> advance &nbsp; <kbd>R</kbd> reset timer
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('slide-counter');
+  const progressBar = document.getElementById('progress-bar');
+  const timerDisplay = document.getElementById('timer-display');
+  const timerDot = document.getElementById('timer-dot');
+  let current = 0;
+  const total = slides.length;
+
+  // ── Timer ──────────────────────────────────────────────
+  let seconds = 0;
+  let timerRunning = false;
+  let timerInterval = null;
+
+  function startTimer() {
+    if (timerRunning) return;
+    timerRunning = true;
+    timerDot.style.background = '#34d399';
+    timerInterval = setInterval(() => {
+      seconds++;
+      const m = String(Math.floor(seconds / 60)).padStart(1,'0');
+      const s = String(seconds % 60).padStart(2,'0');
+      timerDisplay.textContent = `${m}:${s}`;
+      // warn at 4:00
+      if (seconds >= 240) timerDot.style.background = '#fbbf24';
+      // over at 4:30
+      if (seconds >= 270) timerDot.style.background = '#f87171';
+    }, 1000);
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    seconds = 0;
+    timerDisplay.textContent = '0:00';
+    timerDot.style.background = '#34d399';
+  }
+
+  // ── Navigation ─────────────────────────────────────────
+  function goTo(idx) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(idx, total - 1));
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${total}`;
+    progressBar.style.width = `${((current + 1) / total) * 100}%`;
+
+    // start timer on first advance from title
+    if (current === 1 && !timerRunning) startTimer();
+    if (current === 0) resetTimer();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'r' || e.key === 'R') resetTimer();
+  });
+
+  // Click right half = next, left half = prev
+  document.getElementById('slide-viewport').addEventListener('click', (e) => {
+    const half = window.innerWidth / 2;
+    e.clientX > half ? goTo(current + 1) : goTo(current - 1);
+  });
+
+  // Init
+  goTo(0);
+</script>
+</body>
+</html>

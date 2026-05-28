@@ -198,8 +198,82 @@ Return JSON only, matching this exact structure:
             print(f"Gemini evaluate_answer failed: {e}. Using mock backup.")
             return self._mock_evaluation(question, answer)
 
+    async def evaluate_interview_transcript(
+        self, plan_topic: str, questions: List[str], transcript: str
+    ) -> Dict[str, Any]:
+        if not self.is_configured:
+            return self._mock_transcript_evaluation(plan_topic, questions)
+        try:
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            numbered_questions = "\n".join(
+                [f"Q{i+1}: {q}" for i, q in enumerate(questions)]
+            )
+            prompt = f"""You are evaluating a technical voice interview for a candidate studying {plan_topic}.
+
+QUESTIONS THAT WERE ASKED:
+{numbered_questions}
+
+FULL CONVERSATION TRANSCRIPT:
+{transcript[:8000]}
+
+Carefully analyse how the candidate answered each question based on the transcript.
+Return JSON only, matching this exact structure:
+{{
+  "overall_score": <integer 0-100>,
+  "overall_grade": "<letter grade, e.g. A, B+, C->",
+  "summary": "<2-sentence overall assessment of the candidate's performance>",
+  "strengths": ["<specific strength 1>", "<specific strength 2>", "<specific strength 3>"],
+  "improvements": ["<specific improvement area 1>", "<specific improvement area 2>", "<specific improvement area 3>"],
+  "question_feedback": [
+    {{
+      "question": "<question text>",
+      "score": <integer 0-100>,
+      "assessment": "<1-2 sentence evaluation of their answer to this specific question>"
+    }}
+  ]
+}}"""
+            response = model.generate_content(
+                prompt,
+                generation_config={"response_mime_type": "application/json"},
+            )
+            return json.loads(response.text)
+        except Exception as e:
+            print(f"Gemini evaluate_interview_transcript failed: {e}. Using mock.")
+            return self._mock_transcript_evaluation(plan_topic, questions)
+
+    def _mock_transcript_evaluation(
+        self, plan_topic: str, questions: List[str]
+    ) -> Dict[str, Any]:
+        feedback = [
+            {
+                "question": q,
+                "score": 75,
+                "assessment": "Demonstrated foundational understanding with room for more technical depth.",
+            }
+            for q in questions
+        ]
+        return {
+            "overall_score": 78,
+            "overall_grade": "B+",
+            "summary": (
+                f"The candidate showed solid knowledge of {plan_topic} and communicated clearly. "
+                "Most answers covered core concepts, with opportunities to go deeper on advanced topics."
+            ),
+            "strengths": [
+                "Clear communication and well-structured answers",
+                "Good grasp of fundamental concepts",
+                "Engaged thoughtfully with each question",
+            ],
+            "improvements": [
+                "Include more concrete real-world examples",
+                "Go deeper on edge cases and error handling",
+                "Strengthen answers on advanced architectural patterns",
+            ],
+            "question_feedback": feedback,
+        }
+
     # --- Fallback Mock Implementations ---
-    
+
     def _mock_plan(self, topic: str, days: int) -> Dict[str, Any]:
         days_list = []
         common_topics = {

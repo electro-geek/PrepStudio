@@ -5,8 +5,9 @@ from sqlalchemy.orm import selectinload
 from app.core.database import get_db
 from app.core.auth import get_current_user, UserPayload
 from app.models.all import Topic, PlanDay, Plan
-from app.schemas.all import TopicResponse
+from app.schemas.all import TopicResponse, LessonSessionResponse
 from app.services.gemini_service import gemini
+from app.services.elevenlabs_service import elevenlabs_service
 
 router = APIRouter(tags=["topics"])
 
@@ -106,3 +107,42 @@ async def mark_topic_complete(
         "day_id": day.id,
         "day_complete": day.is_complete
     }
+
+
+@router.post("/topics/{topic_id}/lesson-session", response_model=LessonSessionResponse)
+async def start_lesson_session(
+    topic_id: str,
+    db: AsyncSession = Depends(get_db),
+    user: UserPayload = Depends(get_current_user),
+):
+    stmt = (
+        select(Topic)
+        .filter(Topic.id == topic_id)
+        .options(selectinload(Topic.day).selectinload(PlanDay.plan))
+    )
+    result = await db.execute(stmt)
+    topic = result.scalar_one_or_none()
+
+    if not topic or topic.day.plan.user_id != user.uid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
+
+    if not topic.content:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Topic content not generated yet. Open the topic page first to generate it.",
+        )
+
+    try:
+        session = await elevenlabs_service.create_lesson_session(
+            topic_title=topic.title,
+            plan_topic=topic.day.plan.topic,
+            content=topic.content,
+        )
+        return session
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create lesson session: {str(e)}",
+        )

@@ -1,350 +1,499 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { useVoice } from "@/hooks/useVoice";
-import { useInterviewStore } from "@/store/interviewStore";
 import api from "@/lib/api";
-import { ArrowLeft, Mic, MicOff, Volume2, Sparkles, AlertCircle, RefreshCw, ChevronRight, Award, Trophy, ListChecks } from "lucide-react";
+import { useElevenLabsConversation } from "@/hooks/useElevenLabsConversation";
+import {
+  ArrowLeft, Mic, MicOff, Volume2, Sparkles, AlertCircle,
+  RefreshCw, ChevronRight, Trophy, ListChecks, Star,
+  MessageSquare, CheckCircle2, XCircle,
+} from "lucide-react";
+
+type PageState = "idle" | "starting" | "active" | "evaluating" | "finished";
+
+interface QuestionFeedback {
+  question: string;
+  score: number;
+  assessment: string;
+}
+
+interface EvaluationResult {
+  overall_score: number;
+  overall_grade: string;
+  summary: string;
+  strengths: string[];
+  improvements: string[];
+  question_feedback: QuestionFeedback[];
+}
+
+function ScoreRing({ score }: { score: number }) {
+  const grade =
+    score >= 90 ? "A" : score >= 80 ? "B" : score >= 70 ? "C" : score >= 60 ? "D" : "F";
+  const color =
+    score >= 80 ? "text-emerald-400" : score >= 60 ? "text-amber-400" : "text-red-400";
+  const ring =
+    score >= 80 ? "ring-emerald-500/30" : score >= 60 ? "ring-amber-500/30" : "ring-red-500/30";
+  return (
+    <div className={`inline-flex flex-col items-center justify-center bg-slate-950 border border-slate-800 h-36 w-36 rounded-full ring-4 ${ring}`}>
+      <span className={`text-5xl font-extrabold ${color}`}>{score}</span>
+      <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+        Grade {grade}
+      </span>
+    </div>
+  );
+}
+
+function WaveformBars({ active, color = "indigo" }: { active: boolean; color?: string }) {
+  const heights = [35, 60, 80, 55, 90, 70, 45, 75, 60, 40, 85, 65];
+  return (
+    <div className="flex items-center space-x-0.5 h-10">
+      {heights.map((h, i) => (
+        <div
+          key={i}
+          className={`w-1 rounded-full transition-all duration-150 ${
+            active ? `bg-${color}-500` : "bg-slate-700"
+          }`}
+          style={{
+            height: active ? `${(Math.abs(Math.sin((i + Date.now() / 300) * 0.9)) * h + 15)}%` : "15%",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function VoiceInterview() {
   const { planId } = useParams();
-  const router = useRouter();
-
-  const {
-    transcript,
-    setTranscript,
-    isListening,
-    startListening,
-    stopListening,
-    speak,
-    stopSpeaking,
-    browserSupportsSpeech
-  } = useVoice();
-
-  const {
-    questions,
-    answers,
-    currentQuestionIndex,
-    interviewId,
-    score,
-    feedback,
-    isFinished,
-    setInterviewSession,
-    submitAnswer,
-    nextQuestion,
-    finishInterview,
-    reset
-  } = useInterviewStore();
-
-  const [loading, setLoading] = useState(false);
-  const [answering, setAnswering] = useState(false);
+  const [pageState, setPageState] = useState<PageState>("idle");
   const [error, setError] = useState("");
-  const [customTextAnswer, setCustomTextAnswer] = useState("");
-  const [currentQuestionText, setCurrentQuestionText] = useState("");
+  const [interviewId, setInterviewId] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
+  const [questionCount, setQuestionCount] = useState(0);
+  const [selectedQuestionCount, setSelectedQuestionCount] = useState(8);
+  const transcriptScrollRef = useRef<HTMLDivElement>(null);
 
-  // Start interview session
-  const handleStartInterview = async () => {
-    setLoading(true);
-    setError("");
-    reset();
-    try {
-      const res = await api.post("/interviews", { plan_id: planId });
-      setInterviewSession(res.data);
-      setCurrentQuestionText(res.data.first_question);
-      
-      // Auto speak first question
-      setTimeout(() => {
-        speak(res.data.first_question, () => {
-          // Auto trigger microphone once speech finishes
-          startListening();
+  const { startWithSignedUrl, endSession, buildTranscript, liveTranscript, status, isSpeaking, error: convError } = useElevenLabsConversation({
+    onInterviewComplete: async (transcript) => {
+      setPageState("evaluating");
+      try {
+        const res = await api.post(`/interviews/${interviewId}/evaluate-transcript`, {
+          transcript,
         });
-      }, 500);
-    } catch (e: any) {
-      console.error("Failed to start interview:", e);
-      setError("Failed to initialize interview. Ensure backend server is responsive.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    handleStartInterview();
-    return () => {
-      stopSpeaking();
-      stopListening();
-    };
-  }, [planId]);
-
-  // Sync transcript to scratch area
-  useEffect(() => {
-    if (transcript) {
-      setCustomTextAnswer(transcript);
-    }
-  }, [transcript]);
-
-  const handleSubmitAnswer = async () => {
-    const finalAnswer = customTextAnswer.trim();
-    if (!finalAnswer || answering) return;
-
-    setAnswering(true);
-    stopListening();
-    stopSpeaking();
-    
-    try {
-      const res = await api.post(`/interviews/${interviewId}/answer`, {
-        answer: finalAnswer
-      });
-
-      submitAnswer(finalAnswer);
-      setCustomTextAnswer("");
-      setTranscript("");
-
-      if (res.data.is_finished) {
-        finishInterview(res.data.score, res.data.feedback);
-      } else {
-        nextQuestion();
-        setCurrentQuestionText(res.data.next_question);
-        
-        // Speak next question
-        speak(res.data.next_question, () => {
-          startListening();
-        });
+        setEvaluation(res.data);
+        setPageState("finished");
+      } catch (e: any) {
+        setError(e?.response?.data?.detail || "Failed to evaluate interview. Try again.");
+        setPageState("active");
       }
-    } catch (e) {
-      console.error("Failed to submit answer:", e);
-      setError("Failed to grade this answer. Check server status.");
-    } finally {
-      setAnswering(false);
+    },
+  });
+
+  // Track rough question count from AI messages
+  useEffect(() => {
+    const aiMessages = liveTranscript.filter((m) => m.source === "ai");
+    setQuestionCount(Math.min(aiMessages.length, 8));
+  }, [liveTranscript]);
+
+  // Auto-scroll transcript
+  useEffect(() => {
+    if (transcriptScrollRef.current) {
+      transcriptScrollRef.current.scrollTop = transcriptScrollRef.current.scrollHeight;
+    }
+  }, [liveTranscript]);
+
+  const handleStart = async () => {
+    setPageState("starting");
+    setError("");
+    try {
+      const res = await api.post(`/plans/${planId}/voice-interview-session`, {
+        question_count: selectedQuestionCount,
+      });
+      setInterviewId(res.data.interview_id);
+      setQuestions(res.data.questions);
+      await startWithSignedUrl(res.data.signed_url);
+      setPageState("active");
+    } catch (e: any) {
+      setError(e?.response?.data?.detail || "Failed to start interview. Check your ElevenLabs API key.");
+      setPageState("idle");
     }
   };
 
-  if (loading) {
+  const handleEndEarly = async () => {
+    await endSession();
+    if (interviewId && liveTranscript.length > 0) {
+      setPageState("evaluating");
+      try {
+        const res = await api.post(`/interviews/${interviewId}/evaluate-transcript`, {
+          transcript: buildTranscript(),
+        });
+        setEvaluation(res.data);
+        setPageState("finished");
+      } catch {
+        setPageState("idle");
+      }
+    } else {
+      setPageState("idle");
+    }
+  };
+
+  const handleRetake = () => {
+    setPageState("idle");
+    setEvaluation(null);
+    setInterviewId(null);
+    setQuestions([]);
+    setError("");
+  };
+
+  // ── IDLE ──────────────────────────────────────────────────────────────────
+  if (pageState === "idle" || pageState === "starting") {
+    return (
+      <AuthGuard>
+        <div className="min-h-screen bg-[#0F172A] text-slate-100 flex flex-col">
+          <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md px-6 py-4 flex items-center space-x-4 sticky top-0 z-30">
+            <Link href={`/plan/${planId}`} className="text-slate-400 hover:text-white transition">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div>
+              <h1 className="font-extrabold text-sm text-white leading-tight">AI Voice Interview</h1>
+              <p className="text-slate-500 text-[10px] uppercase tracking-wider font-semibold mt-0.5">PrepStudio · Powered by ElevenLabs</p>
+            </div>
+          </header>
+
+          <main className="flex-grow flex items-center justify-center px-6 py-16">
+            <div className="max-w-lg w-full text-center space-y-8">
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start space-x-2 text-xs text-red-400 text-left">
+                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Icon */}
+              <div className="relative mx-auto w-fit">
+                <div className="absolute inset-0 rounded-full bg-indigo-500/20 blur-2xl scale-150" />
+                <div className="relative bg-slate-900 border border-slate-800 p-8 rounded-full">
+                  <Mic className="h-14 w-14 text-indigo-400" />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h2 className="text-3xl font-extrabold text-white tracking-tight">
+                  Ready for your interview?
+                </h2>
+                <p className="text-slate-400 text-sm leading-relaxed max-w-md mx-auto">
+                  Alex, your AI interviewer, will start with a brief intro then ask
+                  8 technical questions — all by voice. Speak naturally. A full
+                  performance report is generated when you finish.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 text-xs text-slate-400">
+                {[
+                  { icon: <Mic className="h-4 w-4 text-indigo-400 mx-auto mb-1" />, label: "Voice only" },
+                  { icon: <MessageSquare className="h-4 w-4 text-violet-400 mx-auto mb-1" />, label: `${selectedQuestionCount} questions` },
+                  { icon: <Star className="h-4 w-4 text-amber-400 mx-auto mb-1" />, label: "Full report" },
+                ].map((item, i) => (
+                  <div key={i} className="bg-slate-900/60 border border-slate-800 p-3 rounded-xl text-center">
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                {/* Question count selector */}
+                <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 space-y-2">
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Number of questions
+                  </p>
+                  <div className="flex gap-2">
+                    {[2, 4, 8].map((n) => (
+                      <button
+                        key={n}
+                        onClick={() => setSelectedQuestionCount(n)}
+                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${
+                          selectedQuestionCount === n
+                            ? "bg-indigo-600 text-white"
+                            : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                        }`}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">
+                  Ensure microphone access is allowed before starting
+                </p>
+                <button
+                  onClick={handleStart}
+                  disabled={pageState === "starting"}
+                  className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/40 text-white py-4 rounded-2xl font-bold text-base transition shadow-lg shadow-indigo-600/20 flex items-center justify-center space-x-3"
+                >
+                  {pageState === "starting" ? (
+                    <><RefreshCw className="h-5 w-5 animate-spin" /><span>Preparing your interview...</span></>
+                  ) : (
+                    <><Mic className="h-5 w-5" /><span>Start Voice Interview — {selectedQuestionCount} Questions</span></>
+                  )}
+                </button>
+              </div>
+            </div>
+          </main>
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  // ── ACTIVE ────────────────────────────────────────────────────────────────
+  if (pageState === "active") {
+    return (
+      <AuthGuard>
+        <div className="min-h-screen bg-[#0F172A] text-slate-100 flex flex-col">
+          <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+            <div className="flex items-center space-x-4">
+              <div>
+                <h1 className="font-extrabold text-sm text-white leading-tight">Live Interview — Alex</h1>
+                <p className="text-slate-500 text-[10px] uppercase tracking-wider font-semibold mt-0.5">ElevenLabs Conversational AI</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-slate-400 text-xs font-semibold bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+                ~Q{questionCount}/8
+              </span>
+              <button
+                onClick={handleEndEarly}
+                className="text-xs font-semibold text-red-400 border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-lg transition"
+              >
+                End Interview
+              </button>
+            </div>
+          </header>
+
+          <main className="flex-grow max-w-4xl w-full mx-auto px-6 py-8 flex flex-col gap-6">
+            {(error || convError) && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex items-start space-x-2 text-xs text-red-400">
+                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>{error || convError}</span>
+              </div>
+            )}
+
+            {/* AI Visualizer */}
+            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 flex flex-col items-center space-y-6">
+              <div className="flex items-center space-x-2 text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                <Volume2 className={`h-4 w-4 ${isSpeaking ? "text-indigo-400" : "text-slate-600"}`} />
+                <span>{isSpeaking ? "Alex is speaking" : "Alex is listening..."}</span>
+              </div>
+
+              {/* Animated avatar */}
+              <div className="relative">
+                <div className={`absolute inset-0 rounded-full transition-all duration-500 ${isSpeaking ? "bg-indigo-500/20 blur-xl scale-125" : "bg-transparent"}`} />
+                <div className={`relative flex items-center justify-center w-24 h-24 rounded-full border-2 transition-all duration-300 ${isSpeaking ? "border-indigo-500/60 bg-indigo-600/10" : "border-slate-800 bg-slate-900"}`}>
+                  <span className="text-3xl font-black text-white">A</span>
+                </div>
+                {isSpeaking && (
+                  <div className="absolute -inset-2 rounded-full border border-indigo-500/20 animate-ping" />
+                )}
+              </div>
+
+              {/* Waveform */}
+              <div className="flex items-center space-x-0.5 h-10 w-full max-w-xs justify-center">
+                {[...Array(20)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-1.5 rounded-full transition-all duration-150 ${isSpeaking ? "bg-indigo-500" : "bg-slate-700"}`}
+                    style={{
+                      height: isSpeaking
+                        ? `${20 + Math.abs(Math.sin((i + Date.now() / 250) * 0.9)) * 80}%`
+                        : "15%",
+                    }}
+                  />
+                ))}
+              </div>
+
+              <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">
+                {status === "connecting" ? "Connecting to Alex..." : "Your mic is always open — speak when ready"}
+              </p>
+            </div>
+
+            {/* Live Transcript */}
+            <div className="bg-slate-900/30 border border-slate-800 rounded-2xl overflow-hidden flex flex-col" style={{ maxHeight: "340px" }}>
+              <div className="px-5 py-3 border-b border-slate-800 flex items-center space-x-2 text-xs text-slate-500 font-semibold uppercase tracking-wider shrink-0">
+                <MessageSquare className="h-3.5 w-3.5" />
+                <span>Live Transcript</span>
+              </div>
+              <div ref={transcriptScrollRef} className="p-5 space-y-3 overflow-y-auto flex-grow">
+                {liveTranscript.length === 0 ? (
+                  <p className="text-slate-600 text-xs italic">Conversation will appear here...</p>
+                ) : (
+                  liveTranscript.map((entry, i) => (
+                    <div key={i} className={`flex ${entry.source === "user" ? "justify-end" : "justify-start"}`}>
+                      <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                        entry.source === "ai"
+                          ? "bg-slate-800/80 text-slate-200 rounded-tl-sm"
+                          : "bg-indigo-600/20 text-indigo-200 rounded-tr-sm border border-indigo-500/20"
+                      }`}>
+                        <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${entry.source === "ai" ? "text-slate-500" : "text-indigo-500"}`}>
+                          {entry.source === "ai" ? "Alex" : "You"}
+                        </p>
+                        <p>{entry.message}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </main>
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  // ── EVALUATING ────────────────────────────────────────────────────────────
+  if (pageState === "evaluating") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0F172A] text-white">
-        <div className="flex flex-col items-center space-y-4 max-w-sm text-center px-6">
-          <RefreshCw className="h-10 w-10 text-indigo-500 animate-spin" />
-          <h3 className="font-bold text-lg text-white">Assembling Oral Exam...</h3>
-          <p className="text-slate-400 text-xs leading-relaxed animate-pulse">
-            Gemini is compiling exactly 8 complex, personalized technical questions mapped to your study modules. Stand by...
+        <div className="flex flex-col items-center space-y-5 max-w-sm text-center px-6">
+          <div className="relative">
+            <div className="absolute inset-0 bg-indigo-500/20 blur-2xl scale-150 rounded-full" />
+            <div className="relative bg-slate-900 border border-slate-800 p-6 rounded-full">
+              <Sparkles className="h-10 w-10 text-indigo-400 animate-pulse" />
+            </div>
+          </div>
+          <h3 className="font-extrabold text-xl text-white">Analysing your performance...</h3>
+          <p className="text-slate-400 text-xs leading-relaxed">
+            Gemini is reviewing your full interview transcript, scoring each answer, and building your personalised report.
           </p>
+          <div className="flex space-x-1.5 mt-2">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <AuthGuard>
-      <div className="min-h-screen bg-[#0F172A] text-slate-100 flex flex-col justify-between">
-        {/* Header */}
-        <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-          <div className="flex items-center space-x-4">
-            <Link href={`/plan/${planId}`} className="text-slate-400 hover:text-white transition">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <div>
-              <h1 className="font-extrabold text-sm text-white leading-tight">AI Vocal Examination</h1>
-              <p className="text-slate-500 text-[10px] uppercase tracking-wider font-semibold mt-0.5">PrepStudio Oral Lab</p>
-            </div>
-          </div>
-
-          {!isFinished && questions.length > 0 && (
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
-              Question {currentQuestionIndex + 1} of 8
-            </div>
-          )}
-        </header>
-
-        <main className="flex-grow max-w-4xl w-full mx-auto px-6 py-10 flex flex-col justify-center">
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 flex items-start space-x-2 text-xs text-red-400">
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {isFinished ? (
-            /* scorecard view */
-            <div className="space-y-8 animate-fade-in">
-              <div className="bg-slate-900/40 border border-slate-800 p-8 rounded-3xl backdrop-blur-sm text-center relative overflow-hidden shadow-2xl">
-                {/* Background design glow */}
-                <div className="absolute top-[-50px] right-[-50px] w-40 h-40 bg-indigo-500/10 rounded-full blur-[60px] pointer-events-none" />
-
-                <div className="bg-indigo-500/10 text-indigo-400 p-4 rounded-full w-fit mx-auto mb-6">
-                  <Trophy className="h-10 w-10 text-indigo-400" />
-                </div>
-                
-                <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2">Examination Complete!</h2>
-                <p className="text-slate-400 text-sm max-w-sm mx-auto leading-relaxed">
-                  Your spoken definitions were parsed, graded, and compiled by the Gemini evaluator agent.
-                </p>
-
-                <div className="my-10">
-                  <div className="inline-flex flex-col items-center justify-center bg-slate-950 border border-slate-850 h-32 w-32 rounded-full ring-4 ring-indigo-500/20">
-                    <span className="text-4xl font-extrabold text-white">{score}</span>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Score</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left border-t border-slate-850 pt-8 mt-6">
-                  <div className="bg-slate-950/40 border border-slate-900 p-5 rounded-2xl">
-                    <h3 className="font-bold text-sm text-indigo-400 uppercase tracking-wider mb-3 flex items-center space-x-1.5">
-                      <ListChecks className="h-4 w-4" />
-                      <span>Conceptual Strengths</span>
-                    </h3>
-                    <div className="text-slate-300 text-xs space-y-2 leading-relaxed">
-                      {feedback?.strengths ? (
-                        feedback.strengths.split("\n").map((line: string, i: number) => (
-                          <p key={i}>{line}</p>
-                        ))
-                      ) : (
-                        <p>No strengths listed.</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-950/40 border border-slate-900 p-5 rounded-2xl">
-                    <h3 className="font-bold text-sm text-amber-400 uppercase tracking-wider mb-3 flex items-center space-x-1.5">
-                      <Sparkles className="h-4 w-4" />
-                      <span>Areas for Improvement</span>
-                    </h3>
-                    <div className="text-slate-300 text-xs space-y-2 leading-relaxed">
-                      {feedback?.improvements ? (
-                        feedback.improvements.split("\n").map((line: string, i: number) => (
-                          <p key={i}>{line}</p>
-                        ))
-                      ) : (
-                        <p>No suggestions listed.</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-center space-x-4">
-                <Link
-                  href={`/plan/${planId}`}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-xl font-bold transition shadow-lg shadow-indigo-600/10 flex items-center space-x-2"
-                >
-                  <span>Return to Study Track</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Link>
-                <button
-                  onClick={handleStartInterview}
-                  className="border border-slate-800 hover:bg-slate-800/80 text-slate-300 px-6 py-4 rounded-xl font-semibold transition"
-                >
-                  Retake Examination
-                </button>
+  // ── FINISHED ──────────────────────────────────────────────────────────────
+  if (pageState === "finished" && evaluation) {
+    return (
+      <AuthGuard>
+        <div className="min-h-screen bg-[#0F172A] text-slate-100 flex flex-col">
+          <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+            <div className="flex items-center space-x-4">
+              <Link href={`/plan/${planId}`} className="text-slate-400 hover:text-white transition">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+              <div>
+                <h1 className="font-extrabold text-sm text-white leading-tight">Interview Report</h1>
+                <p className="text-slate-500 text-[10px] uppercase tracking-wider font-semibold mt-0.5">PrepStudio · Powered by Gemini</p>
               </div>
             </div>
-          ) : (
-            /* interactive exam track */
-            <div className="space-y-8 flex-grow flex flex-col justify-between">
-              
-              {/* Question Screen Card */}
-              <div className="bg-slate-900/40 border border-slate-800 p-6 md:p-8 rounded-2xl relative overflow-hidden flex flex-col items-center text-center">
-                <div className="absolute top-4 left-4 flex items-center space-x-1.5 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
-                  <Volume2 className="h-3.5 w-3.5 text-indigo-400" />
-                  <span>AI Oral Examiner</span>
-                </div>
+          </header>
 
-                <div className="my-8 max-w-2xl">
-                  <p className="text-lg md:text-xl font-semibold text-slate-200 leading-relaxed italic">
-                    "{currentQuestionText || "Pre-loading question details..."}"
-                  </p>
-                </div>
+          <main className="max-w-4xl w-full mx-auto px-6 py-10 space-y-8">
+            {/* Hero score card */}
+            <div className="bg-slate-900/40 border border-slate-800 p-8 rounded-3xl relative overflow-hidden shadow-2xl text-center">
+              <div className="absolute top-[-50px] right-[-50px] w-40 h-40 bg-indigo-500/10 rounded-full blur-[60px] pointer-events-none" />
+              <div className="bg-indigo-500/10 text-indigo-400 p-4 rounded-full w-fit mx-auto mb-5">
+                <Trophy className="h-10 w-10" />
+              </div>
+              <h2 className="text-3xl font-extrabold text-white tracking-tight mb-1">Interview Complete!</h2>
+              <p className="text-slate-400 text-sm max-w-sm mx-auto mb-8 leading-relaxed">
+                {evaluation.summary}
+              </p>
 
-                {/* Speech audio speaking wave simulation */}
-                {!isListening && (
-                  <div className="flex space-x-1 items-center h-4">
-                    {[1, 2, 3, 4, 5].map((bar) => (
-                      <span key={bar} className="w-1 bg-indigo-500 rounded-full h-full animate-pulse" />
+              <div className="flex justify-center mb-8">
+                <ScoreRing score={evaluation.overall_score} />
+              </div>
+
+              {/* Strengths & Improvements */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left border-t border-slate-800 pt-8">
+                <div className="bg-slate-950/40 border border-slate-900 p-5 rounded-2xl">
+                  <h3 className="font-bold text-sm text-emerald-400 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
+                    <CheckCircle2 className="h-4 w-4" /><span>Strengths</span>
+                  </h3>
+                  <ul className="space-y-2.5">
+                    {evaluation.strengths.map((s, i) => (
+                      <li key={i} className="flex items-start space-x-2 text-xs text-slate-300 leading-relaxed">
+                        <span className="text-emerald-500 mt-0.5 shrink-0">✓</span>
+                        <span>{s}</span>
+                      </li>
                     ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Visual Microphone Visualizer Deck */}
-              <div className="flex flex-col items-center space-y-6">
-                <div className="relative">
-                  <div
-                    className={`absolute inset-0 rounded-full blur-xl opacity-30 bg-indigo-500 transition duration-500 ${
-                      isListening ? "scale-125 opacity-55 animate-pulse" : "scale-100"
-                    }`}
-                  />
-                  <button
-                    onClick={isListening ? stopListening : startListening}
-                    disabled={answering}
-                    className={`relative z-10 p-8 rounded-full border shadow-2xl transition duration-300 ${
-                      isListening
-                        ? "bg-red-500 border-red-400 text-white"
-                        : "bg-indigo-600 border-indigo-500 hover:bg-indigo-500 text-white"
-                    }`}
-                  >
-                    {isListening ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
-                  </button>
+                  </ul>
                 </div>
 
-                {/* Animated Speech Recognition Waveform */}
-                {isListening && (
-                  <div className="flex items-center space-x-1 h-6">
-                    {[...Array(9)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-1 bg-red-400 rounded-full h-full wave-bar"
-                        style={{ height: `${Math.floor(Math.random() * 80) + 20}%` }}
-                      />
+                <div className="bg-slate-950/40 border border-slate-900 p-5 rounded-2xl">
+                  <h3 className="font-bold text-sm text-amber-400 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
+                    <Sparkles className="h-4 w-4" /><span>Areas to Improve</span>
+                  </h3>
+                  <ul className="space-y-2.5">
+                    {evaluation.improvements.map((s, i) => (
+                      <li key={i} className="flex items-start space-x-2 text-xs text-slate-300 leading-relaxed">
+                        <span className="text-amber-500 mt-0.5 shrink-0">→</span>
+                        <span>{s}</span>
+                      </li>
                     ))}
-                  </div>
-                )}
-
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  {isListening ? "System is listening to your answer..." : "Microphone Idle — Click to speak"}
-                </span>
-
-                {!browserSupportsSpeech && (
-                  <p className="text-[10px] text-amber-400 bg-amber-400/5 px-3 py-1 rounded border border-amber-400/10">
-                    ⚠️ Speech recognition not supported in this browser. Please type your answer below instead.
-                  </p>
-                )}
-              </div>
-
-              {/* Text fallback submission dashboard */}
-              <div className="space-y-4 max-w-2xl w-full mx-auto">
-                <div className="flex items-center justify-between text-xs text-slate-500 font-semibold uppercase tracking-wider">
-                  <span>Answer Editor</span>
-                  <span>Supports Keyboard Input</span>
+                  </ul>
                 </div>
-                <textarea
-                  value={customTextAnswer}
-                  onChange={(e) => setCustomTextAnswer(e.target.value)}
-                  disabled={answering}
-                  placeholder="Your spoken response will translate here automatically, or you can type here directly..."
-                  className="bg-slate-950 border border-slate-850 rounded-2xl p-5 w-full h-32 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition leading-relaxed"
-                />
-
-                <button
-                  onClick={handleSubmitAnswer}
-                  disabled={answering || !customTextAnswer.trim()}
-                  className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/40 text-white rounded-xl py-4 w-full font-semibold transition text-sm flex items-center justify-center space-x-2"
-                >
-                  {answering ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 animate-spin text-white" />
-                      <span>Evaluating answer with AI agent...</span>
-                    </>
-                  ) : (
-                    <span>Submit & Get Next Question</span>
-                  )}
-                </button>
               </div>
-
             </div>
-          )}
-        </main>
-      </div>
-    </AuthGuard>
-  );
+
+            {/* Per-question breakdown */}
+            <div className="space-y-4">
+              <h3 className="font-bold text-sm text-slate-400 uppercase tracking-wider flex items-center space-x-2">
+                <ListChecks className="h-4 w-4 text-indigo-400" />
+                <span>Question-by-Question Breakdown</span>
+              </h3>
+              {evaluation.question_feedback.map((qf, i) => {
+                const pct = qf.score;
+                const scoreColor = pct >= 80 ? "text-emerald-400" : pct >= 60 ? "text-amber-400" : "text-red-400";
+                const barColor = pct >= 80 ? "bg-emerald-500" : pct >= 60 ? "bg-amber-500" : "bg-red-500";
+                return (
+                  <div key={i} className="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 space-y-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start space-x-3 min-w-0">
+                        <span className="bg-indigo-600/15 text-indigo-400 text-[10px] font-extrabold px-2 py-1 rounded shrink-0 mt-0.5">
+                          Q{i + 1}
+                        </span>
+                        <p className="text-sm font-semibold text-slate-200 leading-snug">{qf.question}</p>
+                      </div>
+                      <span className={`text-xl font-extrabold shrink-0 ${scoreColor}`}>{pct}</span>
+                    </div>
+                    <div className="w-full bg-slate-800 rounded-full h-1.5">
+                      <div className={`h-1.5 rounded-full ${barColor} transition-all`} style={{ width: `${pct}%` }} />
+                    </div>
+                    <p className="text-xs text-slate-400 leading-relaxed">{qf.assessment}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <Link
+                href={`/plan/${planId}`}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-4 rounded-xl font-bold transition text-center flex items-center justify-center space-x-2"
+              >
+                <span>Return to Study Plan</span>
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+              <button
+                onClick={handleRetake}
+                className="flex-1 border border-slate-800 hover:bg-slate-800/80 text-slate-300 px-6 py-4 rounded-xl font-semibold transition"
+              >
+                Retake Interview
+              </button>
+            </div>
+          </main>
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  return null;
 }

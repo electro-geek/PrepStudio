@@ -6,8 +6,8 @@
 
 /* ── Design Tokens ─────────────────────────────────────────── */
 :root {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --bg-base:    #080c14;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bg-base:    #050810;
   --bg-surface: #0d1421;
   --bg-card:    #111827;
   --border:     #1e2d45;

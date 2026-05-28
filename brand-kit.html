@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>PrepStudio — Brand Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;
+  --panel:#0f1020;
+  --border:rgba(255,255,255,0.06);
+  --indigo:#6366f1;
+  --violet:#7c3aed;
+  --indigo-light:#818cf8;
+  --white:#f8fafc;
+  --muted:rgba(255,255,255,0.35);
+}
+html{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+
+/* ── outer canvas ── */
+.canvas{
+  width:1440px;
+  min-height:100vh;
+  margin:0 auto;
+  padding:64px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+/* ── row ── */
+.row{display:flex;gap:6px;width:100%}
+
+/* ── cell base ── */
+.cell{
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+  flex-shrink:0;
+}
+
+/* ── shared label ── */
+.label{
+  position:absolute;
+  top:24px;left:28px;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.2);
+}
+.label-br{top:auto;left:auto;bottom:24px;right:28px;}
+
+/* ══════════════════════════════════
+   ROW 1
+══════════════════════════════════ */
+
+/* Cell A — Hero / Logo cover */
+.cell-hero{
+  flex:2;
+  height:420px;
+  background:linear-gradient(145deg,#0e0f1f 0%,#130d22 100%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:28px;
+}
+.cell-hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 60%,rgba(99,102,241,0.12),transparent);
+  pointer-events:none;
+}
+.hero-mark{
+  width:96px;height:96px;
+  filter:drop-shadow(0 8px 32px rgba(99,102,241,0.5));
+}
+.hero-wordmark{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.hero-wordmark h1{
+  font-size:42px;
+  font-weight:900;
+  letter-spacing:-0.03em;
+  color:var(--white);
+  line-height:1;
+}
+.hero-wordmark p{
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.3);
+}
+
+/* Cell B — Tagline */
+.cell-tagline{
+  flex:1;
+  height:420px;
+  background:#0c0c18;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:36px;
+}
+.cell-tagline h2{
+  font-size:28px;
+  font-weight:800;
+  line-height:1.2;
+  letter-spacing:-0.02em;
+  color:var(--white);
+  margin-bottom:16px;
+}
+.cell-tagline h2 em{
+  font-style:normal;
+  color:var(--indigo-light);
+}
+.cell-tagline p{
+  font-size:12px;
+  font-weight:400;
+  color:rgba(255,255,255,0.3);
+  line-height:1.6;
+  max-width:200px;
+}
+
+/* ══════════════════════════════════
+   ROW 2
+══════════════════════════════════ */
+
+/* Cell C — Color System */
+.cell-colors{
+  flex:1;height:300px;
+  background:#090910;
+  padding:32px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.swatch-row{display:flex;gap:8px;flex-wrap:wrap;}
+.swatch{
+  height:56px;
+  flex:1;
+  border-radius:12px;
+  position:relative;
+  overflow:hidden;
+  min-width:48px;
+}
+.swatch::after{
+  content:attr(data-hex);
+  position:absolute;
+  bottom:6px;left:0;right:0;
+  text-align:center;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:0.06em;
+  color:rgba(255,255,255,0.5);
+}
+.swatch-label{
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.2);
+  margin-bottom:12px;
+}
+
+/* Cell D — Logo Construction */
+.cell-construct{
+  flex:1;height:300px;
+  background:#0b0b16;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:40px;
+}
+.construct-diagram{
+  position:relative;
+  width:120px;height:120px;
+}
+.construct-notes{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.c-note{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.c-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.c-note span{
+  font-size:10px;
+  font-weight:500;
+  color:rgba(255,255,255,0.35);
+  letter-spacing:0.04em;
+}
+
+/* Cell E — Typography */
+.cell-type{
+  flex:1.2;height:300px;
+  background:#090912;
+  padding:32px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.type-display{
+  font-size:64px;
+  font-weight:900;
+  letter-spacing:-0.04em;
+  line-height:1;
+  color:var(--white);
+  opacity:0.9;
+}
+.type-row{
+  display:flex;
+  align-items:baseline;
+  gap:16px;
+  border-top:1px solid var(--border);
+  padding-top:16px;
+}
+.type-name{
+  font-size:9px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.2em;
+  color:rgba(255,255,255,0.2);
+  width:80px;
+  flex-shrink:0;
+}
+.type-sample{
+  font-size:14px;
+  color:rgba(255,255,255,0.5);
+  font-weight:300;
+  letter-spacing:0.01em;
+}
+
+/* ══════════════════════════════════
+   ROW 3
+══════════════════════════════════ */
+
+/* Cell F — App Mockup */
+.cell-app{
+  flex:1.5;height:340px;
+  background:linear-gradient(160deg,#0b0c1a,#0f0b1e);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  padding:28px;
+  gap:16px;
+}
+.app-bar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:12px;
+  padding:10px 14px;
+}
+.app-dot{width:6px;height:6px;border-radius:50%}
+.app-url{
+  flex:1;
+  font-size:11px;
+  font-weight:500;
+  color:rgba(255,255,255,0.2);
+  letter-spacing:0.02em;
+}
+.app-nav{
+  display:flex;align-items:center;gap:10px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+.app-logo-row{display:flex;align-items:center;gap:8px}
+.app-logo-row span{font-size:13px;font-weight:900;color:var(--white)}
+.app-nav-links{
+  display:flex;gap:20px;margin-left:auto;
+}
+.app-nav-links span{
+  font-size:10px;font-weight:500;
+  color:rgba(255,255,255,0.25);
+}
+.app-hero-text{
+  font-size:26px;font-weight:900;
+  letter-spacing:-0.02em;
+  line-height:1.1;
+  color:var(--white);
+}
+.app-hero-text em{
+  font-style:normal;
+  background:linear-gradient(90deg,var(--indigo-light),#a78bfa);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.app-btn{
+  display:inline-flex;
+  align-items:center;gap:6px;
+  background:white;
+  color:black;
+  font-size:11px;
+  font-weight:800;
+  padding:8px 16px;
+  border-radius:10px;
+  width:fit-content;
+}
+
+/* Cell G — Logo Variants */
+.cell-variants{
+  flex:1;height:340px;
+  background:#090910;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:32px;
+}
+.variant{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 0;
+}
+.variant+.variant{border-top:1px solid var(--border)}
+.variant-name{
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.2);
+  width:70px;flex-shrink:0;
+}
+
+/* Cell H — Palette atmosphere */
+.cell-atmos{
+  flex:0.8;height:340px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#1a1240 0%,#0d0820 50%,#050810 100%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  padding:28px;
+}
+.atmos-orb{
+  width:110px;height:110px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#818cf8,#6366f1 40%,#4338ca 70%,#1e1b4b);
+  box-shadow:0 0 60px rgba(99,102,241,0.4),0 0 120px rgba(99,102,241,0.15);
+}
+.atmos-text{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.2);
+  text-align:center;
+}
+.atmos-palette{
+  display:flex;gap:6px;
+}
+.atmos-chip{
+  width:24px;height:24px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.1);
+}
+
+/* ══════════════════════════════════
+   ROW 4 — Full-width strip
+══════════════════════════════════ */
+.cell-strip{
+  width:100%;height:120px;
+  background:#0c0c1a;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 52px;
+}
+.strip-logo{display:flex;align-items:center;gap:12px}
+.strip-logo span{font-size:16px;font-weight:900;color:rgba(255,255,255,0.9)}
+.strip-tagline{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:-0.02em;
+  color:rgba(255,255,255,0.08);
+}
+.strip-tagline em{
+  font-style:normal;
+  color:rgba(255,255,255,0.7);
+}
+.strip-url{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.08em;
+  color:rgba(255,255,255,0.15);
+}
+
+/* ══════════ CONSTRUCTION GRID LINES ══════════ */
+.grid-line{
+  position:absolute;
+  background:rgba(99,102,241,0.15);
+}
+.gl-h{height:1px;width:100%;top:50%}
+.gl-v{width:1px;height:100%;left:50%}
+.gl-circle{
+  position:absolute;
+  border:1px solid rgba(99,102,241,0.15);
+  border-radius:50%;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+}
+.construct-label{
+  position:absolute;
+  font-size:7px;
+  font-weight:700;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:rgba(99,102,241,0.5);
+}
+
+/* Page number */
+.page-num{
+  position:absolute;
+  bottom:18px;right:22px;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:0.15em;
+  color:rgba(255,255,255,0.12);
+}
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <!-- ── ROW 1 ── -->
+  <div class="row">
+
+    <!-- Cell A: Hero logo -->
+    <div class="cell cell-hero">
+      <span class="label">01 — Mark + Wordmark</span>
+      <svg class="hero-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hbg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f46e5"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+        <rect width="100" height="100" rx="22" fill="url(#hbg)"/>
+        <rect x="0.5" y="0.5" width="99" height="99" rx="21.5" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+        <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
+        <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
+        <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
+        <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
+      </svg>
+      <div class="hero-wordmark">
+        <h1>PrepStudio</h1>
+        <p>AI Study &amp; Voice Interview Platform</p>
+      </div>
+      <span class="page-num">01</span>
+    </div>
+
+    <!-- Cell B: Tagline -->
+    <div class="cell cell-tagline">
+      <span class="label">02 — Brand Essence</span>
+      <div>
+        <h2>Study smarter.<br/><em>Speak</em> sharper.</h2>
+        <p>From blank topic to confident voice — AI-guided, every step.</p>
+      </div>
+      <span class="page-num">02</span>
+    </div>
+
+  </div>
+
+  <!-- ── ROW 2 ── -->
+  <div class="row">
+
+    <!-- Cell C: Colors -->
+    <div class="cell cell-colors">
+      <span class="label">03 — Color System</span>
+      <div>
+        <div class="swatch-label">Primary Palette</div>
+        <div class="swatch-row">
+          <div class="swatch" style="background:#4f46e5" data-hex="#4F46E5"></div>
+          <div class="swatch" style="background:#6366f1" data-hex="#6366F1"></div>
+          <div class="swatch" style="background:#818cf8" data-hex="#818CF8"></div>
+          <div class="swatch" style="background:#7c3aed" data-hex="#7C3AED"></div>
+          <div class="swatch" style="background:#8b5cf6" data-hex="#8B5CF6"></div>
+        </div>
+      </div>
+      <div>
+        <div class="swatch-label">Neutral &amp; Surface</div>
+        <div class="swatch-row">
+          <div class="swatch" style="background:#050810" data-hex="#050810"></div>
+          <div class="swatch" style="background:#0f172a" data-hex="#0F172A"></div>
+          <div class="swatch" style="background:#1e293b" data-hex="#1E293B"></div>
+          <div class="swatch" style="background:#94a3b8" data-hex="#94A3B8"></div>
+          <div class="swatch" style="background:#f8fafc" data-hex="#F8FAFC"></div>
+        </div>
+      </div>
+      <span class="page-num">03</span>
+    </div>
+
+    <!-- Cell D: Construction -->
+    <div class="cell cell-construct">
+      <span class="label">04 — Mark Construction</span>
+      <div class="construct-diagram">
+        <!-- Grid lines -->
+        <div class="grid-line gl-h" style="opacity:0.6"></div>
+        <div class="grid-line gl-v" style="opacity:0.6"></div>
+        <div class="gl-circle" style="width:80px;height:80px;"></div>
+        <div class="gl-circle" style="width:120px;height:120px;"></div>
+        <!-- Labels -->
+        <span class="construct-label" style="top:2px;left:50%;transform:translateX(-50%)">P Stem</span>
+        <span class="construct-label" style="bottom:2px;right:4px">Bars</span>
+        <!-- Logo scaled down -->
+        <svg viewBox="0 0 100 100" style="width:90px;height:90px;position:absolute;top:15px;left:15px;filter:drop-shadow(0 4px 16px rgba(99,102,241,0.4))">
+          <defs>
+            <linearGradient id="cbg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4f46e5"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <rect width="100" height="100" rx="22" fill="url(#cbg)"/>
+          <rect x="0.5" y="0.5" width="99" height="99" rx="21.5" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
+          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
+          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
+          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
+        </svg>
+      </div>
+      <div class="construct-notes">
+        <div class="c-note">
+          <div class="c-dot" style="background:#818cf8"></div>
+          <span>P monogram — structure, prep</span>
+        </div>
+        <div class="c-note">
+          <div class="c-dot" style="background:#a78bfa"></div>
+          <span>Audio bars — voice, interview</span>
+        </div>
+        <div class="c-note">
+          <div class="c-dot" style="background:#c4b5fd"></div>
+          <span>Unified mark — one system</span>
+        </div>
+        <div class="c-note">
+          <div class="c-dot" style="background:rgba(255,255,255,0.2)"></div>
+          <span>Radius: 22px grid unit</span>
+        </div>
+      </div>
+      <span class="page-num">04</span>
+    </div>
+
+    <!-- Cell E: Typography -->
+    <div class="cell cell-type">
+      <span class="label">05 — Typography</span>
+      <div class="type-display">Aa</div>
+      <div>
+        <div class="type-row">
+          <span class="type-name">Display</span>
+          <span class="type-sample" style="font-size:18px;font-weight:900;color:rgba(255,255,255,0.7)">Inter Black 900</span>
+        </div>
+        <div class="type-row">
+          <span class="type-name">Heading</span>
+          <span class="type-sample" style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.55)">Inter Bold 700</span>
+        </div>
+        <div class="type-row">
+          <span class="type-name">Body</span>
+          <span class="type-sample" style="font-size:13px;font-weight:400;color:rgba(255,255,255,0.4)">Inter Regular 400</span>
+        </div>
+        <div class="type-row">
+          <span class="type-name">Label</span>
+          <span class="type-sample" style="font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.25)">INTER 700 / 0.18em</span>
+        </div>
+      </div>
+      <span class="page-num">05</span>
+    </div>
+
+  </div>
+
+  <!-- ── ROW 3 ── -->
+  <div class="row">
+
+    <!-- Cell F: App mockup -->
+    <div class="cell cell-app">
+      <span class="label">06 — Digital Application</span>
+      <!-- Browser bar -->
+      <div class="app-bar">
+        <div class="app-dot" style="background:#ff5f57"></div>
+        <div class="app-dot" style="background:#febc2e"></div>
+        <div class="app-dot" style="background:#28c840"></div>
+        <span class="app-url">prepstudio.app</span>
+      </div>
+      <!-- Nav -->
+      <div class="app-nav">
+        <div class="app-logo-row">
+          <svg viewBox="0 0 100 100" style="width:22px;height:22px">
+            <defs>
+              <linearGradient id="nbg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#4f46e5"/>
+                <stop offset="100%" stop-color="#7c3aed"/>
+              </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="22" fill="url(#nbg)"/>
+            <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
+            <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
+            <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
+            <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
+          </svg>
+          <span>PrepStudio</span>
+        </div>
+        <div class="app-nav-links">
+          <span>Features</span>
+          <span>How it works</span>
+          <span style="color:rgba(255,255,255,0.6)">Start free →</span>
+        </div>
+      </div>
+      <div class="app-hero-text">Master any skill<br/>with <em>AI.</em></div>
+      <div class="app-btn">
+        <span>Start Learning Free</span>
+        <span>→</span>
+      </div>
+      <span class="page-num">06</span>
+    </div>
+
+    <!-- Cell G: Logo variants -->
+    <div class="cell cell-variants">
+      <span class="label">07 — Logo Variants</span>
+
+      <!-- Full colour -->
+      <div class="variant">
+        <span class="variant-name">Full Colour</span>
+        <svg viewBox="0 0 100 100" style="width:36px;height:36px">
+          <defs>
+            <linearGradient id="v1bg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4f46e5"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <rect width="100" height="100" rx="22" fill="url(#v1bg)"/>
+          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
+          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
+          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
+          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
+        </svg>
+        <span style="font-size:16px;font-weight:900;color:white;letter-spacing:-0.02em">PrepStudio</span>
+      </div>
+
+      <!-- Monochrome white -->
+      <div class="variant">
+        <span class="variant-name">White</span>
+        <svg viewBox="0 0 100 100" style="width:36px;height:36px">
+          <rect width="100" height="100" rx="22" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
+          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
+          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
+          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
+        </svg>
+        <span style="font-size:16px;font-weight:900;color:rgba(255,255,255,0.9);letter-spacing:-0.02em">PrepStudio</span>
+      </div>
+
+      <!-- Icon only -->
+      <div class="variant">
+        <span class="variant-name">Icon Only</span>
+        <svg viewBox="0 0 100 100" style="width:36px;height:36px">
+          <defs>
+            <linearGradient id="v3bg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4f46e5"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <rect width="100" height="100" rx="22" fill="url(#v3bg)"/>
+          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
+          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
+          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
+          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
+        </svg>
+        <span style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);letter-spacing:0.05em">For avatars, favicons, app icons</span>
+      </div>
+
+      <!-- Dark bg -->
+      <div class="variant">
+        <span class="variant-name">On Light</span>
+        <div style="background:#f8fafc;border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px;">
+          <svg viewBox="0 0 100 100" style="width:22px;height:22px">
+            <defs>
+              <linearGradient id="v4bg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#4f46e5"/>
+                <stop offset="100%" stop-color="#7c3aed"/>
+              </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="22" fill="url(#v4bg)"/>
+            <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
+            <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
+            <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
+            <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
+          </svg>
+          <span style="font-size:13px;font-weight:900;color:#0f0f1a;letter-spacing:-0.02em">PrepStudio</span>
+        </div>
+        <span></span>
+      </div>
+
+      <span class="page-num">07</span>
+    </div>
+
+    <!-- Cell H: Atmosphere -->
+    <div class="cell cell-atmos">
+      <span class="label">08 — Accent</span>
+      <div class="atmos-orb"></div>
+      <div class="atmos-text">Indigo — Violet<br/>Gradient System</div>
+      <div class="atmos-palette">
+        <div class="atmos-chip" style="background:#4f46e5"></div>
+        <div class="atmos-chip" style="background:#6366f1"></div>
+        <div class="atmos-chip" style="background:#7c3aed"></div>
+        <div class="atmos-chip" style="background:#8b5cf6"></div>
+        <div class="atmos-chip" style="background:#a78bfa"></div>
+      </div>
+      <span class="page-num">08</span>
+    </div>
+
+  </div>
+
+  <!-- ── ROW 4 — Strip ── -->
+  <div class="row">
+    <div class="cell cell-strip" style="flex:1">
+      <div class="strip-logo">
+        <svg viewBox="0 0 100 100" style="width:32px;height:32px">
+          <defs>
+            <linearGradient id="sbg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4f46e5"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <rect width="100" height="100" rx="22" fill="url(#sbg)"/>
+          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
+          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
+          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
+          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
+        </svg>
+        <span>PrepStudio</span>
+      </div>
+      <div class="strip-tagline">Study smarter. <em>Speak sharper.</em></div>
+      <div class="strip-url">prepstudio.app — 2025</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

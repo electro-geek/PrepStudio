@@ -8,6 +8,7 @@ class Settings:
         # environment variable pointing to a PostgreSQL instance.
         self.DATABASE_URL = "postgresql+asyncpg://user:password@localhost:5432/learnforge"
         self.GEMINI_API_KEY = ""
+        self.ELEVENLABS_API_KEY = ""
         self.FIREBASE_PROJECT_ID = ""
         self.FIREBASE_PRIVATE_KEY = ""
         self.FIREBASE_CLIENT_EMAIL = ""
@@ -20,6 +21,7 @@ class Settings:
         # Environment variables always win — this is the Vercel-compatible path
         self.DATABASE_URL = os.getenv("DATABASE_URL", self.DATABASE_URL)
         self.GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", self.GEMINI_API_KEY)
+        self.ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", self.ELEVENLABS_API_KEY)
         self.FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID", self.FIREBASE_PROJECT_ID)
         self.FIREBASE_PRIVATE_KEY = os.getenv("FIREBASE_PRIVATE_KEY", self.FIREBASE_PRIVATE_KEY)
         self.FIREBASE_CLIENT_EMAIL = os.getenv("FIREBASE_CLIENT_EMAIL", self.FIREBASE_CLIENT_EMAIL)
@@ -60,9 +62,9 @@ class Settings:
                 val = val.strip()
 
                 valid_keys = {
-                    "DATABASE_URL", "GEMINI_API_KEY", "FIREBASE_PROJECT_ID", 
-                    "FIREBASE_PRIVATE_KEY", "FIREBASE_CLIENT_EMAIL", "CORS_ORIGINS",
-                    "AUTH_BYPASS"
+                    "DATABASE_URL", "GEMINI_API_KEY", "ELEVENLABS_API_KEY",
+                    "FIREBASE_PROJECT_ID", "FIREBASE_PRIVATE_KEY",
+                    "FIREBASE_CLIENT_EMAIL", "CORS_ORIGINS", "AUTH_BYPASS"
                 }
 
                 if key in valid_keys:
