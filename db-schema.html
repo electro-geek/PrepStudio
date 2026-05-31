@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrepStudio — Database Schema</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #21262d;
+    --border-accent: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --pk: #f0883e;
+    --fk: #79c0ff;
+    --idx: #7ee787;
+    --nullable: #6e7681;
+    --type-color: #d2a8ff;
+    --default-color: #a5d6ff;
+    --line: #388bfd;
+    --shadow: 0 8px 32px rgba(0,0,0,0.5);
+    --user-accent: #f0883e;
+    --plan-accent: #388bfd;
+    --day-accent: #79c0ff;
+    --topic-accent: #7ee787;
+    --article-accent: #d2a8ff;
+    --interview-accent: #ff7b72;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 32px 48px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: -0.3px;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    margin-top: 4px;
+  }
+
+  .badge {
+    background: var(--surface);
+    border: 1px solid var(--border-accent);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    padding: 14px 48px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── ERD Canvas ── */
+  .erd-container {
+    padding: 40px 48px;
+    overflow-x: auto;
+  }
+
+  .erd-canvas {
+    position: relative;
+    width: 1100px;
+    height: 780px;
+    margin: 0 auto;
+  }
+
+  svg.relations {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  /* ── Table Cards ── */
+  .table-card {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--border-accent);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    min-width: 220px;
+    transition: box-shadow 0.2s;
+  }
+
+  .table-card:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+    z-index: 10;
+  }
+
+  .table-header {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .table-header .icon {
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+
+  .table-body { padding: 6px 0 8px; }
+
+  .col-row {
+    display: flex;
+    align-items: center;
+    padding: 3px 14px;
+    gap: 8px;
+    border-left: 2px solid transparent;
+  }
+
+  .col-row.is-pk { border-left-color: var(--pk); }
+  .col-row.is-fk { border-left-color: var(--fk); }
+  .col-row.is-idx { border-left-color: var(--idx); }
+
+  .col-marker {
+    font-size: 9px;
+    font-weight: 700;
+    width: 22px;
+    flex-shrink: 0;
+    text-align: center;
+    padding: 1px 3px;
+    border-radius: 3px;
+    letter-spacing: 0.3px;
+  }
+
+  .col-marker.pk { background: rgba(240,136,62,0.15); color: var(--pk); }
+  .col-marker.fk { background: rgba(121,192,255,0.15); color: var(--fk); }
+  .col-marker.idx { background: rgba(126,231,135,0.12); color: var(--idx); }
+  .col-marker.empty { opacity: 0; }
+
+  .col-name {
+    flex: 1;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .col-type {
+    color: var(--type-color);
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .col-nullable {
+    color: var(--nullable);
+    font-size: 9px;
+    margin-left: 4px;
+  }
+
+  .col-default {
+    color: var(--default-color);
+    font-size: 9px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 6px 0;
+  }
+
+  /* ── Table positions ── */
+  #tbl-app_users   { top: 280px; left: 30px;  width: 240px; --accent: var(--user-accent); }
+  #tbl-plans       { top: 40px;  left: 310px; width: 230px; --accent: var(--plan-accent); }
+  #tbl-plan_days   { top: 40px;  left: 590px; width: 230px; --accent: var(--day-accent); }
+  #tbl-topics      { top: 40px;  left: 860px; width: 240px; --accent: var(--topic-accent); }
+  #tbl-articles    { top: 420px; left: 590px; width: 240px; --accent: var(--article-accent); }
+  #tbl-interviews  { top: 420px; left: 310px; width: 240px; --accent: var(--interview-accent); }
+
+  .table-header { background: var(--accent, #21262d); }
+
+  /* ── Relationship Lines SVG ── */
+  path.rel-line {
+    fill: none;
+    stroke-width: 1.5;
+    opacity: 0.55;
+  }
+
+  circle.rel-dot {
+    opacity: 0.7;
+  }
+
+  /* ── Schema reference table ── */
+  .schema-section {
+    padding: 0 48px 60px;
+  }
+
+  .schema-section h2 {
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text);
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+  }
+
+  .schema-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 900px) {
+    .schema-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .schema-card {
+    background: var(--surface);
+    border: 1px solid var(--border-accent);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .schema-card-header {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  table.col-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  table.col-table th {
+    text-align: left;
+    padding: 5px 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  table.col-table td {
+    padding: 5px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  table.col-table tr:last-child td { border-bottom: none; }
+
+  table.col-table tr.pk-row td:first-child { color: var(--pk); }
+  table.col-table tr.fk-row td:first-child { color: var(--fk); }
+
+  .tag {
+    display: inline-block;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-left: 3px;
+  }
+
+  .tag.pk { background: rgba(240,136,62,0.2); color: var(--pk); }
+  .tag.fk { background: rgba(121,192,255,0.2); color: var(--fk); }
+  .tag.idx { background: rgba(126,231,135,0.15); color: var(--idx); }
+  .tag.nn { background: rgba(139,148,158,0.15); color: var(--muted); }
+
+  .type-pill {
+    color: var(--type-color);
+    font-size: 10px;
+  }
+
+  /* ── Flow diagram ── */
+  .flow-section {
+    padding: 0 48px 60px;
+  }
+
+  .flow-section h2 {
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    margin-bottom: 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+  }
+
+  .flow-cards {
+    display: flex;
+    gap: 0;
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 16px;
+  }
+
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border-accent);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-width: 130px;
+  }
+
+  .flow-node .fn-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .flow-node .fn-title {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .flow-node .fn-count {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 18px;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    background: var(--surface);
+    border: 1px solid var(--border-accent);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-chip .sc-label { font-size: 10px; color: var(--muted); }
+  .stat-chip .sc-value { font-size: 20px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>PrepStudio — Database Schema</h1>
+    <p>PostgreSQL · 6 tables · 7 foreign keys · 3 indexes</p>
+  </div>
+  <div class="badge">prepstudio @ 34.10.7.41:5432</div>
+</header>
+
+<div class="legend">
+  <span style="font-size:11px;color:var(--muted);font-family:sans-serif;margin-right:4px;">Legend:</span>
+  <div class="legend-item"><div class="dot" style="background:var(--pk)"></div> Primary Key</div>
+  <div class="legend-item"><div class="dot" style="background:var(--fk)"></div> Foreign Key</div>
+  <div class="legend-item"><div class="dot" style="background:var(--idx)"></div> Index</div>
+  <div class="legend-item"><div class="dot" style="background:var(--type-color)"></div> Type</div>
+  <div class="legend-item"><div class="dot" style="background:var(--nullable)"></div> Nullable</div>
+</div>
+
+<!-- ══════════════════ ERD DIAGRAM ══════════════════ -->
+<div class="erd-container">
+  <div class="erd-canvas">
+
+    <!-- Relationship SVG lines -->
+    <svg class="relations" viewBox="0 0 1100 780" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="dot-blue" markerWidth="6" markerHeight="6" refX="3" refY="3">
+          <circle cx="3" cy="3" r="2.5" fill="#79c0ff"/>
+        </marker>
+        <marker id="dot-orange" markerWidth="6" markerHeight="6" refX="3" refY="3">
+          <circle cx="3" cy="3" r="2.5" fill="#f0883e"/>
+        </marker>
+        <marker id="dot-purple" markerWidth="6" markerHeight="6" refX="3" refY="3">
+          <circle cx="3" cy="3" r="2.5" fill="#d2a8ff"/>
+        </marker>
+        <marker id="dot-red" markerWidth="6" markerHeight="6" refX="3" refY="3">
+          <circle cx="3" cy="3" r="2.5" fill="#ff7b72"/>
+        </marker>
+        <marker id="dot-green" markerWidth="6" markerHeight="6" refX="3" refY="3">
+          <circle cx="3" cy="3" r="2.5" fill="#7ee787"/>
+        </marker>
+        <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="#79c0ff"/>
+        </marker>
+        <marker id="arr-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="#f0883e"/>
+        </marker>
+        <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="#d2a8ff"/>
+        </marker>
+        <marker id="arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="#ff7b72"/>
+        </marker>
+        <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="#7ee787"/>
+        </marker>
+      </defs>
+
+      <!-- app_users → plans  (user_id) -->
+      <path class="rel-line" stroke="#388bfd"
+        d="M 270,330 C 295,330 295,120 310,120"
+        marker-start="url(#dot-blue)" marker-end="url(#arr-blue)"/>
+      <text x="275" y="240" fill="#8b949e" font-size="9" font-family="monospace" transform="rotate(-90,275,240)">user_id</text>
+
+      <!-- app_users → interviews (user_id) -->
+      <path class="rel-line" stroke="#ff7b72"
+        d="M 270,360 C 290,360 290,490 310,490"
+        marker-start="url(#dot-red)" marker-end="url(#arr-red)"/>
+      <text x="276" y="430" fill="#8b949e" font-size="9" font-family="monospace" transform="rotate(-90,276,430)">user_id</text>
+
+      <!-- app_users → articles (user_id) -->
+      <path class="rel-line" stroke="#d2a8ff"
+        d="M 270,380 C 340,380 380,490 590,490"
+        marker-start="url(#dot-purple)" marker-end="url(#arr-purple)"/>
+      <text x="400" y="418" fill="#8b949e" font-size="9" font-family="monospace">user_id</text>
+
+      <!-- plans → plan_days (plan_id) -->
+      <path class="rel-line" stroke="#79c0ff"
+        d="M 540,120 C 565,120 565,120 590,120"
+        marker-start="url(#dot-blue)" marker-end="url(#arr-blue)"/>
+      <text x="550" y="113" fill="#8b949e" font-size="9" font-family="monospace">plan_id</text>
+
+      <!-- plan_days → topics (day_id) -->
+      <path class="rel-line" stroke="#7ee787"
+        d="M 820,130 C 845,130 845,130 860,130"
+        marker-start="url(#dot-green)" marker-end="url(#arr-green)"/>
+      <text x="828" y="123" fill="#8b949e" font-size="9" font-family="monospace">day_id</text>
+
+      <!-- topics → articles (topic_id) -->
+      <path class="rel-line" stroke="#d2a8ff"
+        d="M 960,280 C 960,360 880,400 830,460"
+        marker-start="url(#dot-purple)" marker-end="url(#arr-purple)"/>
+      <text x="892" y="370" fill="#8b949e" font-size="9" font-family="monospace">topic_id</text>
+
+      <!-- plans → interviews (plan_id) -->
+      <path class="rel-line" stroke="#ff7b72"
+        d="M 420,300 C 420,380 400,410 400,420"
+        marker-start="url(#dot-red)" marker-end="url(#arr-red)"/>
+      <text x="430" y="370" fill="#8b949e" font-size="9" font-family="monospace">plan_id</text>
+    </svg>
+
+    <!-- ══ app_users ══ -->
+    <div class="table-card" id="tbl-app_users">
+      <div class="table-header" style="background:rgba(240,136,62,0.18);border-bottom:1px solid rgba(240,136,62,0.3)">
+        <div class="icon" style="background:rgba(240,136,62,0.25)">👤</div>
+        app_users
+      </div>
+      <div class="table-body">
+        <div class="col-row is-pk">
+          <span class="col-marker pk">PK</span>
+          <span class="col-name">id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker idx" title="UNIQUE index">UI</span>
+          <span class="col-name">email</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">display_name</span>
+          <span class="col-type">varchar</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">created_at</span>
+          <span class="col-type">timestamptz</span>
+          <span class="col-default">now()</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ plans ══ -->
+    <div class="table-card" id="tbl-plans">
+      <div class="table-header" style="background:rgba(56,139,253,0.18);border-bottom:1px solid rgba(56,139,253,0.3)">
+        <div class="icon" style="background:rgba(56,139,253,0.25)">📋</div>
+        plans
+      </div>
+      <div class="table-body">
+        <div class="col-row is-pk">
+          <span class="col-marker pk">PK</span>
+          <span class="col-name">id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row is-fk">
+          <span class="col-marker fk">FK</span>
+          <span class="col-name">user_id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">topic</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">total_days</span>
+          <span class="col-type">integer</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">status</span>
+          <span class="col-type">varchar</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">created_at</span>
+          <span class="col-type">timestamptz</span>
+          <span class="col-default">now()</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ plan_days ══ -->
+    <div class="table-card" id="tbl-plan_days">
+      <div class="table-header" style="background:rgba(121,192,255,0.15);border-bottom:1px solid rgba(121,192,255,0.3)">
+        <div class="icon" style="background:rgba(121,192,255,0.2)">📅</div>
+        plan_days
+      </div>
+      <div class="table-body">
+        <div class="col-row is-pk">
+          <span class="col-marker pk">PK</span>
+          <span class="col-name">id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row is-fk is-idx">
+          <span class="col-marker fk">FK</span>
+          <span class="col-name">plan_id</span>
+          <span class="col-type">varchar</span>
+          <span class="col-nullable" style="color:var(--idx);font-size:9px">⚡</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">day_number</span>
+          <span class="col-type">integer</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">title</span>
+          <span class="col-type">varchar</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">is_complete</span>
+          <span class="col-type">boolean</span>
+          <span class="col-nullable">?</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ topics ══ -->
+    <div class="table-card" id="tbl-topics">
+      <div class="table-header" style="background:rgba(126,231,135,0.12);border-bottom:1px solid rgba(126,231,135,0.3)">
+        <div class="icon" style="background:rgba(126,231,135,0.18)">📚</div>
+        topics
+      </div>
+      <div class="table-body">
+        <div class="col-row is-pk">
+          <span class="col-marker pk">PK</span>
+          <span class="col-name">id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row is-fk is-idx">
+          <span class="col-marker fk">FK</span>
+          <span class="col-name">day_id</span>
+          <span class="col-type">varchar</span>
+          <span class="col-nullable" style="color:var(--idx);font-size:9px">⚡</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">title</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">content</span>
+          <span class="col-type">text</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">article_ideas</span>
+          <span class="col-type">json</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">is_complete</span>
+          <span class="col-type">boolean</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">created_at</span>
+          <span class="col-type">timestamptz</span>
+          <span class="col-default">now()</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ articles ══ -->
+    <div class="table-card" id="tbl-articles">
+      <div class="table-header" style="background:rgba(210,168,255,0.12);border-bottom:1px solid rgba(210,168,255,0.3)">
+        <div class="icon" style="background:rgba(210,168,255,0.18)">✍️</div>
+        articles
+      </div>
+      <div class="table-body">
+        <div class="col-row is-pk">
+          <span class="col-marker pk">PK</span>
+          <span class="col-name">id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row is-fk">
+          <span class="col-marker fk">FK</span>
+          <span class="col-name">topic_id</span>
+          <span class="col-type">varchar</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row is-fk">
+          <span class="col-marker fk">FK</span>
+          <span class="col-name">user_id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">raw_text</span>
+          <span class="col-type">text</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">refined_markdown</span>
+          <span class="col-type">text</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">twitter_thread</span>
+          <span class="col-type">text</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">created_at</span>
+          <span class="col-type">timestamptz</span>
+          <span class="col-default">now()</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ interviews ══ -->
+    <div class="table-card" id="tbl-interviews">
+      <div class="table-header" style="background:rgba(255,123,114,0.12);border-bottom:1px solid rgba(255,123,114,0.3)">
+        <div class="icon" style="background:rgba(255,123,114,0.18)">🎙️</div>
+        interviews
+      </div>
+      <div class="table-body">
+        <div class="col-row is-pk">
+          <span class="col-marker pk">PK</span>
+          <span class="col-name">id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row is-fk">
+          <span class="col-marker fk">FK</span>
+          <span class="col-name">plan_id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row is-fk">
+          <span class="col-marker fk">FK</span>
+          <span class="col-name">user_id</span>
+          <span class="col-type">varchar</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">score</span>
+          <span class="col-type">integer</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">feedback</span>
+          <span class="col-type">json</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">questions</span>
+          <span class="col-type">json</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">answers</span>
+          <span class="col-type">json</span>
+          <span class="col-nullable">?</span>
+        </div>
+        <div class="col-row">
+          <span class="col-marker empty">  </span>
+          <span class="col-name">created_at</span>
+          <span class="col-type">timestamptz</span>
+          <span class="col-default">now()</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /erd-canvas -->
+</div><!-- /erd-container -->
+
+
+<!-- ══════════════════ DATA FLOW ══════════════════ -->
+<div class="flow-section">
+  <h2>Data Flow — User Learning Journey</h2>
+  <div class="flow-cards">
+    <div class="flow-node" style="border-color:rgba(240,136,62,0.4)">
+      <div class="fn-label">1 · Identity</div>
+      <div class="fn-title" style="color:var(--user-accent)">app_users</div>
+      <div class="fn-count">Firebase UID as PK</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:rgba(56,139,253,0.4)">
+      <div class="fn-label">2 · Study Plan</div>
+      <div class="fn-title" style="color:var(--plan-accent)">plans</div>
+      <div class="fn-count">topic + duration</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:rgba(121,192,255,0.4)">
+      <div class="fn-label">3 · Daily Schedule</div>
+      <div class="fn-title" style="color:var(--day-accent)">plan_days</div>
+      <div class="fn-count">day_number + title</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:rgba(126,231,135,0.4)">
+      <div class="fn-label">4 · Learning Content</div>
+      <div class="fn-title" style="color:var(--topic-accent)">topics</div>
+      <div class="fn-count">lazy Gemini content</div>
+    </div>
+    <div class="flow-arrow" style="color:var(--muted)">⤵ ⤵</div>
+    <div class="flow-node" style="border-color:rgba(210,168,255,0.4)">
+      <div class="fn-label">5a · Writing</div>
+      <div class="fn-title" style="color:var(--article-accent)">articles</div>
+      <div class="fn-count">raw → markdown → tweet</div>
+    </div>
+    <div class="flow-arrow">·</div>
+    <div class="flow-node" style="border-color:rgba(255,123,114,0.4)">
+      <div class="fn-label">5b · Voice Practice</div>
+      <div class="fn-title" style="color:var(--interview-accent)">interviews</div>
+      <div class="fn-count">score + AI feedback</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ SCHEMA REFERENCE ══════════════════ -->
+<div class="schema-section">
+  <h2>Full Column Reference</h2>
+  <div class="schema-grid">
+
+    <!-- app_users -->
+    <div class="schema-card">
+      <div class="schema-card-header" style="background:rgba(240,136,62,0.12);border-bottom:1px solid rgba(240,136,62,0.2)">
+        <span style="color:var(--user-accent)">●</span> app_users
+      </div>
+      <table class="col-table">
+        <tr><th>Column</th><th>Type</th><th>Flags</th></tr>
+        <tr class="pk-row"><td>id</td><td class="type-pill">varchar</td><td><span class="tag pk">PK</span><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>email</td><td class="type-pill">varchar</td><td><span class="tag idx">UNIQUE</span><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>display_name</td><td class="type-pill">varchar</td><td></td></tr>
+        <tr><td>created_at</td><td class="type-pill">timestamptz</td><td><span class="tag" style="background:rgba(165,214,255,0.15);color:var(--default-color)">DEFAULT now()</span></td></tr>
+      </table>
+    </div>
+
+    <!-- plans -->
+    <div class="schema-card">
+      <div class="schema-card-header" style="background:rgba(56,139,253,0.12);border-bottom:1px solid rgba(56,139,253,0.2)">
+        <span style="color:var(--plan-accent)">●</span> plans
+      </div>
+      <table class="col-table">
+        <tr><th>Column</th><th>Type</th><th>Flags</th></tr>
+        <tr class="pk-row"><td>id</td><td class="type-pill">varchar</td><td><span class="tag pk">PK</span></td></tr>
+        <tr class="fk-row"><td>user_id</td><td class="type-pill">varchar</td><td><span class="tag fk">FK→users</span><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>topic</td><td class="type-pill">varchar</td><td><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>total_days</td><td class="type-pill">integer</td><td><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>status</td><td class="type-pill">varchar</td><td></td></tr>
+        <tr><td>created_at</td><td class="type-pill">timestamptz</td><td><span class="tag" style="background:rgba(165,214,255,0.15);color:var(--default-color)">DEFAULT now()</span></td></tr>
+      </table>
+    </div>
+
+    <!-- plan_days -->
+    <div class="schema-card">
+      <div class="schema-card-header" style="background:rgba(121,192,255,0.1);border-bottom:1px solid rgba(121,192,255,0.2)">
+        <span style="color:var(--day-accent)">●</span> plan_days
+      </div>
+      <table class="col-table">
+        <tr><th>Column</th><th>Type</th><th>Flags</th></tr>
+        <tr class="pk-row"><td>id</td><td class="type-pill">varchar</td><td><span class="tag pk">PK</span></td></tr>
+        <tr class="fk-row"><td>plan_id</td><td class="type-pill">varchar</td><td><span class="tag fk">FK→plans</span><span class="tag idx">IDX</span><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>day_number</td><td class="type-pill">integer</td><td><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>title</td><td class="type-pill">varchar</td><td></td></tr>
+        <tr><td>is_complete</td><td class="type-pill">boolean</td><td></td></tr>
+      </table>
+    </div>
+
+    <!-- topics -->
+    <div class="schema-card">
+      <div class="schema-card-header" style="background:rgba(126,231,135,0.08);border-bottom:1px solid rgba(126,231,135,0.2)">
+        <span style="color:var(--topic-accent)">●</span> topics
+      </div>
+      <table class="col-table">
+        <tr><th>Column</th><th>Type</th><th>Flags</th></tr>
+        <tr class="pk-row"><td>id</td><td class="type-pill">varchar</td><td><span class="tag pk">PK</span></td></tr>
+        <tr class="fk-row"><td>day_id</td><td class="type-pill">varchar</td><td><span class="tag fk">FK→plan_days</span><span class="tag idx">IDX</span><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>title</td><td class="type-pill">varchar</td><td><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>content</td><td class="type-pill">text</td><td><span class="tag" style="background:rgba(88,166,255,0.1);color:#58a6ff;font-size:9px">lazy Gemini</span></td></tr>
+        <tr><td>article_ideas</td><td class="type-pill">json</td><td></td></tr>
+        <tr><td>is_complete</td><td class="type-pill">boolean</td><td></td></tr>
+        <tr><td>created_at</td><td class="type-pill">timestamptz</td><td><span class="tag" style="background:rgba(165,214,255,0.15);color:var(--default-color)">DEFAULT now()</span></td></tr>
+      </table>
+    </div>
+
+    <!-- articles -->
+    <div class="schema-card">
+      <div class="schema-card-header" style="background:rgba(210,168,255,0.08);border-bottom:1px solid rgba(210,168,255,0.2)">
+        <span style="color:var(--article-accent)">●</span> articles
+      </div>
+      <table class="col-table">
+        <tr><th>Column</th><th>Type</th><th>Flags</th></tr>
+        <tr class="pk-row"><td>id</td><td class="type-pill">varchar</td><td><span class="tag pk">PK</span></td></tr>
+        <tr class="fk-row"><td>topic_id</td><td class="type-pill">varchar</td><td><span class="tag fk">FK→topics</span></td></tr>
+        <tr class="fk-row"><td>user_id</td><td class="type-pill">varchar</td><td><span class="tag fk">FK→users</span><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>raw_text</td><td class="type-pill">text</td><td></td></tr>
+        <tr><td>refined_markdown</td><td class="type-pill">text</td><td></td></tr>
+        <tr><td>twitter_thread</td><td class="type-pill">text</td><td></td></tr>
+        <tr><td>created_at</td><td class="type-pill">timestamptz</td><td><span class="tag" style="background:rgba(165,214,255,0.15);color:var(--default-color)">DEFAULT now()</span></td></tr>
+      </table>
+    </div>
+
+    <!-- interviews -->
+    <div class="schema-card">
+      <div class="schema-card-header" style="background:rgba(255,123,114,0.08);border-bottom:1px solid rgba(255,123,114,0.2)">
+        <span style="color:var(--interview-accent)">●</span> interviews
+      </div>
+      <table class="col-table">
+        <tr><th>Column</th><th>Type</th><th>Flags</th></tr>
+        <tr class="pk-row"><td>id</td><td class="type-pill">varchar</td><td><span class="tag pk">PK</span></td></tr>
+        <tr class="fk-row"><td>plan_id</td><td class="type-pill">varchar</td><td><span class="tag fk">FK→plans</span><span class="tag nn">NOT NULL</span></td></tr>
+        <tr class="fk-row"><td>user_id</td><td class="type-pill">varchar</td><td><span class="tag fk">FK→users</span><span class="tag nn">NOT NULL</span></td></tr>
+        <tr><td>score</td><td class="type-pill">integer</td><td></td></tr>
+        <tr><td>feedback</td><td class="type-pill">json</td><td></td></tr>
+        <tr><td>questions</td><td class="type-pill">json</td><td></td></tr>
+        <tr><td>answers</td><td class="type-pill">json</td><td></td></tr>
+        <tr><td>created_at</td><td class="type-pill">timestamptz</td><td><span class="tag" style="background:rgba(165,214,255,0.15);color:var(--default-color)">DEFAULT now()</span></td></tr>
+      </table>
+    </div>
+
+  </div><!-- /schema-grid -->
+
+  <!-- Stats row -->
+  <div class="stats-row" style="margin-top:28px">
+    <div class="stat-chip">
+      <div class="sc-label">Tables</div>
+      <div class="sc-value" style="color:var(--text)">6</div>
+    </div>
+    <div class="stat-chip">
+      <div class="sc-label">Foreign Keys</div>
+      <div class="sc-value" style="color:var(--fk)">7</div>
+    </div>
+    <div class="stat-chip">
+      <div class="sc-label">Indexes</div>
+      <div class="sc-value" style="color:var(--idx)">3</div>
+    </div>
+    <div class="stat-chip">
+      <div class="sc-label">Unique Constraints</div>
+      <div class="sc-value" style="color:var(--pk)">7</div>
+    </div>
+    <div class="stat-chip">
+      <div class="sc-label">Total Columns</div>
+      <div class="sc-value" style="color:var(--muted)">33</div>
+    </div>
+    <div class="stat-chip">
+      <div class="sc-label">JSON Columns</div>
+      <div class="sc-value" style="color:var(--type-color)">5</div>
+    </div>
+  </div>
+
+</div><!-- /schema-section -->
+
+</body>
+</html>

@@ -1,0 +1,171 @@
+================================================================================
+                              PREPSTUDIO
+           Study smarter. Learn by voice. Prove it in a mock interview.
+================================================================================
+
+
+WHAT IS PREPSTUDIO?
+--------------------------------------------------------------------------------
+
+PrepStudio is your AI-powered study companion that takes you from "I want to
+learn this" to "I can actually explain it in an interview."
+
+Tell it what you want to master and how many days you have — it builds your
+entire curriculum, teaches you through live voice lessons, helps you write
+about what you learned, and then puts you through a real mock interview to
+prove you are ready.
+
+Most study tools give you content. PrepStudio gives you a complete loop:
+structured learning, active recall through conversation, teaching others
+through writing, and high-pressure testing. That four-stage cycle is how
+expertise actually forms.
+
+
+--------------------------------------------------------------------------------
+FEATURES
+--------------------------------------------------------------------------------
+
+
+  1. AI CURRICULUM BUILDER
+  ~~~~~~~~~~~~~~~~~~~~~~~~
+  Stop staring at a blank page wondering where to start. Type in any topic —
+  Python, System Design, Machine Learning, anything — and PrepStudio instantly
+  generates a structured day-by-day curriculum tailored to your timeline.
+
+  Every day has a clear focus, every lesson has a purpose, and the whole plan
+  is laid out so you always know exactly what is next. No guesswork, no wasted
+  time figuring out what to study.
+
+
+  2. VOICE LESSONS WITH NOVA (AI TUTOR)
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Reading articles alone does not make things stick. PrepStudio pairs every
+  lesson with an AI tutor named Nova who actually talks to you.
+
+  Nova does not just read the material back — she opens with a surprising hook,
+  explains concepts through vivid analogies, checks in to make sure things are
+  landing, and wraps up with three key takeaways. Ask a question mid-lesson and
+  she will answer it on the spot.
+
+  It feels like a real one-on-one tutoring session, not a text-to-speech bot.
+
+
+  3. ARTICLE REFINER
+  ~~~~~~~~~~~~~~~~~~~
+  After each lesson, jot down whatever you learned — rough notes, bullet
+  points, half-formed thoughts. PrepStudio's Article Refiner takes your raw
+  writing and transforms it into two things:
+
+    - A publication-ready blog post in clean Markdown
+    - A Twitter/X thread you can share immediately
+
+  It also suggests three article ideas per topic to spark your thinking.
+  Learning by writing is one of the most effective techniques there is —
+  PrepStudio makes it effortless.
+
+
+  4. VOICE MOCK INTERVIEW WITH ALEX
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Once you have worked through 80% of your plan, the mock interview unlocks.
+
+  A professional AI interviewer named Alex asks you eight technical questions
+  drawn directly from everything you studied — one at a time, no hints, no
+  hand-holding. You answer by voice, exactly like a real interview.
+
+  When it is done, PrepStudio evaluates your entire performance and delivers a
+  full scorecard.
+
+
+  5. PERFORMANCE SCORECARD
+  ~~~~~~~~~~~~~~~~~~~~~~~~~
+  After every mock interview you receive a detailed, honest assessment of how
+  you performed:
+
+    - Overall score out of 100
+    - Letter grade (A through F)
+    - A two-sentence summary of your performance
+    - Your three biggest strengths
+    - Three specific areas to improve
+    - Question-by-question scores and individual feedback
+
+  You do not just feel prepared — you can see exactly where you stand.
+
+
+  6. PROGRESS TRACKING
+  ~~~~~~~~~~~~~~~~~~~~~
+  A visual progress ring on your plan dashboard tracks completion across every
+  day and topic at a glance. Topics toggle between incomplete and complete as
+  you work through them. The interview gate at 80% is not an obstacle — it is
+  the point. It keeps you honest about whether you have actually done the work.
+
+
+--------------------------------------------------------------------------------
+HOW IT WORKS
+--------------------------------------------------------------------------------
+
+  Step 1  —  Enter a topic and choose how many days you have to study.
+
+  Step 2  —  PrepStudio builds your full curriculum instantly.
+
+  Step 3  —  Work through each day. Read the AI-generated lesson content,
+              then launch a live voice session with Nova to really understand it.
+
+  Step 4  —  Write your notes. Let the Article Refiner turn them into a blog
+              post and Twitter thread.
+
+  Step 5  —  Hit 80% completion to unlock your mock interview.
+
+  Step 6  —  Have a real voice conversation with Alex. Answer 8 technical
+              questions. Get your scorecard.
+
+
+--------------------------------------------------------------------------------
+WHO IS IT FOR?
+--------------------------------------------------------------------------------
+
+  DEVELOPERS
+  Preparing for technical interviews at your next job? PrepStudio builds the
+  knowledge and then tests it the way an interviewer actually would — out loud,
+  under pressure, with no notes in front of you.
+
+  STUDENTS
+  Need to go deep on a subject fast and retain it? The combination of
+  structured content, voice explanation, and active recall through writing is
+  the most effective way to absorb and remember new material.
+
+  SELF-LEARNERS
+  Want structure, accountability, and a real measure of progress? PrepStudio
+  gives you a clear path from day one to a completed, tested curriculum — not
+  just a pile of bookmarks and half-finished courses.
+
+  CAREER SWITCHERS
+  Building fluency in a new technical domain quickly? PrepStudio covers any
+  topic, at any depth, in whatever time you have available.
+
+
+--------------------------------------------------------------------------------
+FEATURE SUMMARY
+--------------------------------------------------------------------------------
+
+  Feature                    What It Does
+  -------------------------  --------------------------------------------------
+  AI Curriculum Builder      Generates a full day-by-day plan for any topic
+  Voice Lessons (Nova)       Live AI tutor explains each topic in conversation
+  Article Refiner            Turns raw notes into a blog post + Twitter thread
+  Article Idea Generator     3 writing prompts per topic to reinforce learning
+  Voice Mock Interview       8-question live voice interview based on your plan
+  Performance Scorecard      Score, grade, strengths, improvements, per-Q notes
+  Progress Tracking          Visual completion view across every day and topic
+  Interview Gate             Unlocks at 80% — keeps you accountable
+
+
+--------------------------------------------------------------------------------
+TAGLINE
+--------------------------------------------------------------------------------
+
+  "Study smarter. Learn by voice. Prove it in a mock interview."
+
+
+================================================================================
+                     prepstudio.app  |  Built with Gemini + ElevenLabs
+================================================================================

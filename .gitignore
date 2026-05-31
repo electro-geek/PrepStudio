@@ -181,3 +181,6 @@ Thumbs.db
 # ── Project Config ────────────────────────────────────────────────────────────
 config.properties
 backend/prepstudio-16c39-firebase-adminsdk-fbsvc-04d14beb33.json
+
+# ── Admin Panel ───────────────────────────────────────────────────────────────
+admin/
