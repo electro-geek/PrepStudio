@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AuthGuard from "../../components/auth/AuthGuard";
 import api from "../../lib/api";
-import { ArrowLeft, Send, Sparkles, User, Bot, Loader2 } from "lucide-react";
+import { ArrowLeft, Send, User, Bot, Loader2 } from "lucide-react";
 
 interface Message {
   id: string;
@@ -115,7 +115,7 @@ export default function NewPlan() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-[#080c14] text-slate-100 flex flex-col grid-bg">
+      <div className="min-h-screen bg-[#06060E] text-[#F1F5F9] flex flex-col grid-bg">
         {/* Ambient glows */}
         <div className="pointer-events-none fixed inset-0 overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-600/8 rounded-full blur-[120px]" />
@@ -127,11 +127,16 @@ export default function NewPlan() {
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
             <span className="text-sm font-medium hidden sm:inline">Back</span>
           </Link>
-          <div className="flex items-center space-x-2.5">
-            <div className="bg-gradient-to-tr from-indigo-500 to-blue-500 p-1.5 rounded-xl shadow-lg shadow-indigo-500/20">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <h1 className="font-black text-base text-white tracking-tight">Forge a Study Plan</h1>
+          <div className="flex items-center gap-2.5">
+            <svg width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="9"  y="9"  width="9"  height="54" rx="4.5" fill="#F1F5F9"/>
+              <rect x="9"  y="9"  width="46" height="9"  rx="4.5" fill="#F1F5F9"/>
+              <rect x="9"  y="36" width="25" height="9"  rx="4.5" fill="#F1F5F9"/>
+              <rect x="22" y="18" width="9"  height="27" rx="4.5" fill="#6366F1"/>
+              <rect x="35" y="22" width="9"  height="19" rx="4.5" fill="#6366F1" opacity="0.58"/>
+              <rect x="48" y="27" width="9"  height="9"  rx="4.5" fill="#6366F1" opacity="0.28"/>
+            </svg>
+            <h1 className="font-black text-base text-[#F1F5F9] tracking-tight">New Study Plan</h1>
           </div>
         </header>
 
@@ -149,7 +154,7 @@ export default function NewPlan() {
                   className={`p-2.5 rounded-2xl shrink-0 ${
                     msg.sender === "user"
                       ? "bg-white/5 border border-white/10 text-slate-300"
-                      : "bg-gradient-to-tr from-indigo-600 to-blue-500 text-white shadow-lg shadow-indigo-500/20"
+                      : "bg-[#6366F1] text-white shadow-lg shadow-indigo-500/20"
                   }`}
                 >
                   {msg.sender === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
@@ -171,7 +176,7 @@ export default function NewPlan() {
             {/* Typing indicator */}
             {loading && (
               <div className="flex items-start space-x-3 fade-up">
-                <div className="bg-gradient-to-tr from-indigo-600 to-blue-500 text-white p-2.5 rounded-2xl shrink-0 shadow-lg shadow-indigo-500/20">
+                <div className="bg-[#6366F1] text-white p-2.5 rounded-2xl shrink-0 shadow-lg shadow-indigo-500/20">
                   <Bot className="h-4 w-4" />
                 </div>
                 <div className="bg-indigo-500/8 border border-indigo-500/15 rounded-2xl px-4 py-3 flex items-center space-x-2 text-slate-400 text-sm">

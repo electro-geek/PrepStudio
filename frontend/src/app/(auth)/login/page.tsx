@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn, signInWithGoogle, isMock } from "../../../lib/firebase";
-import { Sparkles, Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
+import { Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -40,7 +40,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#080c14] text-white flex items-center justify-center px-4 py-16 grid-bg overflow-hidden">
+    <div className="relative min-h-screen bg-[#06060E] text-white flex items-center justify-center px-4 py-16 grid-bg overflow-hidden">
       {/* Glow orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-indigo-600/10 rounded-full blur-[120px]" />
@@ -49,11 +49,19 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-[420px]">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center space-x-2.5 group">
-            <div className="bg-gradient-to-tr from-indigo-500 to-blue-500 p-2 rounded-xl shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform">
-              <Sparkles className="h-5 w-5 text-white" />
+          <Link href="/" className="inline-flex items-center gap-2.5 group">
+            <svg width="32" height="32" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:opacity-90 transition-opacity">
+              <rect x="9"  y="9"  width="9"  height="54" rx="4.5" fill="#F1F5F9"/>
+              <rect x="9"  y="9"  width="46" height="9"  rx="4.5" fill="#F1F5F9"/>
+              <rect x="9"  y="36" width="25" height="9"  rx="4.5" fill="#F1F5F9"/>
+              <rect x="22" y="18" width="9"  height="27" rx="4.5" fill="#6366F1"/>
+              <rect x="35" y="22" width="9"  height="19" rx="4.5" fill="#6366F1" opacity="0.58"/>
+              <rect x="48" y="27" width="9"  height="9"  rx="4.5" fill="#6366F1" opacity="0.28"/>
+            </svg>
+            <div className="flex items-baseline gap-[1px] text-[18px] tracking-tight">
+              <span className="font-black text-[#F1F5F9]">prep</span>
+              <span className="font-light text-[#F1F5F9]/38">studio</span>
             </div>
-            <span className="font-black text-xl text-white tracking-tight">PrepStudio</span>
           </Link>
           <h2 className="text-2xl font-black text-white mt-6 tracking-tight">Welcome back</h2>
           <p className="text-slate-500 text-sm mt-1.5">Sign in to continue your learning journey</p>
@@ -64,7 +72,7 @@ export default function LoginPage() {
           {/* Dev mode notice */}
           {isMock && (
             <div className="bg-indigo-500/8 border border-indigo-500/20 rounded-2xl p-3.5 mb-5 flex items-start space-x-2.5 text-xs text-indigo-300">
-              <Sparkles className="h-4 w-4 shrink-0 mt-0.5 text-indigo-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse mt-1.5 shrink-0" />
               <span><strong>Dev Mode:</strong> Any email and password will work via mock authentication.</span>
             </div>
           )}

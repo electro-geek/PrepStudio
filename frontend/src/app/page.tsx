@@ -8,25 +8,16 @@ import {
   Headphones, Zap, Shield, TrendingUp,
 } from "lucide-react";
 
-/* ── Logo Mark (unique gradient per instance via useId) ──── */
+/* ── Brand Logo Mark ─────────────────────────────────────── */
 function LogoMark({ size = 28, className = "" }: { size?: number; className?: string }) {
-  const uid = React.useId().replace(/:/g, "");
-  const gid = `lg-${uid}`;
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <defs>
-        <linearGradient id={gid} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#4f46e5" />
-          <stop offset="100%" stopColor="#7c3aed" />
-        </linearGradient>
-      </defs>
-      <rect width="100" height="100" rx="22" fill={`url(#${gid})`} />
-      <rect x="0.5" y="0.5" width="99" height="99" rx="21.5" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-      <path fillRule="evenodd" fill="white"
-        d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z" />
-      <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fillOpacity="0.45" />
-      <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fillOpacity="0.70" />
-      <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fillOpacity="1" />
+    <svg width={size} height={size} viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <rect x="9"  y="9"  width="9"  height="54" rx="4.5" fill="#F1F5F9"/>
+      <rect x="9"  y="9"  width="46" height="9"  rx="4.5" fill="#F1F5F9"/>
+      <rect x="9"  y="36" width="25" height="9"  rx="4.5" fill="#F1F5F9"/>
+      <rect x="22" y="18" width="9"  height="27" rx="4.5" fill="#6366F1"/>
+      <rect x="35" y="22" width="9"  height="19" rx="4.5" fill="#6366F1" opacity="0.58"/>
+      <rect x="48" y="27" width="9"  height="9"  rx="4.5" fill="#6366F1" opacity="0.28"/>
     </svg>
   );
 }
@@ -47,23 +38,23 @@ const STEPS = [
   },
   {
     icon: Headphones,
-    color: "#7c3aed",
+    color: "#22D3EE",
     heading: "Nova teaches it aloud",
     body: "Click Audio Lesson. Your ElevenLabs AI tutor takes the article and teaches it — not reads it. Analogies, real-world examples, live Q&A. A full two-way voice conversation.",
   },
   {
     icon: Mic,
-    color: "#8b5cf6",
+    color: "#22D3EE",
     heading: "Alex interviews you",
     body: "An AI interviewer asks technical questions based on your plan — by voice, one at a time. Gemini scores every answer and generates your complete performance report.",
   },
 ];
 
 const ACCORDION_FEATURES = [
-  { icon: Calendar, title: "AI Study Plans", sub: "Your curriculum in seconds", desc: "Tell us your topic and timeline. Gemini builds a hyper-personalized day-by-day plan from first principles.", img: "https://picsum.photos/seed/studycurriculum/800/600", accent: "#6366f1", grad: "from-indigo-950/70" },
-  { icon: BookOpen, title: "Deep Readings", sub: "AI articles, cached forever", desc: "Premium AI-generated technical articles per topic, permanently cached. Deep-dive into concepts with structured content.", img: "https://picsum.photos/seed/deepread/800/600", accent: "#3b82f6", grad: "from-blue-950/70" },
-  { icon: Headphones, title: "Audio Lessons", sub: "Hear it. Ask it. Learn it.", desc: "ElevenLabs Conversational AI turns every article into an interactive spoken lesson. Interrupt, question, explore.", img: "https://picsum.photos/seed/voicelesson/800/600", accent: "#7c3aed", grad: "from-violet-950/70" },
-  { icon: Mic, title: "Voice Interviews", sub: "Speak. Get scored. Level up.", desc: "AI interviewer Alex asks questions verbally. Gemini scores every answer and builds your personalised report.", img: "https://picsum.photos/seed/interviewvoice/800/600", accent: "#0d9488", grad: "from-teal-950/70" },
+  { icon: Calendar, title: "AI Study Plans", sub: "Your curriculum in seconds", desc: "Tell us your topic and timeline. Gemini builds a hyper-personalized day-by-day plan from first principles.", img: "https://picsum.photos/seed/studycurriculum/800/600", accent: "#6366F1", grad: "from-indigo-950/70" },
+  { icon: BookOpen, title: "Deep Readings", sub: "AI articles, cached forever", desc: "Premium AI-generated technical articles per topic, permanently cached. Deep-dive into concepts with structured content.", img: "https://picsum.photos/seed/deepread/800/600", accent: "#22D3EE", grad: "from-cyan-950/70" },
+  { icon: Headphones, title: "Audio Lessons", sub: "Hear it. Ask it. Learn it.", desc: "ElevenLabs Conversational AI turns every article into an interactive spoken lesson. Interrupt, question, explore.", img: "https://picsum.photos/seed/voicelesson/800/600", accent: "#22D3EE", grad: "from-cyan-950/60" },
+  { icon: Mic, title: "Voice Interviews", sub: "Speak. Get scored. Level up.", desc: "AI interviewer Alex asks questions verbally. Gemini scores every answer and builds your personalised report.", img: "https://picsum.photos/seed/interviewvoice/800/600", accent: "#F59E0B", grad: "from-amber-950/60" },
 ];
 
 const PHILOSOPHY =
@@ -219,13 +210,13 @@ export default function LandingPage() {
 
   return (
     <main
-      className="overflow-x-hidden w-full max-w-full bg-[#050810] text-white"
+      className="overflow-x-hidden w-full max-w-full bg-[#06060E] text-white"
       style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif" }}
     >
       {/* Ambient orbs */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-56 left-[18%] w-[860px] h-[860px] rounded-full bg-indigo-700/[7%] blur-[160px]" />
-        <div className="absolute top-[38%] -right-56 w-[680px] h-[680px] rounded-full bg-violet-700/[5%] blur-[140px]" />
+        <div className="absolute top-[38%] -right-56 w-[680px] h-[680px] rounded-full bg-[#22D3EE]/[3%] blur-[150px]" />
         <div className="absolute bottom-0 left-[28%] w-[600px] h-[600px] rounded-full bg-indigo-600/[4%] blur-[130px]" />
       </div>
 
@@ -233,8 +224,11 @@ export default function LandingPage() {
       <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[92vw] max-w-[740px]">
         <nav className="flex items-center justify-between px-5 py-3 rounded-2xl border border-white/[7%] bg-black/55 backdrop-blur-2xl shadow-2xl shadow-black/60">
           <div className="flex items-center gap-2.5">
-            <LogoMark size={34} />
-            <span className="font-black text-[18px] tracking-tight">PrepStudio</span>
+            <LogoMark size={32} />
+            <div className="flex items-baseline gap-[1px] text-[17px] tracking-tight">
+              <span className="font-black text-[#F1F5F9]">prep</span>
+              <span className="font-light text-[#F1F5F9]/38">studio</span>
+            </div>
           </div>
           <div className="hidden md:flex items-center gap-7 text-sm text-white/40 font-medium">
             <a href="#features" className="hover:text-white transition-colors duration-200">Features</a>
@@ -280,8 +274,7 @@ export default function LandingPage() {
 
             {/* H1 — 2 lines max, ultra-wide container */}
             <h1
-              className="hero-anim w-full max-w-5xl font-black tracking-tighter leading-[0.87] mb-7"
-              style={{ fontSize: "clamp(3.8rem, 7vw, 7.5rem)" }}
+              className="hero-anim w-full max-w-5xl font-black tracking-tighter leading-[0.87] mb-7 text-[clamp(3.8rem,7vw,7.5rem)]"
             >
               Study smarter.<br />
               Speak sharper.
@@ -319,7 +312,7 @@ export default function LandingPage() {
                     <p className="text-[10px] text-white/30 font-medium mb-0.5 uppercase tracking-wider">System Design</p>
                     <p className="text-sm font-bold text-white">Day 3 of 14</p>
                   </div>
-                  <span className="bg-violet-500/15 border border-violet-500/25 text-violet-300 text-[10px] font-semibold px-3 py-1 rounded-full">In Progress</span>
+                  <span className="bg-indigo-500/15 border border-indigo-500/25 text-indigo-300 text-[10px] font-semibold px-3 py-1 rounded-full">In Progress</span>
                 </div>
                 <div className="space-y-2 mb-5">
                   {[
@@ -327,26 +320,26 @@ export default function LandingPage() {
                     { name: "Consistent Hashing",  status: "active"   },
                     { name: "Load Balancing",       status: "upcoming" },
                   ].map(({ name, status }) => (
-                    <div key={name} className={`flex items-center gap-3 px-4 py-3 rounded-xl ${status === "active" ? "bg-violet-500/15 border border-violet-500/25" : status === "done" ? "bg-white/[4%]" : "bg-white/[2%]"}`}>
-                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${status === "done" ? "bg-emerald-400" : status === "active" ? "bg-violet-400" : "bg-white/15"}`} />
+                    <div key={name} className={`flex items-center gap-3 px-4 py-3 rounded-xl ${status === "active" ? "bg-indigo-500/15 border border-indigo-500/25" : status === "done" ? "bg-white/[4%]" : "bg-white/[2%]"}`}>
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${status === "done" ? "bg-[#22D3EE]" : status === "active" ? "bg-indigo-400" : "bg-white/15"}`} />
                       <span className={`text-sm flex-1 ${status === "active" ? "text-white font-semibold" : status === "done" ? "text-white/60" : "text-white/25"}`}>{name}</span>
-                      {status === "done"   && <span className="text-[10px] text-emerald-400 font-semibold">Done</span>}
-                      {status === "active" && <span className="text-[10px] text-violet-300 font-semibold">Now</span>}
+                      {status === "done"   && <span className="text-[10px] text-[#22D3EE] font-semibold">Done</span>}
+                      {status === "active" && <span className="text-[10px] text-indigo-300 font-semibold">Now</span>}
                     </div>
                   ))}
                 </div>
                 <div className="bg-white/[4%] rounded-xl p-3.5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] text-white/30">Interview Readiness</span>
-                    <span className="text-[10px] font-black text-violet-300">64%</span>
+                    <span className="text-[10px] font-black text-[#22D3EE]">64%</span>
                   </div>
                   <div className="w-full bg-white/[8%] rounded-full h-1.5">
-                    <div className="hero-progress-fill h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500" style={{ width: 0 }} />
+                    <div className="hero-progress-fill h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-[#22D3EE]" style={{ width: 0 }} />
                   </div>
                 </div>
               </div>
-              <div className="absolute -top-4 -right-4 bg-gradient-to-br from-indigo-600 to-violet-700 text-white text-[10px] font-black px-3.5 py-2 rounded-2xl shadow-xl shadow-indigo-500/30 border border-indigo-400/20">Gemini AI</div>
-              <div className="absolute -bottom-4 -left-4 bg-black/80 border border-white/[9%] backdrop-blur-xl text-white/60 text-[10px] font-medium px-3.5 py-2 rounded-2xl">ElevenLabs Voice</div>
+              <div className="absolute -top-4 -right-4 bg-[#6366F1] text-white text-[10px] font-black px-3.5 py-2 rounded-2xl shadow-xl shadow-indigo-500/30 border border-indigo-400/20">Gemini AI</div>
+              <div className="absolute -bottom-4 -left-4 bg-black/80 border border-[#22D3EE]/20 backdrop-blur-xl text-[#22D3EE]/80 text-[10px] font-medium px-3.5 py-2 rounded-2xl">ElevenLabs Voice</div>
             </div>
             <div className="absolute inset-0 bg-violet-600/[9%] rounded-full blur-[90px] -z-10 scale-90 pointer-events-none" />
           </div>
@@ -398,8 +391,8 @@ export default function LandingPage() {
             </div>
 
             {/* B: Deep Readings — col×1 row×1 */}
-            <div className="bento-card col-span-1 row-span-1 group relative rounded-3xl border border-white/[6%] bg-gradient-to-br from-blue-950/55 to-transparent overflow-hidden cursor-default p-6 flex flex-col justify-between hover:border-blue-500/22 transition-colors duration-300">
-              <BookOpen className="h-6 w-6 text-blue-400" />
+            <div className="bento-card col-span-1 row-span-1 group relative rounded-3xl border border-white/[6%] bg-gradient-to-br from-cyan-950/45 to-transparent overflow-hidden cursor-default p-6 flex flex-col justify-between hover:border-cyan-500/22 transition-colors duration-300">
+              <BookOpen className="h-6 w-6 text-cyan-400" />
               <div>
                 <h3 className="text-base font-bold text-white mb-1 tracking-tight">Deep Readings</h3>
                 <p className="text-white/35 text-xs leading-relaxed">AI-generated articles, cached to your profile forever.</p>
@@ -407,8 +400,8 @@ export default function LandingPage() {
             </div>
 
             {/* C: Voice Interviews — col×1 row×1 */}
-            <div className="bento-card col-span-1 row-span-1 group relative rounded-3xl border border-white/[6%] bg-gradient-to-br from-violet-950/55 to-transparent overflow-hidden cursor-default p-6 flex flex-col justify-between hover:border-violet-500/22 transition-colors duration-300">
-              <Mic className="h-6 w-6 text-violet-400" />
+            <div className="bento-card col-span-1 row-span-1 group relative rounded-3xl border border-white/[6%] bg-gradient-to-br from-cyan-950/30 to-transparent overflow-hidden cursor-default p-6 flex flex-col justify-between hover:border-cyan-400/18 transition-colors duration-300">
+              <Mic className="h-6 w-6 text-[#22D3EE]" />
               <div>
                 <h3 className="text-base font-bold text-white mb-1 tracking-tight">Voice Interviews</h3>
                 <p className="text-white/35 text-xs leading-relaxed">Speak your answers. Get scored instantly.</p>
@@ -417,13 +410,13 @@ export default function LandingPage() {
           </div>
 
           {/* Article Refiner — full-width row */}
-          <div className="bento-card group relative rounded-3xl border border-white/[6%] bg-gradient-to-r from-emerald-950/40 to-transparent overflow-hidden cursor-default p-8 flex items-center gap-10 hover:border-emerald-500/18 transition-colors duration-300 mt-4">
-            <PenTool className="h-8 w-8 text-emerald-400 flex-shrink-0" />
+          <div className="bento-card group relative rounded-3xl border border-white/[6%] bg-gradient-to-r from-amber-950/30 to-transparent overflow-hidden cursor-default p-8 flex items-center gap-10 hover:border-amber-500/18 transition-colors duration-300 mt-4">
+            <PenTool className="h-8 w-8 text-amber-400 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <h3 className="text-xl font-black text-white mb-1 tracking-tight">Article Refiner</h3>
               <p className="text-white/40 text-sm leading-relaxed">Paste rough study notes. Gemini rewrites them into polished blog posts and viral Twitter threads in one click.</p>
             </div>
-            <span className="hidden lg:block font-black font-mono flex-shrink-0 select-none" style={{ fontSize: "4.5rem", color: "rgba(16,185,129,0.055)", lineHeight: 1 }}>.md</span>
+            <span className="hidden lg:block font-black font-mono flex-shrink-0 select-none" style={{ fontSize: "4.5rem", color: "rgba(245,158,11,0.06)", lineHeight: 1 }}>.md</span>
           </div>
         </div>
       </section>

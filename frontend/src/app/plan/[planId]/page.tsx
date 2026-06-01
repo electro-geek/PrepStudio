@@ -32,7 +32,7 @@ export default function PlanView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#080c14]">
+      <div className="min-h-screen flex items-center justify-center bg-[#06060E]">
         <div className="flex flex-col items-center space-y-4">
           <div className="relative">
             <div className="h-14 w-14 rounded-full border-2 border-indigo-500/20 animate-pulse absolute inset-0" />
@@ -46,7 +46,7 @@ export default function PlanView() {
 
   if (error || !plan) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#080c14] px-6 text-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#06060E] px-6 text-center">
         <div className="max-w-md space-y-5">
           <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl w-fit mx-auto">
             <AlertCircle className="h-8 w-8 text-red-400" />
@@ -85,7 +85,7 @@ export default function PlanView() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-[#080c14] text-slate-100 flex flex-col grid-bg">
+      <div className="min-h-screen bg-[#06060E] text-[#F1F5F9] flex flex-col grid-bg">
         {/* Ambient glows */}
         <div className="pointer-events-none fixed inset-0 overflow-hidden">
           <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-indigo-600/6 rounded-full blur-[120px]" />
@@ -108,11 +108,10 @@ export default function PlanView() {
             {isInterviewUnlocked ? (
               <Link
                 href={`/plan/${plan.id}/interview`}
-                className="btn-glow px-4 py-2.5 rounded-xl text-sm font-semibold text-white flex items-center space-x-2"
+                className="flex items-center space-x-2 bg-[#22D3EE]/12 border border-[#22D3EE]/28 hover:bg-[#22D3EE]/20 hover:border-[#22D3EE]/45 px-4 py-2.5 rounded-xl text-sm font-semibold text-[#22D3EE] transition-all duration-200 cursor-pointer"
               >
                 <Mic className="h-4 w-4" />
                 <span>AI Interview</span>
-                <Sparkles className="h-3.5 w-3.5 opacity-70" />
               </Link>
             ) : (
               <div

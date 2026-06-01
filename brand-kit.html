@@ -1,755 +1,573 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<title>PrepStudio — Brand Kit</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&display=swap" rel="stylesheet"/>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a0a0f;
-  --panel:#0f1020;
-  --border:rgba(255,255,255,0.06);
-  --indigo:#6366f1;
-  --violet:#7c3aed;
-  --indigo-light:#818cf8;
-  --white:#f8fafc;
-  --muted:rgba(255,255,255,0.35);
-}
-html{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrepStudio — Brand Identity System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── outer canvas ── */
-.canvas{
-  width:1440px;
-  min-height:100vh;
-  margin:0 auto;
-  padding:64px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
+    :root {
+      --bg:       #06060E;
+      --surface:  #0C0C18;
+      --surface2: #11111F;
+      --surface3: #171728;
+      --border:   rgba(255,255,255,0.055);
+      --indigo:   #6366F1;
+      --cyan:     #22D3EE;
+      --amber:    #F59E0B;
+      --white:    #F1F5F9;
+      --muted:    #475569;
+      --gutter:   10px;
+      --r:        14px;
+    }
 
-/* ── row ── */
-.row{display:flex;gap:6px;width:100%}
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px 56px;
+    }
 
-/* ── cell base ── */
-.cell{
-  border:1px solid var(--border);
-  border-radius:20px;
-  overflow:hidden;
-  position:relative;
-  flex-shrink:0;
-}
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .header-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .header-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.14);
+      letter-spacing: 0.06em;
+    }
 
-/* ── shared label ── */
-.label{
-  position:absolute;
-  top:24px;left:28px;
-  font-size:9px;
-  font-weight:700;
-  letter-spacing:0.22em;
-  text-transform:uppercase;
-  color:rgba(255,255,255,0.2);
-}
-.label-br{top:auto;left:auto;bottom:24px;right:28px;}
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 320px);
+      grid-template-rows: repeat(3, 230px);
+      gap: var(--gutter);
+    }
 
-/* ══════════════════════════════════
-   ROW 1
-══════════════════════════════════ */
+    .panel {
+      background: var(--surface);
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lbl {
+      position: absolute;
+      bottom: 14px;
+      left: 16px;
+      font-size: 8.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .num {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.1);
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-/* Cell A — Hero / Logo cover */
-.cell-hero{
-  flex:2;
-  height:420px;
-  background:linear-gradient(145deg,#0e0f1f 0%,#130d22 100%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:28px;
-}
-.cell-hero::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:radial-gradient(ellipse 60% 50% at 50% 60%,rgba(99,102,241,0.12),transparent);
-  pointer-events:none;
-}
-.hero-mark{
-  width:96px;height:96px;
-  filter:drop-shadow(0 8px 32px rgba(99,102,241,0.5));
-}
-.hero-wordmark{
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-}
-.hero-wordmark h1{
-  font-size:42px;
-  font-weight:900;
-  letter-spacing:-0.03em;
-  color:var(--white);
-  line-height:1;
-}
-.hero-wordmark p{
-  font-size:11px;
-  font-weight:500;
-  letter-spacing:0.22em;
-  text-transform:uppercase;
-  color:rgba(255,255,255,0.3);
-}
+    /* ── 01 LOGO COVER ── */
+    .p1 {
+      background: var(--bg);
+      flex-direction: column;
+      gap: 18px;
+    }
+    .p1::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 42%, rgba(99,102,241,0.14) 0%, transparent 100%);
+    }
+    .logo-wrap { position: relative; z-index: 1; }
+    .wordmark {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: baseline;
+      gap: 1px;
+    }
+    .wm-prep   { font-size: 17px; font-weight: 700; letter-spacing: -0.025em; color: var(--white); }
+    .wm-studio { font-size: 17px; font-weight: 300; letter-spacing: -0.025em; color: rgba(255,255,255,0.38); }
 
-/* Cell B — Tagline */
-.cell-tagline{
-  flex:1;
-  height:420px;
-  background:#0c0c18;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
-  padding:36px;
-}
-.cell-tagline h2{
-  font-size:28px;
-  font-weight:800;
-  line-height:1.2;
-  letter-spacing:-0.02em;
-  color:var(--white);
-  margin-bottom:16px;
-}
-.cell-tagline h2 em{
-  font-style:normal;
-  color:var(--indigo-light);
-}
-.cell-tagline p{
-  font-size:12px;
-  font-weight:400;
-  color:rgba(255,255,255,0.3);
-  line-height:1.6;
-  max-width:200px;
-}
+    /* ── 02 CONSTRUCTION ── */
+    .p2 {
+      background: var(--surface2);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 24px;
+    }
+    .section-label {
+      font-size: 8.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
 
-/* ══════════════════════════════════
-   ROW 2
-══════════════════════════════════ */
+    /* ── 03 APP MOCKUP ── */
+    .p3 {
+      background: var(--surface2);
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 0;
+    }
+    .browser-bar {
+      background: var(--surface3);
+      border-bottom: 1px solid var(--border);
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; }
+    .url-bar {
+      flex: 1;
+      margin-left: 8px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 5px;
+      padding: 3px 10px;
+      font-size: 9.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+    }
+    .app-body { flex: 1; padding: 16px 18px; display: flex; flex-direction: column; gap: 9px; }
+    .app-nav { display: flex; align-items: center; justify-content: space-between; }
+    .app-logo-row { display: flex; align-items: center; gap: 5px; }
+    .app-links { display: flex; gap: 14px; }
+    .app-link { font-size: 9.5px; color: var(--muted); }
+    .app-link.on { color: var(--white); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.24);
+      border-radius: 100px; padding: 3px 9px;
+      font-size: 8.5px; color: #A5B4FC; margin-bottom: 8px;
+    }
+    .app-title { font-size: 14px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.22; }
+    .app-sub   { font-size: 9px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
+    .mini-bars { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+    .mini-bar-row { display: flex; align-items: center; gap: 7px; }
+    .mini-bar-lbl { font-size: 8px; color: var(--muted); width: 68px; }
+    .mini-bar-track { flex: 1; height: 2px; background: rgba(255,255,255,0.05); border-radius: 4px; }
+    .mini-bar-fill { height: 100%; border-radius: 4px; }
+    .mini-bar-pct { font-size: 8px; font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.18); width: 26px; text-align: right; }
 
-/* Cell C — Color System */
-.cell-colors{
-  flex:1;height:300px;
-  background:#090910;
-  padding:32px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-.swatch-row{display:flex;gap:8px;flex-wrap:wrap;}
-.swatch{
-  height:56px;
-  flex:1;
-  border-radius:12px;
-  position:relative;
-  overflow:hidden;
-  min-width:48px;
-}
-.swatch::after{
-  content:attr(data-hex);
-  position:absolute;
-  bottom:6px;left:0;right:0;
-  text-align:center;
-  font-size:8px;
-  font-weight:700;
-  letter-spacing:0.06em;
-  color:rgba(255,255,255,0.5);
-}
-.swatch-label{
-  font-size:9px;
-  font-weight:700;
-  letter-spacing:0.15em;
-  text-transform:uppercase;
-  color:rgba(255,255,255,0.2);
-  margin-bottom:12px;
-}
+    /* ── 04 TAGLINE ── */
+    .p4 {
+      background: linear-gradient(140deg, #3730A3 0%, #4F46E5 55%, #6366F1 100%);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 32px 30px;
+    }
+    .tagline { font-size: 24px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.08; color: #fff; }
+    .tagline-url { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 14px; font-weight: 400; }
 
-/* Cell D — Logo Construction */
-.cell-construct{
-  flex:1;height:300px;
-  background:#0b0b16;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:40px;
-}
-.construct-diagram{
-  position:relative;
-  width:120px;height:120px;
-}
-.construct-notes{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-.c-note{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.c-dot{
-  width:8px;height:8px;
-  border-radius:50%;
-  flex-shrink:0;
-}
-.c-note span{
-  font-size:10px;
-  font-weight:500;
-  color:rgba(255,255,255,0.35);
-  letter-spacing:0.04em;
-}
+    /* ── 05 COLORS ── */
+    .p5 {
+      background: var(--surface2);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 22px;
+    }
+    .swatches { display: flex; gap: 7px; width: 100%; flex: 1; margin-top: 10px; }
+    .swatch { flex: 1; border-radius: 8px; display: flex; flex-direction: column; justify-content: flex-end; padding: 7px 6px; min-height: 118px; }
+    .sw-name { font-size: 7.5px; font-weight: 600; letter-spacing: 0.04em; color: rgba(255,255,255,0.65); }
+    .sw-hex  { font-size: 7px; font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.32); margin-top: 2px; }
 
-/* Cell E — Typography */
-.cell-type{
-  flex:1.2;height:300px;
-  background:#090912;
-  padding:32px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-.type-display{
-  font-size:64px;
-  font-weight:900;
-  letter-spacing:-0.04em;
-  line-height:1;
-  color:var(--white);
-  opacity:0.9;
-}
-.type-row{
-  display:flex;
-  align-items:baseline;
-  gap:16px;
-  border-top:1px solid var(--border);
-  padding-top:16px;
-}
-.type-name{
-  font-size:9px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:0.2em;
-  color:rgba(255,255,255,0.2);
-  width:80px;
-  flex-shrink:0;
-}
-.type-sample{
-  font-size:14px;
-  color:rgba(255,255,255,0.5);
-  font-weight:300;
-  letter-spacing:0.01em;
-}
+    /* ── 06 TYPOGRAPHY ── */
+    .p6 {
+      background: var(--surface2);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 22px;
+    }
+    .type-big { font-size: 64px; font-weight: 900; letter-spacing: -0.07em; line-height: 0.88; color: var(--white); margin-top: 10px; }
+    .type-alph { font-size: 8.5px; color: rgba(255,255,255,0.22); letter-spacing: 0.1em; margin-top: 13px; }
+    .type-face { font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(99,102,241,0.75); font-weight: 600; margin-top: 10px; }
+    .type-mono { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 5px; }
 
-/* ══════════════════════════════════
-   ROW 3
-══════════════════════════════════ */
+    /* ── 07 VOICE ── */
+    .p7 { background: var(--bg); overflow: hidden; }
+    .p7::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 55% 55% at 50% 60%, rgba(34,211,238,0.09) 0%, transparent 100%);
+    }
+    .voice-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .voice-eyebrow { font-size: 8.5px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--cyan); font-weight: 500; }
+    .voice-tag { font-size: 8px; font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.14); letter-spacing: 0.12em; }
 
-/* Cell F — App Mockup */
-.cell-app{
-  flex:1.5;height:340px;
-  background:linear-gradient(160deg,#0b0c1a,#0f0b1e);
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  padding:28px;
-  gap:16px;
-}
-.app-bar{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.06);
-  border-radius:12px;
-  padding:10px 14px;
-}
-.app-dot{width:6px;height:6px;border-radius:50%}
-.app-url{
-  flex:1;
-  font-size:11px;
-  font-weight:500;
-  color:rgba(255,255,255,0.2);
-  letter-spacing:0.02em;
-}
-.app-nav{
-  display:flex;align-items:center;gap:10px;
-  padding-bottom:8px;
-  border-bottom:1px solid var(--border);
-}
-.app-logo-row{display:flex;align-items:center;gap:8px}
-.app-logo-row span{font-size:13px;font-weight:900;color:var(--white)}
-.app-nav-links{
-  display:flex;gap:20px;margin-left:auto;
-}
-.app-nav-links span{
-  font-size:10px;font-weight:500;
-  color:rgba(255,255,255,0.25);
-}
-.app-hero-text{
-  font-size:26px;font-weight:900;
-  letter-spacing:-0.02em;
-  line-height:1.1;
-  color:var(--white);
-}
-.app-hero-text em{
-  font-style:normal;
-  background:linear-gradient(90deg,var(--indigo-light),#a78bfa);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-.app-btn{
-  display:inline-flex;
-  align-items:center;gap:6px;
-  background:white;
-  color:black;
-  font-size:11px;
-  font-weight:800;
-  padding:8px 16px;
-  border-radius:10px;
-  width:fit-content;
-}
+    /* ── 08 ATMOSPHERE ── */
+    .p8 { padding: 0; overflow: hidden; }
+    .atmo-inner {
+      width: 100%; height: 100%;
+      background: linear-gradient(155deg, #090914 0%, #0B0B1C 50%, #060610 100%);
+      position: relative;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 22px;
+    }
+    .atmo-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(99,102,241,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.035) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .atmo-glow {
+      position: absolute; top: -50px; right: -50px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(99,102,241,0.13) 0%, transparent 70%);
+    }
+    .atmo-glow2 {
+      position: absolute; bottom: -40px; left: -20px;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(34,211,238,0.06) 0%, transparent 70%);
+    }
+    .atmo-quote { position: relative; z-index: 1; }
+    .atmo-quote p { font-size: 15px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.35; color: var(--white); }
+    .atmo-quote span { color: var(--indigo); }
 
-/* Cell G — Logo Variants */
-.cell-variants{
-  flex:1;height:340px;
-  background:#090910;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  padding:32px;
-}
-.variant{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:14px 0;
-}
-.variant+.variant{border-top:1px solid var(--border)}
-.variant-name{
-  font-size:9px;
-  font-weight:700;
-  letter-spacing:0.18em;
-  text-transform:uppercase;
-  color:rgba(255,255,255,0.2);
-  width:70px;flex-shrink:0;
-}
+    /* ── 09 SYSTEM DETAIL ── */
+    .p9 {
+      background: var(--surface2);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 22px;
+      gap: 11px;
+    }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 5px; }
+    .chip { border-radius: 100px; padding: 3.5px 11px; font-size: 8.5px; font-weight: 500; letter-spacing: 0.03em; }
+    .ci { background: rgba(99,102,241,0.14); border: 1px solid rgba(99,102,241,0.28); color: #A5B4FC; }
+    .cc { background: rgba(34,211,238,0.10); border: 1px solid rgba(34,211,238,0.22); color: #67E8F9; }
+    .ca { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.22); color: #FCD34D; }
+    .cn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); color: var(--muted); }
+    .cmd-block {
+      background: rgba(0,0,0,0.45); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 13px; width: 100%;
+    }
+    .cmd { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; }
+    .cmd-p { color: var(--cyan); }
+    .cmd-t { color: rgba(255,255,255,0.5); }
+    .prog-row { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+    .prog-item { display: flex; align-items: center; gap: 7px; }
+    .prog-lbl { font-size: 8px; color: var(--muted); width: 70px; }
+    .prog-track { flex: 1; height: 2.5px; background: rgba(255,255,255,0.05); border-radius: 10px; }
+    .prog-fill { height: 100%; border-radius: 10px; }
+    .prog-pct { font-size: 8px; font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.2); width: 26px; text-align: right; }
 
-/* Cell H — Palette atmosphere */
-.cell-atmos{
-  flex:0.8;height:340px;
-  overflow:hidden;
-  background:linear-gradient(180deg,#1a1240 0%,#0d0820 50%,#050810 100%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:20px;
-  padding:28px;
-}
-.atmos-orb{
-  width:110px;height:110px;
-  border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#818cf8,#6366f1 40%,#4338ca 70%,#1e1b4b);
-  box-shadow:0 0 60px rgba(99,102,241,0.4),0 0 120px rgba(99,102,241,0.15);
-}
-.atmos-text{
-  font-size:10px;
-  font-weight:600;
-  letter-spacing:0.2em;
-  text-transform:uppercase;
-  color:rgba(255,255,255,0.2);
-  text-align:center;
-}
-.atmos-palette{
-  display:flex;gap:6px;
-}
-.atmos-chip{
-  width:24px;height:24px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,0.1);
-}
-
-/* ══════════════════════════════════
-   ROW 4 — Full-width strip
-══════════════════════════════════ */
-.cell-strip{
-  width:100%;height:120px;
-  background:#0c0c1a;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 52px;
-}
-.strip-logo{display:flex;align-items:center;gap:12px}
-.strip-logo span{font-size:16px;font-weight:900;color:rgba(255,255,255,0.9)}
-.strip-tagline{
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:-0.02em;
-  color:rgba(255,255,255,0.08);
-}
-.strip-tagline em{
-  font-style:normal;
-  color:rgba(255,255,255,0.7);
-}
-.strip-url{
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:0.08em;
-  color:rgba(255,255,255,0.15);
-}
-
-/* ══════════ CONSTRUCTION GRID LINES ══════════ */
-.grid-line{
-  position:absolute;
-  background:rgba(99,102,241,0.15);
-}
-.gl-h{height:1px;width:100%;top:50%}
-.gl-v{width:1px;height:100%;left:50%}
-.gl-circle{
-  position:absolute;
-  border:1px solid rgba(99,102,241,0.15);
-  border-radius:50%;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-}
-.construct-label{
-  position:absolute;
-  font-size:7px;
-  font-weight:700;
-  letter-spacing:0.15em;
-  text-transform:uppercase;
-  color:rgba(99,102,241,0.5);
-}
-
-/* Page number */
-.page-num{
-  position:absolute;
-  bottom:18px;right:22px;
-  font-size:8px;
-  font-weight:700;
-  letter-spacing:0.15em;
-  color:rgba(255,255,255,0.12);
-}
-</style>
+    .footer {
+      margin-top: 28px;
+      font-size: 9px;
+      color: rgba(255,255,255,0.1);
+      letter-spacing: 0.14em;
+      text-align: center;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+  </style>
 </head>
 <body>
-<div class="canvas">
 
-  <!-- ── ROW 1 ── -->
-  <div class="row">
-
-    <!-- Cell A: Hero logo -->
-    <div class="cell cell-hero">
-      <span class="label">01 — Mark + Wordmark</span>
-      <svg class="hero-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="hbg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#4f46e5"/>
-            <stop offset="100%" stop-color="#7c3aed"/>
-          </linearGradient>
-        </defs>
-        <rect width="100" height="100" rx="22" fill="url(#hbg)"/>
-        <rect x="0.5" y="0.5" width="99" height="99" rx="21.5" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-        <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
-        <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
-        <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
-        <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
-      </svg>
-      <div class="hero-wordmark">
-        <h1>PrepStudio</h1>
-        <p>AI Study &amp; Voice Interview Platform</p>
-      </div>
-      <span class="page-num">01</span>
-    </div>
-
-    <!-- Cell B: Tagline -->
-    <div class="cell cell-tagline">
-      <span class="label">02 — Brand Essence</span>
-      <div>
-        <h2>Study smarter.<br/><em>Speak</em> sharper.</h2>
-        <p>From blank topic to confident voice — AI-guided, every step.</p>
-      </div>
-      <span class="page-num">02</span>
-    </div>
-
+  <div class="header">
+    <div class="header-eyebrow">Brand Identity System · 2025</div>
+    <div class="header-sub">prepstudio.ai &nbsp;·&nbsp; v1.0 &nbsp;·&nbsp; Confidential</div>
   </div>
 
-  <!-- ── ROW 2 ── -->
-  <div class="row">
+  <div class="grid">
 
-    <!-- Cell C: Colors -->
-    <div class="cell cell-colors">
-      <span class="label">03 — Color System</span>
-      <div>
-        <div class="swatch-label">Primary Palette</div>
-        <div class="swatch-row">
-          <div class="swatch" style="background:#4f46e5" data-hex="#4F46E5"></div>
-          <div class="swatch" style="background:#6366f1" data-hex="#6366F1"></div>
-          <div class="swatch" style="background:#818cf8" data-hex="#818CF8"></div>
-          <div class="swatch" style="background:#7c3aed" data-hex="#7C3AED"></div>
-          <div class="swatch" style="background:#8b5cf6" data-hex="#8B5CF6"></div>
-        </div>
+    <!-- 01 LOGO COVER -->
+    <div class="panel p1">
+      <div class="logo-wrap">
+        <svg width="76" height="76" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- P stem (left vertical bar) -->
+          <rect x="9"  y="9"  width="9"  height="54" rx="4.5" fill="#F1F5F9"/>
+          <!-- Top crossbar -->
+          <rect x="9"  y="9"  width="46" height="9"  rx="4.5" fill="#F1F5F9"/>
+          <!-- Mid connector (base of P bowl) -->
+          <rect x="9"  y="36" width="25" height="9"  rx="4.5" fill="#F1F5F9"/>
+          <!-- Waveform bar 1 — tallest -->
+          <rect x="22" y="18" width="9"  height="27" rx="4.5" fill="#6366F1"/>
+          <!-- Waveform bar 2 — medium -->
+          <rect x="35" y="22" width="9"  height="19" rx="4.5" fill="#6366F1" opacity="0.58"/>
+          <!-- Waveform bar 3 — shortest -->
+          <rect x="48" y="27" width="9"  height="9"  rx="4.5" fill="#6366F1" opacity="0.28"/>
+        </svg>
       </div>
-      <div>
-        <div class="swatch-label">Neutral &amp; Surface</div>
-        <div class="swatch-row">
-          <div class="swatch" style="background:#050810" data-hex="#050810"></div>
-          <div class="swatch" style="background:#0f172a" data-hex="#0F172A"></div>
-          <div class="swatch" style="background:#1e293b" data-hex="#1E293B"></div>
-          <div class="swatch" style="background:#94a3b8" data-hex="#94A3B8"></div>
-          <div class="swatch" style="background:#f8fafc" data-hex="#F8FAFC"></div>
-        </div>
+      <div class="wordmark">
+        <span class="wm-prep">prep</span><span class="wm-studio">studio</span>
       </div>
-      <span class="page-num">03</span>
+      <span class="lbl">Logomark + Wordmark</span>
+      <span class="num">01</span>
     </div>
 
-    <!-- Cell D: Construction -->
-    <div class="cell cell-construct">
-      <span class="label">04 — Mark Construction</span>
-      <div class="construct-diagram">
-        <!-- Grid lines -->
-        <div class="grid-line gl-h" style="opacity:0.6"></div>
-        <div class="grid-line gl-v" style="opacity:0.6"></div>
-        <div class="gl-circle" style="width:80px;height:80px;"></div>
-        <div class="gl-circle" style="width:120px;height:120px;"></div>
+    <!-- 02 LOGO CONSTRUCTION -->
+    <div class="panel p2">
+      <div class="section-label">Mark Construction</div>
+      <svg width="100%" height="176" viewBox="0 0 276 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grid -->
+        <line x1="0"   y1="0"   x2="0"   y2="176" stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+        <line x1="46"  y1="0"   x2="46"  y2="176" stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+        <line x1="92"  y1="0"   x2="92"  y2="176" stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+        <line x1="138" y1="0"   x2="138" y2="176" stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+        <line x1="0"   y1="46"  x2="138" y2="46"  stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+        <line x1="0"   y1="92"  x2="138" y2="92"  stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+        <line x1="0"   y1="138" x2="138" y2="138" stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+        <!-- Corner marks -->
+        <line x1="9" y1="5"  x2="9"  y2="15" stroke="rgba(99,102,241,0.45)" stroke-width="0.9"/>
+        <line x1="4" y1="9"  x2="14" y2="9"  stroke="rgba(99,102,241,0.45)" stroke-width="0.9"/>
+        <!-- Construction guides -->
+        <line x1="9"  y1="9"  x2="9"  y2="165" stroke="rgba(99,102,241,0.13)" stroke-width="0.6" stroke-dasharray="4 3"/>
+        <line x1="9"  y1="9"  x2="128" y2="9"  stroke="rgba(99,102,241,0.13)" stroke-width="0.6" stroke-dasharray="4 3"/>
+        <line x1="9"  y1="88" x2="80"  y2="88" stroke="rgba(99,102,241,0.13)" stroke-width="0.6" stroke-dasharray="4 3"/>
+        <!-- Logo enlarged ~2.2x -->
+        <rect x="9"  y="9"  width="19" height="117" rx="9.5"  fill="#F1F5F9" opacity="0.92"/>
+        <rect x="9"  y="9"  width="101" height="19" rx="9.5"  fill="#F1F5F9" opacity="0.92"/>
+        <rect x="9"  y="79" width="55" height="19"  rx="9.5"  fill="#F1F5F9" opacity="0.92"/>
+        <rect x="32" y="28" width="19" height="51"  rx="9.5"  fill="#6366F1"/>
+        <rect x="55" y="38" width="19" height="34"  rx="9.5"  fill="#6366F1" opacity="0.58"/>
+        <rect x="78" y="50" width="19" height="18"  rx="9"    fill="#6366F1" opacity="0.28"/>
         <!-- Labels -->
-        <span class="construct-label" style="top:2px;left:50%;transform:translateX(-50%)">P Stem</span>
-        <span class="construct-label" style="bottom:2px;right:4px">Bars</span>
-        <!-- Logo scaled down -->
-        <svg viewBox="0 0 100 100" style="width:90px;height:90px;position:absolute;top:15px;left:15px;filter:drop-shadow(0 4px 16px rgba(99,102,241,0.4))">
-          <defs>
-            <linearGradient id="cbg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#4f46e5"/>
-              <stop offset="100%" stop-color="#7c3aed"/>
-            </linearGradient>
-          </defs>
-          <rect width="100" height="100" rx="22" fill="url(#cbg)"/>
-          <rect x="0.5" y="0.5" width="99" height="99" rx="21.5" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
-          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
-          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
-          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
-        </svg>
-      </div>
-      <div class="construct-notes">
-        <div class="c-note">
-          <div class="c-dot" style="background:#818cf8"></div>
-          <span>P monogram — structure, prep</span>
-        </div>
-        <div class="c-note">
-          <div class="c-dot" style="background:#a78bfa"></div>
-          <span>Audio bars — voice, interview</span>
-        </div>
-        <div class="c-note">
-          <div class="c-dot" style="background:#c4b5fd"></div>
-          <span>Unified mark — one system</span>
-        </div>
-        <div class="c-note">
-          <div class="c-dot" style="background:rgba(255,255,255,0.2)"></div>
-          <span>Radius: 22px grid unit</span>
-        </div>
-      </div>
-      <span class="page-num">04</span>
+        <text x="152" y="22"  fill="rgba(255,255,255,0.28)"  font-size="8" font-family="Inter,sans-serif" letter-spacing="0.1em">STEM · CROSSBAR</text>
+        <text x="152" y="55"  fill="rgba(99,102,241,0.72)"   font-size="8" font-family="Inter,sans-serif" letter-spacing="0.1em">WAVEFORM BARS</text>
+        <text x="152" y="88"  fill="rgba(255,255,255,0.18)"  font-size="8" font-family="Inter,sans-serif" letter-spacing="0.1em">MID CONNECTOR</text>
+        <text x="152" y="118" fill="rgba(34,211,238,0.48)"   font-size="8" font-family="Inter,sans-serif" letter-spacing="0.1em">3-TIER DECAY</text>
+        <!-- Pointer lines -->
+        <line x1="148" y1="18" x2="28" y2="18" stroke="rgba(255,255,255,0.07)" stroke-width="0.6"/>
+        <line x1="148" y1="52" x2="32" y2="52" stroke="rgba(99,102,241,0.28)"  stroke-width="0.6"/>
+        <line x1="148" y1="85" x2="28" y2="85" stroke="rgba(255,255,255,0.07)" stroke-width="0.6"/>
+        <line x1="148" y1="114" x2="55" y2="55" stroke="rgba(34,211,238,0.18)" stroke-width="0.6" stroke-dasharray="3 3"/>
+      </svg>
+      <span class="lbl">Construction Logic</span>
+      <span class="num">02</span>
     </div>
 
-    <!-- Cell E: Typography -->
-    <div class="cell cell-type">
-      <span class="label">05 — Typography</span>
-      <div class="type-display">Aa</div>
-      <div>
-        <div class="type-row">
-          <span class="type-name">Display</span>
-          <span class="type-sample" style="font-size:18px;font-weight:900;color:rgba(255,255,255,0.7)">Inter Black 900</span>
+    <!-- 03 APP MOCKUP -->
+    <div class="panel p3">
+      <div class="browser-bar">
+        <div class="dot" style="background:#FF5F57;"></div>
+        <div class="dot" style="background:#FEBC2E;"></div>
+        <div class="dot" style="background:#28C840;"></div>
+        <div class="url-bar">prepstudio.ai/dashboard</div>
+      </div>
+      <div class="app-body">
+        <div class="app-nav">
+          <div class="app-logo-row">
+            <svg width="15" height="15" viewBox="0 0 72 72" fill="none">
+              <rect x="9" y="9" width="9" height="54" rx="4.5" fill="#F1F5F9"/>
+              <rect x="9" y="9" width="46" height="9"  rx="4.5" fill="#F1F5F9"/>
+              <rect x="9" y="36" width="25" height="9" rx="4.5" fill="#F1F5F9"/>
+              <rect x="22" y="18" width="9" height="27" rx="4.5" fill="#6366F1"/>
+              <rect x="35" y="22" width="9" height="19" rx="4.5" fill="#6366F1" opacity="0.58"/>
+              <rect x="48" y="27" width="9" height="9"  rx="4.5" fill="#6366F1" opacity="0.28"/>
+            </svg>
+            <span style="font-size:10.5px;font-weight:700;letter-spacing:-0.025em;">prepstudio</span>
+          </div>
+          <div class="app-links">
+            <span class="app-link on">Dashboard</span>
+            <span class="app-link">Plans</span>
+            <span class="app-link">Interview</span>
+          </div>
         </div>
-        <div class="type-row">
-          <span class="type-name">Heading</span>
-          <span class="type-sample" style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.55)">Inter Bold 700</span>
+        <div>
+          <div class="badge">
+            <svg width="5" height="5" viewBox="0 0 5 5"><circle cx="2.5" cy="2.5" r="2.5" fill="#6366F1"/></svg>
+            AI-Powered · Voice-First
+          </div>
+          <div class="app-title">Your study plan,<br>ready to speak.</div>
+          <div class="app-sub">Gemini generates your roadmap.<br>Nova explains it. Alex interviews you.</div>
         </div>
-        <div class="type-row">
-          <span class="type-name">Body</span>
-          <span class="type-sample" style="font-size:13px;font-weight:400;color:rgba(255,255,255,0.4)">Inter Regular 400</span>
-        </div>
-        <div class="type-row">
-          <span class="type-name">Label</span>
-          <span class="type-sample" style="font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.25)">INTER 700 / 0.18em</span>
+        <div class="mini-bars">
+          <div class="mini-bar-row">
+            <span class="mini-bar-lbl">System Design</span>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:72%;background:#6366F1;"></div></div>
+            <span class="mini-bar-pct">72%</span>
+          </div>
+          <div class="mini-bar-row">
+            <span class="mini-bar-lbl">Algorithms</span>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:45%;background:#22D3EE;"></div></div>
+            <span class="mini-bar-pct">45%</span>
+          </div>
+          <div class="mini-bar-row">
+            <span class="mini-bar-lbl">Behavioural</span>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:88%;background:#F59E0B;"></div></div>
+            <span class="mini-bar-pct">88%</span>
+          </div>
         </div>
       </div>
-      <span class="page-num">05</span>
+      <span class="lbl">Digital Application</span>
+      <span class="num">03</span>
+    </div>
+
+    <!-- 04 TAGLINE -->
+    <div class="panel p4">
+      <div class="tagline">Study<br>smarter.<br>Sound<br>confident.</div>
+      <div class="tagline-url">prepstudio.ai</div>
+      <span class="lbl" style="color:rgba(255,255,255,0.32);">Brand Essence</span>
+      <span class="num" style="color:rgba(255,255,255,0.16);">04</span>
+    </div>
+
+    <!-- 05 COLOR SYSTEM -->
+    <div class="panel p5">
+      <div class="section-label">Color System</div>
+      <div class="swatches">
+        <div class="swatch" style="background:#06060E;border:1px solid rgba(255,255,255,0.08);">
+          <div class="sw-name">Void</div>
+          <div class="sw-hex">#06060E</div>
+        </div>
+        <div class="swatch" style="background:#6366F1;">
+          <div class="sw-name">Indigo</div>
+          <div class="sw-hex">#6366F1</div>
+        </div>
+        <div class="swatch" style="background:#22D3EE;">
+          <div class="sw-name">Cyan</div>
+          <div class="sw-hex">#22D3EE</div>
+        </div>
+        <div class="swatch" style="background:#F59E0B;">
+          <div class="sw-name">Amber</div>
+          <div class="sw-hex">#F59E0B</div>
+        </div>
+        <div class="swatch" style="background:#F1F5F9;">
+          <div class="sw-name"  style="color:rgba(0,0,0,0.55);">Ice</div>
+          <div class="sw-hex"  style="color:rgba(0,0,0,0.3);">#F1F5F9</div>
+        </div>
+      </div>
+      <span class="lbl">Color Palette</span>
+      <span class="num">05</span>
+    </div>
+
+    <!-- 06 TYPOGRAPHY -->
+    <div class="panel p6">
+      <div class="section-label">Typography</div>
+      <div class="type-big">Aa</div>
+      <div class="type-alph">ABCDEFGHIJKLMNOPQRSTUVWXYZ · 0123456789</div>
+      <div class="type-face">Inter — Display &amp; Body</div>
+      <div class="type-mono">$ uvicorn app.main:app --reload &nbsp;// Mono</div>
+      <span class="lbl">Type System</span>
+      <span class="num">06</span>
+    </div>
+
+    <!-- 07 VOICE / WAVEFORM -->
+    <div class="panel p7">
+      <div class="voice-inner">
+        <div class="voice-eyebrow">Voice · AI · Studio</div>
+        <svg width="258" height="58" viewBox="0 0 258 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2"   y="27" width="5" height="4"  rx="2.5" fill="#22D3EE" opacity="0.22"/>
+          <rect x="11"  y="23" width="5" height="12" rx="2.5" fill="#22D3EE" opacity="0.33"/>
+          <rect x="20"  y="18" width="5" height="22" rx="2.5" fill="#22D3EE" opacity="0.44"/>
+          <rect x="29"  y="13" width="5" height="32" rx="2.5" fill="#6366F1" opacity="0.55"/>
+          <rect x="38"  y="8"  width="5" height="42" rx="2.5" fill="#6366F1" opacity="0.68"/>
+          <rect x="47"  y="5"  width="5" height="48" rx="2.5" fill="#6366F1" opacity="0.78"/>
+          <rect x="56"  y="9"  width="5" height="40" rx="2.5" fill="#6366F1" opacity="0.65"/>
+          <rect x="65"  y="14" width="5" height="30" rx="2.5" fill="#6366F1" opacity="0.52"/>
+          <rect x="74"  y="18" width="5" height="22" rx="2.5" fill="#22D3EE" opacity="0.45"/>
+          <rect x="83"  y="12" width="5" height="34" rx="2.5" fill="#6366F1" opacity="0.60"/>
+          <rect x="92"  y="6"  width="5" height="46" rx="2.5" fill="#6366F1" opacity="0.75"/>
+          <rect x="101" y="2"  width="5" height="54" rx="2.5" fill="#22D3EE" opacity="0.95"/>
+          <rect x="110" y="4"  width="5" height="50" rx="2.5" fill="#6366F1" opacity="0.88"/>
+          <rect x="120" y="1"  width="6" height="56" rx="3"   fill="#22D3EE"/>
+          <rect x="130" y="4"  width="5" height="50" rx="2.5" fill="#6366F1" opacity="0.88"/>
+          <rect x="139" y="2"  width="5" height="54" rx="2.5" fill="#22D3EE" opacity="0.95"/>
+          <rect x="148" y="6"  width="5" height="46" rx="2.5" fill="#6366F1" opacity="0.75"/>
+          <rect x="157" y="12" width="5" height="34" rx="2.5" fill="#6366F1" opacity="0.60"/>
+          <rect x="166" y="18" width="5" height="22" rx="2.5" fill="#22D3EE" opacity="0.45"/>
+          <rect x="175" y="14" width="5" height="30" rx="2.5" fill="#6366F1" opacity="0.52"/>
+          <rect x="184" y="9"  width="5" height="40" rx="2.5" fill="#6366F1" opacity="0.65"/>
+          <rect x="193" y="5"  width="5" height="48" rx="2.5" fill="#6366F1" opacity="0.78"/>
+          <rect x="202" y="8"  width="5" height="42" rx="2.5" fill="#6366F1" opacity="0.68"/>
+          <rect x="211" y="13" width="5" height="32" rx="2.5" fill="#6366F1" opacity="0.55"/>
+          <rect x="220" y="18" width="5" height="22" rx="2.5" fill="#22D3EE" opacity="0.44"/>
+          <rect x="229" y="23" width="5" height="12" rx="2.5" fill="#22D3EE" opacity="0.33"/>
+          <rect x="238" y="27" width="5" height="4"  rx="2.5" fill="#22D3EE" opacity="0.22"/>
+        </svg>
+        <div class="voice-tag">ELEVENLABS CONVERSATIONAL AI · NOVA &amp; ALEX</div>
+      </div>
+      <span class="lbl">Voice Identity</span>
+      <span class="num">07</span>
+    </div>
+
+    <!-- 08 ATMOSPHERE -->
+    <div class="panel p8">
+      <div class="atmo-inner">
+        <div class="atmo-grid"></div>
+        <div class="atmo-glow"></div>
+        <div class="atmo-glow2"></div>
+        <div class="atmo-quote">
+          <p>AI that <span>listens</span>,<br>plans that <span>adapt</span>,<br>interviews that<br><span>matter.</span></p>
+        </div>
+      </div>
+      <span class="lbl" style="z-index:2;">Image Direction</span>
+      <span class="num" style="z-index:2;">08</span>
+    </div>
+
+    <!-- 09 SYSTEM DETAIL -->
+    <div class="panel p9">
+      <div class="section-label">System Components</div>
+      <div class="chip-row">
+        <div class="chip ci">AI Plan Generator</div>
+        <div class="chip cc">Voice Tutor</div>
+        <div class="chip ca">Interview Mode</div>
+        <div class="chip cn">Gemini 2.5 Flash</div>
+        <div class="chip cn">ElevenLabs</div>
+        <div class="chip cn">Firebase Auth</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd"><span class="cmd-p">→</span>&nbsp; <span class="cmd-t">Starting voice session…</span></div>
+        <div class="cmd" style="margin-top:4px;"><span class="cmd-p" style="color:rgba(34,211,238,0.45);">→</span>&nbsp; <span class="cmd-t">"Tell me about system design."</span></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-item">
+          <span class="prog-lbl">Topics done</span>
+          <div class="prog-track"><div class="prog-fill" style="width:60%;background:#6366F1;"></div></div>
+          <span class="prog-pct">6/10</span>
+        </div>
+        <div class="prog-item">
+          <span class="prog-lbl">Score</span>
+          <div class="prog-track"><div class="prog-fill" style="width:84%;background:#22D3EE;"></div></div>
+          <span class="prog-pct">84%</span>
+        </div>
+        <div class="prog-item">
+          <span class="prog-lbl">Confidence</span>
+          <div class="prog-track"><div class="prog-fill" style="width:91%;background:#F59E0B;"></div></div>
+          <span class="prog-pct">91%</span>
+        </div>
+      </div>
+      <span class="lbl">System Detail</span>
+      <span class="num">09</span>
     </div>
 
   </div>
 
-  <!-- ── ROW 3 ── -->
-  <div class="row">
-
-    <!-- Cell F: App mockup -->
-    <div class="cell cell-app">
-      <span class="label">06 — Digital Application</span>
-      <!-- Browser bar -->
-      <div class="app-bar">
-        <div class="app-dot" style="background:#ff5f57"></div>
-        <div class="app-dot" style="background:#febc2e"></div>
-        <div class="app-dot" style="background:#28c840"></div>
-        <span class="app-url">prepstudio.app</span>
-      </div>
-      <!-- Nav -->
-      <div class="app-nav">
-        <div class="app-logo-row">
-          <svg viewBox="0 0 100 100" style="width:22px;height:22px">
-            <defs>
-              <linearGradient id="nbg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#4f46e5"/>
-                <stop offset="100%" stop-color="#7c3aed"/>
-              </linearGradient>
-            </defs>
-            <rect width="100" height="100" rx="22" fill="url(#nbg)"/>
-            <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
-            <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
-            <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
-            <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
-          </svg>
-          <span>PrepStudio</span>
-        </div>
-        <div class="app-nav-links">
-          <span>Features</span>
-          <span>How it works</span>
-          <span style="color:rgba(255,255,255,0.6)">Start free →</span>
-        </div>
-      </div>
-      <div class="app-hero-text">Master any skill<br/>with <em>AI.</em></div>
-      <div class="app-btn">
-        <span>Start Learning Free</span>
-        <span>→</span>
-      </div>
-      <span class="page-num">06</span>
-    </div>
-
-    <!-- Cell G: Logo variants -->
-    <div class="cell cell-variants">
-      <span class="label">07 — Logo Variants</span>
-
-      <!-- Full colour -->
-      <div class="variant">
-        <span class="variant-name">Full Colour</span>
-        <svg viewBox="0 0 100 100" style="width:36px;height:36px">
-          <defs>
-            <linearGradient id="v1bg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#4f46e5"/>
-              <stop offset="100%" stop-color="#7c3aed"/>
-            </linearGradient>
-          </defs>
-          <rect width="100" height="100" rx="22" fill="url(#v1bg)"/>
-          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
-          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
-          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
-          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
-        </svg>
-        <span style="font-size:16px;font-weight:900;color:white;letter-spacing:-0.02em">PrepStudio</span>
-      </div>
-
-      <!-- Monochrome white -->
-      <div class="variant">
-        <span class="variant-name">White</span>
-        <svg viewBox="0 0 100 100" style="width:36px;height:36px">
-          <rect width="100" height="100" rx="22" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
-          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
-          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
-          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
-          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
-        </svg>
-        <span style="font-size:16px;font-weight:900;color:rgba(255,255,255,0.9);letter-spacing:-0.02em">PrepStudio</span>
-      </div>
-
-      <!-- Icon only -->
-      <div class="variant">
-        <span class="variant-name">Icon Only</span>
-        <svg viewBox="0 0 100 100" style="width:36px;height:36px">
-          <defs>
-            <linearGradient id="v3bg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#4f46e5"/>
-              <stop offset="100%" stop-color="#7c3aed"/>
-            </linearGradient>
-          </defs>
-          <rect width="100" height="100" rx="22" fill="url(#v3bg)"/>
-          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
-          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
-          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
-          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
-        </svg>
-        <span style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);letter-spacing:0.05em">For avatars, favicons, app icons</span>
-      </div>
-
-      <!-- Dark bg -->
-      <div class="variant">
-        <span class="variant-name">On Light</span>
-        <div style="background:#f8fafc;border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px;">
-          <svg viewBox="0 0 100 100" style="width:22px;height:22px">
-            <defs>
-              <linearGradient id="v4bg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#4f46e5"/>
-                <stop offset="100%" stop-color="#7c3aed"/>
-              </linearGradient>
-            </defs>
-            <rect width="100" height="100" rx="22" fill="url(#v4bg)"/>
-            <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
-            <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
-            <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
-            <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
-          </svg>
-          <span style="font-size:13px;font-weight:900;color:#0f0f1a;letter-spacing:-0.02em">PrepStudio</span>
-        </div>
-        <span></span>
-      </div>
-
-      <span class="page-num">07</span>
-    </div>
-
-    <!-- Cell H: Atmosphere -->
-    <div class="cell cell-atmos">
-      <span class="label">08 — Accent</span>
-      <div class="atmos-orb"></div>
-      <div class="atmos-text">Indigo — Violet<br/>Gradient System</div>
-      <div class="atmos-palette">
-        <div class="atmos-chip" style="background:#4f46e5"></div>
-        <div class="atmos-chip" style="background:#6366f1"></div>
-        <div class="atmos-chip" style="background:#7c3aed"></div>
-        <div class="atmos-chip" style="background:#8b5cf6"></div>
-        <div class="atmos-chip" style="background:#a78bfa"></div>
-      </div>
-      <span class="page-num">08</span>
-    </div>
-
+  <div class="footer">
+    PREPSTUDIO &nbsp;·&nbsp; BRAND IDENTITY SYSTEM &nbsp;·&nbsp; 2025 &nbsp;·&nbsp; CONFIDENTIAL
   </div>
 
-  <!-- ── ROW 4 — Strip ── -->
-  <div class="row">
-    <div class="cell cell-strip" style="flex:1">
-      <div class="strip-logo">
-        <svg viewBox="0 0 100 100" style="width:32px;height:32px">
-          <defs>
-            <linearGradient id="sbg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#4f46e5"/>
-              <stop offset="100%" stop-color="#7c3aed"/>
-            </linearGradient>
-          </defs>
-          <rect width="100" height="100" rx="22" fill="url(#sbg)"/>
-          <path fill-rule="evenodd" fill="white" d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z"/>
-          <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fill-opacity="0.45"/>
-          <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fill-opacity="0.70"/>
-          <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fill-opacity="1.00"/>
-        </svg>
-        <span>PrepStudio</span>
-      </div>
-      <div class="strip-tagline">Study smarter. <em>Speak sharper.</em></div>
-      <div class="strip-url">prepstudio.app — 2025</div>
-    </div>
-  </div>
-
-</div>
 </body>
 </html>

@@ -4,17 +4,22 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* ── Design Tokens ─────────────────────────────────────────── */
+/* ── Brand Design Tokens ────────────────────────────────────── */
 :root {
   font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --bg-base:    #050810;
-  --bg-surface: #0d1421;
-  --bg-card:    #111827;
-  --border:     #1e2d45;
-  --border-alt: #243045;
-  --accent:     #6366f1;
-  --accent-2:   #3b82f6;
-  --accent-glow:rgba(99,102,241,0.15);
+  --bg-base:    #06060E;
+  --bg-surface: #0C0C18;
+  --bg-card:    #11111F;
+  --border:     rgba(255,255,255,0.055);
+  --border-alt: rgba(255,255,255,0.08);
+  --accent:     #6366F1;
+  --accent-2:   #22D3EE;
+  --cyan:       #22D3EE;
+  --amber:      #F59E0B;
+  --accent-glow: rgba(99,102,241,0.13);
+  --cyan-glow:   rgba(34,211,238,0.10);
+  --text-base:  #F1F5F9;
+  --text-muted: #475569;
 }
 
 html { scroll-behavior: smooth; }
@@ -23,7 +28,7 @@ body {
   margin: 0;
   padding: 0;
   background: var(--bg-base);
-  color: #e2e8f0;
+  color: var(--text-base);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -33,15 +38,15 @@ code, pre {
 
 /* ── Glassmorphism card ───────────────────────────────────── */
 .glass {
-  background: rgba(13, 20, 33, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(12,12,24,0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--border);
 }
 
 /* ── Gradient text shortcut ──────────────────────────────── */
 .grad-text {
-  background: linear-gradient(135deg, #818cf8 0%, #60a5fa 50%, #34d399 100%);
+  background: linear-gradient(135deg, #818cf8 0%, #22D3EE 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -49,32 +54,45 @@ code, pre {
 
 /* ── Glow button ─────────────────────────────────────────── */
 .btn-glow {
-  background: linear-gradient(135deg, #6366f1, #3b82f6);
-  box-shadow: 0 0 20px rgba(99,102,241,0.35), 0 4px 16px rgba(0,0,0,0.4);
-  transition: box-shadow 0.2s, transform 0.15s;
+  background: #6366F1;
+  box-shadow: 0 0 22px rgba(99,102,241,0.32), 0 4px 16px rgba(0,0,0,0.5);
+  transition: box-shadow 0.22s, transform 0.15s, background 0.2s;
 }
 .btn-glow:hover {
-  box-shadow: 0 0 32px rgba(99,102,241,0.55), 0 6px 20px rgba(0,0,0,0.5);
+  background: #5254d4;
+  box-shadow: 0 0 36px rgba(99,102,241,0.5), 0 6px 20px rgba(0,0,0,0.6);
   transform: translateY(-1px);
+}
+
+/* ── Cyan accent button ──────────────────────────────────── */
+.btn-cyan {
+  background: rgba(34,211,238,0.12);
+  border: 1px solid rgba(34,211,238,0.25);
+  color: #22D3EE;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-cyan:hover {
+  background: rgba(34,211,238,0.2);
+  border-color: rgba(34,211,238,0.4);
 }
 
 /* ── Progress bar glow ───────────────────────────────────── */
 .progress-bar {
-  background: linear-gradient(90deg, #6366f1, #3b82f6, #34d399);
-  box-shadow: 0 0 8px rgba(99,102,241,0.5);
+  background: linear-gradient(90deg, #6366F1, #22D3EE);
+  box-shadow: 0 0 8px rgba(99,102,241,0.45);
 }
 
 /* ── Scrollbar styling ───────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #1e2d45; border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: #2d3f5a; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
 
 /* ── Grid pattern background ─────────────────────────────── */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
@@ -84,14 +102,14 @@ code, pre {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0.035;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 128px;
 }
 
 /* ── Animation utilities ─────────────────────────────────── */
 @keyframes wave-bounce {
-  0%, 100% { transform: scaleY(0.2); }
+  0%, 100% { transform: scaleY(0.22); }
   50% { transform: scaleY(1.0); }
 }
 .wave-bar { transform-origin: center; animation: wave-bounce 1s ease-in-out infinite; }
@@ -115,7 +133,7 @@ code, pre {
   100% { background-position: 200% 0; }
 }
 .shimmer {
-  background: linear-gradient(90deg, #1e2d45 25%, #243a58 50%, #1e2d45 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -144,3 +162,11 @@ code, pre {
   will-change: transform;
 }
 .animate-marquee:hover { animation-play-state: paused; }
+
+/* ── Brand waveform logo animation ──────────────────────── */
+@keyframes bar-pulse {
+  0%, 100% { opacity: 0.28; transform: scaleY(0.7); }
+  50% { opacity: 0.55; transform: scaleY(1); }
+}
+.logo-bar-2 { animation: bar-pulse 1.6s ease-in-out infinite; }
+.logo-bar-3 { animation: bar-pulse 1.6s ease-in-out 0.3s infinite; }

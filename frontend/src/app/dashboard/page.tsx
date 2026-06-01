@@ -11,25 +11,16 @@ import {
   CheckCircle2, ChevronRight, Sparkles, TrendingUp, Mic,
 } from "lucide-react";
 
-/* ── Logo Mark ──────────────────────────────────────────── */
+/* ── Brand Logo Mark ─────────────────────────────────────── */
 function LogoMark({ size = 26 }: { size?: number }) {
-  const uid = React.useId().replace(/:/g, "");
-  const gid = `dlg-${uid}`;
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id={gid} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#4f46e5" />
-          <stop offset="100%" stopColor="#7c3aed" />
-        </linearGradient>
-      </defs>
-      <rect width="100" height="100" rx="22" fill={`url(#${gid})`} />
-      <rect x="0.5" y="0.5" width="99" height="99" rx="21.5" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-      <path fillRule="evenodd" fill="white"
-        d="M14 14 L14 86 L26 86 L26 50 Q66 50 66 32 Q66 14 26 14Z M26 22 Q58 22 58 32 Q58 42 26 42Z" />
-      <rect x="72" y="26" width="6" height="12" rx="3" fill="white" fillOpacity="0.45" />
-      <rect x="80" y="22" width="6" height="20" rx="3" fill="white" fillOpacity="0.70" />
-      <rect x="88" y="18" width="6" height="28" rx="3" fill="white" fillOpacity="1" />
+    <svg width={size} height={size} viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="9"  y="9"  width="9"  height="54" rx="4.5" fill="#F1F5F9"/>
+      <rect x="9"  y="9"  width="46" height="9"  rx="4.5" fill="#F1F5F9"/>
+      <rect x="9"  y="36" width="25" height="9"  rx="4.5" fill="#F1F5F9"/>
+      <rect x="22" y="18" width="9"  height="27" rx="4.5" fill="#6366F1"/>
+      <rect x="35" y="22" width="9"  height="19" rx="4.5" fill="#6366F1" opacity="0.58"/>
+      <rect x="48" y="27" width="9"  height="9"  rx="4.5" fill="#6366F1" opacity="0.28"/>
     </svg>
   );
 }
@@ -82,7 +73,7 @@ export default function Dashboard() {
     <AuthGuard>
       <div
         className="min-h-screen text-slate-100 flex flex-col"
-        style={{ background: "#050810", fontFamily: "'Outfit','Inter',sans-serif" }}
+        style={{ background: "#06060E", fontFamily: "'Outfit','Inter',sans-serif" }}
       >
         {/* Ambient orbs */}
         <div className="pointer-events-none fixed inset-0 overflow-hidden -z-0">
@@ -96,7 +87,10 @@ export default function Dashboard() {
         <header className="relative z-30 border-b border-white/[5%] bg-black/40 backdrop-blur-xl px-6 py-3.5 flex items-center justify-between sticky top-0">
           <div className="flex items-center gap-2.5">
             <LogoMark size={26} />
-            <span className="font-black text-[15px] text-white tracking-tight">PrepStudio</span>
+            <div className="flex items-baseline gap-[1px] text-[15px] tracking-tight">
+              <span className="font-black text-[#F1F5F9]">prep</span>
+              <span className="font-light text-[#F1F5F9]/38">studio</span>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-white/35 text-sm hidden md:inline font-medium">
@@ -245,7 +239,7 @@ export default function Dashboard() {
                         <Link
                           href={`/plan/${plan.id}/interview`}
                           title="Voice Interview"
-                          className="w-11 h-11 rounded-xl bg-white/[4%] border border-white/[7%] hover:bg-violet-600/18 hover:border-violet-500/35 text-white/35 hover:text-violet-300 transition-all duration-200 flex items-center justify-center flex-shrink-0 cursor-pointer"
+                          className="w-11 h-11 rounded-xl bg-white/[4%] border border-white/[7%] hover:bg-[#22D3EE]/10 hover:border-[#22D3EE]/30 text-white/35 hover:text-[#22D3EE] transition-all duration-200 flex items-center justify-center flex-shrink-0 cursor-pointer"
                         >
                           <Mic className="h-4 w-4" />
                         </Link>
