@@ -5,38 +5,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AuthGuard from "../../components/auth/AuthGuard";
 import { useAuthStore } from "../../store/authStore";
+import { Wordmark } from "../../components/BrandLogo";
+import { ThemeToggle } from "../../components/ThemeToggle";
 import api from "../../lib/api";
-import {
-  Plus, LogOut, BookOpen, Calendar,
-  CheckCircle2, ChevronRight, Sparkles, TrendingUp, Mic,
-} from "lucide-react";
+import { Plus, LogOut, ChevronRight, Mic } from "lucide-react";
 
-/* ── Brand Logo Mark ─────────────────────────────────────── */
-function LogoMark({ size = 26 }: { size?: number }) {
+/* ── Skeleton cell ──────────────────────────────────────── */
+function SkeletonCell() {
   return (
-    <svg width={size} height={size} viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="9"  y="9"  width="9"  height="54" rx="4.5" fill="#F1F5F9"/>
-      <rect x="9"  y="9"  width="46" height="9"  rx="4.5" fill="#F1F5F9"/>
-      <rect x="9"  y="36" width="25" height="9"  rx="4.5" fill="#F1F5F9"/>
-      <rect x="22" y="18" width="9"  height="27" rx="4.5" fill="#6366F1"/>
-      <rect x="35" y="22" width="9"  height="19" rx="4.5" fill="#6366F1" opacity="0.58"/>
-      <rect x="48" y="27" width="9"  height="9"  rx="4.5" fill="#6366F1" opacity="0.28"/>
-    </svg>
-  );
-}
-
-/* ── Skeleton card ──────────────────────────────────────── */
-function SkeletonCard() {
-  return (
-    <div className="rounded-2xl border border-white/[5%] bg-white/[2%] p-6 h-60 flex flex-col justify-between">
+    <div className="bg-paper px-6 py-7 h-56 flex flex-col justify-between">
       <div className="space-y-3">
-        <div className="h-2.5 shimmer rounded-full w-1/4" />
-        <div className="h-6 shimmer rounded-lg w-3/4" />
-        <div className="h-2.5 shimmer rounded-full w-1/2" />
+        <div className="h-2.5 bg-paper-dark ind-pulse w-1/3" />
+        <div className="h-6 bg-paper-dark ind-pulse w-3/4" />
       </div>
       <div className="space-y-3">
-        <div className="h-2 shimmer rounded-full w-full" />
-        <div className="h-10 shimmer rounded-xl" />
+        <div className="h-3 bg-paper-dark ind-pulse w-full" />
+        <div className="h-10 bg-paper-dark ind-pulse" />
       </div>
     </div>
   );
@@ -71,41 +55,22 @@ export default function Dashboard() {
 
   return (
     <AuthGuard>
-      <div
-        className="min-h-screen text-slate-100 flex flex-col"
-        style={{ background: "#06060E", fontFamily: "'Outfit','Inter',sans-serif" }}
-      >
-        {/* Ambient orbs */}
-        <div className="pointer-events-none fixed inset-0 overflow-hidden -z-0">
-          <div className="absolute -top-56 -left-56 w-[700px] h-[700px] bg-indigo-600/[6%] rounded-full blur-[140px]" />
-          <div className="absolute -bottom-56 -right-56 w-[600px] h-[600px] bg-violet-600/[5%] rounded-full blur-[130px]" />
-          {/* Grid pattern */}
-          <div className="absolute inset-0 grid-bg opacity-100" />
-        </div>
+      <div className="min-h-screen bg-paper text-ink flex flex-col blueprint">
 
         {/* ── Header ────────────────────────────────────── */}
-        <header className="relative z-30 border-b border-white/[5%] bg-black/40 backdrop-blur-xl px-6 py-3.5 flex items-center justify-between sticky top-0">
-          <div className="flex items-center gap-2.5">
-            <LogoMark size={26} />
-            <div className="flex items-baseline gap-[1px] text-[15px] tracking-tight">
-              <span className="font-black text-[#F1F5F9]">prep</span>
-              <span className="font-light text-[#F1F5F9]/38">studio</span>
-            </div>
-          </div>
+        <header className="relative z-30 border-b-2 border-ink bg-paper px-5 md:px-8 h-14 flex items-center justify-between sticky top-0">
+          <Wordmark size="md" />
           <div className="flex items-center gap-3">
-            <span className="text-white/35 text-sm hidden md:inline font-medium">
-              {user?.displayName || user?.email?.split("@")[0] || "Learner"}
+            <span className="mono-label-sm text-ink-500 hidden md:inline">
+              OP / {user?.displayName || user?.email?.split("@")[0] || "LEARNER"}
             </span>
-            <Link
-              href="/new"
-              className="btn-glow px-4 py-2 rounded-xl text-sm font-semibold text-white flex items-center gap-1.5 cursor-pointer"
-            >
-              <Plus className="h-4 w-4" />
-              <span>New Plan</span>
+            <Link href="/new" className="btn-ind px-4 py-2 text-[11px] flex items-center gap-1.5">
+              <Plus className="h-3.5 w-3.5" /> NEW PLAN
             </Link>
+            <ThemeToggle />
             <button
               onClick={() => { logout(); router.replace("/"); }}
-              className="border border-white/[8%] hover:bg-white/[5%] p-2 rounded-xl text-white/35 hover:text-white transition-colors cursor-pointer"
+              className="btn-outline p-2.5 flex items-center justify-center"
               title="Sign out"
             >
               <LogOut className="h-4 w-4" />
@@ -113,133 +78,93 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {/* ── Main ──────────────────────────────────────── */}
-        <main className="relative z-10 flex-grow max-w-6xl w-full mx-auto px-6 py-12">
-
-          {/* Page header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        {/* ── Page header ───────────────────────────────── */}
+        <div className="border-b-2 border-ink bg-paper-alt">
+          <div className="max-w-[1400px] w-full mx-auto px-5 md:px-8 py-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <p className="text-indigo-400/80 text-[10px] font-bold uppercase tracking-[0.22em] mb-2">Your Workspace</p>
-              <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">Study Plans</h1>
-              <p className="text-white/30 text-sm mt-1.5 font-light">Track progress and continue where you left off.</p>
+              <p className="mono-label text-hazard mb-3">[ OPERATOR WORKSPACE ]</p>
+              <h1 className="macro text-[clamp(2.4rem,5vw,4rem)]">STUDY PLANS</h1>
             </div>
-            {plans.length > 0 && (
-              <Link
-                href="/new"
-                className="btn-glow px-5 py-2.5 rounded-xl text-sm font-semibold text-white flex items-center gap-2 self-start md:self-auto cursor-pointer"
-              >
-                <Sparkles className="h-4 w-4" />
-                <span>New Plan</span>
-              </Link>
-            )}
+            <span className="mono-label-sm text-ink-500">
+              {loading ? "LOADING…" : `${plans.length} ACTIVE UNIT${plans.length === 1 ? "" : "S"}`}
+            </span>
           </div>
+        </div>
 
-          {/* Loading */}
+        {/* ── Main ──────────────────────────────────────── */}
+        <main className="relative z-10 flex-grow max-w-[1400px] w-full mx-auto">
+
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
+            <div className="hairline-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 m-5 md:m-8">
+              {[1, 2, 3].map(i => <SkeletonCell key={i} />)}
             </div>
           ) : plans.length === 0 ? (
 
             /* Empty state */
-            <div className="flex flex-col items-center justify-center py-28 text-center max-w-sm mx-auto">
-              <div className="relative mb-8">
-                <div className="absolute inset-0 bg-indigo-500/15 rounded-full blur-2xl scale-150" />
-                <div className="relative bg-indigo-500/10 border border-indigo-500/20 p-7 rounded-3xl">
-                  <BookOpen className="h-10 w-10 text-indigo-400" />
+            <div className="flex flex-col items-center justify-center py-28 px-6 text-center">
+              <div className="panel px-8 py-7 mb-8 hazard-stripes-red">
+                <div className="bg-paper px-6 py-4 border-2 border-ink">
+                  <p className="mono-label text-ink">[ NO UNITS ON RECORD ]</p>
                 </div>
               </div>
-              <h2 className="text-2xl font-black text-white mb-3 tracking-tight">Create your first plan</h2>
-              <p className="text-white/32 text-sm mb-10 leading-relaxed font-light">
-                Tell PrepStudio what you want to master and your timeline. Gemini builds a complete day-by-day curriculum just for you.
+              <h2 className="macro text-3xl mb-4">CREATE YOUR<br />FIRST PLAN</h2>
+              <p className="text-ink-700 text-sm mb-9 leading-relaxed max-w-sm">
+                Declare what you want to master and your timeline. Gemini builds a
+                complete day-by-day curriculum to specification.
               </p>
-              <Link
-                href="/new"
-                className="btn-glow px-8 py-3.5 rounded-2xl font-bold text-white flex items-center gap-2 cursor-pointer"
-              >
-                <Sparkles className="h-4 w-4" />
-                <span>Forge My First Plan</span>
+              <Link href="/new" className="btn-hazard px-8 py-4 text-xs flex items-center gap-2">
+                <Plus className="h-4 w-4" /> FORGE FIRST PLAN
               </Link>
             </div>
 
           ) : (
             /* Plans grid */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {plans.map((plan) => {
+            <div className="hairline-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 m-5 md:m-8">
+              {plans.map((plan, i) => {
                 const { pct, isDone, total, done } = getPlanStats(plan);
                 return (
-                  <div
-                    key={plan.id}
-                    className="group relative rounded-2xl border border-white/[5%] bg-white/[2%] p-6 flex flex-col justify-between hover:border-indigo-500/28 transition-all duration-300 overflow-hidden cursor-default"
-                  >
-                    {/* Top accent line */}
-                    <div
-                      className="absolute top-0 left-0 right-0 h-[2px]"
-                      style={{
-                        background: isDone
-                          ? "linear-gradient(90deg,#10b981,#34d399)"
-                          : "linear-gradient(90deg,#6366f1,#7c3aed,#8b5cf6)",
-                        opacity: 0.75,
-                      }}
-                    />
-
+                  <div key={plan.id} className="group bg-paper px-6 py-6 flex flex-col justify-between hover:bg-paper-alt transition-colors">
                     <div>
-                      <div className="flex items-start justify-between mb-4">
-                        <span className="text-white/25 text-[11px] font-bold uppercase tracking-widest flex items-center gap-1.5">
-                          <Calendar className="h-3 w-3" />
-                          {plan.total_days}d Plan
+                      <div className="flex items-start justify-between mb-5">
+                        <span className="mono-label-sm text-ink-500">
+                          UNIT №{String(i + 1).padStart(2, "0")} / {plan.total_days}D
                         </span>
-                        {isDone ? (
-                          <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg flex items-center gap-1">
-                            <CheckCircle2 className="h-3 w-3" />Complete
-                          </span>
-                        ) : (
-                          <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg flex items-center gap-1">
-                            <TrendingUp className="h-3 w-3" />Active
-                          </span>
-                        )}
+                        <span className={`mono-label-sm px-2 py-1 ${isDone ? "bg-ink text-paper" : "bg-hazard text-paper"}`}>
+                          {isDone ? "COMPLETE" : "ACTIVE"}
+                        </span>
                       </div>
 
-                      <h3 className="font-black text-lg text-white mb-1.5 leading-snug tracking-tight group-hover:text-indigo-300 transition-colors duration-200">
+                      <h3 className="macro text-xl leading-tight mb-2 group-hover:text-hazard transition-colors line-clamp-2">
                         {plan.topic}
                       </h3>
-                      <p className="text-[11px] text-white/22 font-medium">
-                        {done} / {total} topics complete
+                      <p className="mono-label-sm text-ink-400">
+                        {done} / {total} TOPICS LOGGED
                       </p>
                     </div>
 
-                    <div className="mt-5 space-y-4">
+                    <div className="mt-6 space-y-4">
                       <div className="space-y-1.5">
-                        <div className="flex justify-between text-[11px] font-semibold text-white/25">
-                          <span>Progress</span>
-                          <span className="text-white/50">{pct}%</span>
+                        <div className="flex justify-between mono-label-sm text-ink-500">
+                          <span>PROGRESS</span>
+                          <span className="text-ink">{pct}%</span>
                         </div>
-                        <div className="h-1.5 bg-white/[5%] rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-700"
-                            style={{
-                              width: `${pct}%`,
-                              background: isDone
-                                ? "linear-gradient(90deg,#10b981,#34d399)"
-                                : "linear-gradient(90deg,#6366f1,#7c3aed)",
-                              boxShadow: `0 0 8px ${isDone ? "rgba(16,185,129,0.4)" : "rgba(99,102,241,0.4)"}`,
-                            }}
-                          />
+                        <div className="h-3 border border-ink halftone">
+                          <div className={`h-full transition-all duration-500 ${isDone ? "bg-ink" : "bg-hazard"}`} style={{ width: `${pct}%` }} />
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-px bg-ink border border-ink">
                         <Link
                           href={`/plan/${plan.id}`}
-                          className="flex-1 group/btn flex items-center justify-center gap-2 py-3 rounded-xl bg-white/[4%] border border-white/[7%] hover:bg-indigo-600/18 hover:border-indigo-500/35 text-white/50 hover:text-white text-sm font-semibold transition-all duration-200 cursor-pointer"
+                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-paper hover:bg-ink hover:text-paper mono-label text-ink transition-colors"
                         >
-                          <span>{isDone ? "Review" : "Continue"}</span>
-                          <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-0.5 transition-transform" />
+                          {isDone ? "REVIEW" : "CONTINUE"}
+                          <ChevronRight className="h-3.5 w-3.5" />
                         </Link>
                         <Link
                           href={`/plan/${plan.id}/interview`}
                           title="Voice Interview"
-                          className="w-11 h-11 rounded-xl bg-white/[4%] border border-white/[7%] hover:bg-[#22D3EE]/10 hover:border-[#22D3EE]/30 text-white/35 hover:text-[#22D3EE] transition-all duration-200 flex items-center justify-center flex-shrink-0 cursor-pointer"
+                          className="w-12 flex items-center justify-center bg-paper hover:bg-hazard hover:text-paper text-ink transition-colors"
                         >
                           <Mic className="h-4 w-4" />
                         </Link>

@@ -40,8 +40,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-[#06060E] text-[#F1F5F9] min-h-screen antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-paper text-ink min-h-screen antialiased noise">
+        {/* No-flash theme init — runs before first paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('ps-theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();`,
+          }}
+        />
         {children}
       </body>
     </html>

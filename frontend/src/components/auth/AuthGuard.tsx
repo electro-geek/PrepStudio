@@ -16,10 +16,14 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0F172A] text-white">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          <p className="text-slate-400 animate-pulse text-sm">Forging credentials & sync...</p>
+      <div className="min-h-screen flex items-center justify-center bg-paper text-ink blueprint">
+        <div className="panel px-8 py-7 flex flex-col items-center gap-4">
+          <div className="flex items-end gap-1 h-8">
+            {[0,1,2,3,4].map((i) => (
+              <div key={i} className="w-1.5 h-full bg-ink telem-bar" style={{ animationDelay: `${i * 0.12}s` }} />
+            ))}
+          </div>
+          <p className="mono-label text-ink-500">[ AUTHENTICATING · SYNC ]</p>
         </div>
       </div>
     );

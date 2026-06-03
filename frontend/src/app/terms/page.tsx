@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Wordmark } from "../../components/BrandLogo";
+import { ThemeToggle } from "../../components/ThemeToggle";
 
 export const metadata = {
   title: "Terms & Conditions — PrepStudio",
@@ -10,42 +11,41 @@ export default function TermsPage() {
   const lastUpdated = "May 28, 2025";
 
   return (
-    <div className="min-h-screen bg-[#080c14] text-white">
+    <div className="min-h-screen bg-paper text-ink blueprint">
       {/* Nav */}
-      <nav className="border-b border-white/5 px-6 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link href="/" className="inline-flex items-center space-x-2.5 group">
-            <div className="bg-gradient-to-tr from-indigo-500 to-blue-500 p-2 rounded-xl shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <span className="font-black text-lg text-white tracking-tight">PrepStudio</span>
-          </Link>
-          <Link href="/" className="text-slate-500 hover:text-white text-sm transition-colors">
-            ← Back to home
-          </Link>
+      <nav className="border-b-2 border-ink bg-paper px-5 md:px-8 h-14 flex items-center sticky top-0 z-30">
+        <div className="max-w-3xl w-full mx-auto flex items-center justify-between">
+          <Link href="/"><Wordmark size="sm" /></Link>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="mono-label-sm text-ink-500 hover:text-hazard transition-colors">
+              ← BACK TO HOME
+            </Link>
+            <ThemeToggle className="!p-2" />
+          </div>
         </div>
       </nav>
 
-      <main className="max-w-3xl mx-auto px-6 py-16">
-        <div className="mb-12">
-          <h1 className="text-4xl font-black tracking-tight mb-3">Terms &amp; Conditions</h1>
-          <p className="text-slate-500 text-sm">Last updated: {lastUpdated}</p>
+      <main className="max-w-3xl mx-auto px-5 md:px-8 py-16">
+        <div className="mb-12 border-b-2 border-ink pb-8">
+          <span className="mono-label text-hazard block mb-4">[ LEGAL / DOC-TERMS ]</span>
+          <h1 className="macro text-[clamp(2.4rem,5vw,4rem)] mb-3">TERMS &amp; CONDITIONS</h1>
+          <p className="mono-label-sm text-ink-500">LAST UPDATED / {lastUpdated.toUpperCase()}</p>
         </div>
 
-        <div className="space-y-10 text-slate-300 leading-relaxed">
+        <div className="space-y-10 text-ink-700 leading-relaxed">
 
           <section>
             <p>
               Welcome to PrepStudio. These Terms &amp; Conditions (&ldquo;Terms&rdquo;) govern your access to and use of
               the PrepStudio platform, operated by Mritunjay Pandey, accessible at{" "}
-              <span className="text-indigo-400">prepstudio.mritunjay.live</span> (the &ldquo;Service&rdquo;). By creating
+              <span className="text-hazard">prepstudio.mritunjay.live</span> (the &ldquo;Service&rdquo;). By creating
               an account or using the Service in any way, you agree to be bound by these Terms. If you do not agree,
               do not use the Service.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">1. Eligibility</h2>
+            <h2 className="macro text-xl mb-3">1. Eligibility</h2>
             <p>
               You must be at least 13 years old to use PrepStudio. By using the Service you represent and warrant
               that you meet this age requirement. If you are under 18, you represent that your parent or guardian
@@ -54,7 +54,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">2. Your Account</h2>
+            <h2 className="macro text-xl mb-3">2. Your Account</h2>
             <p className="mb-3">
               You are responsible for maintaining the confidentiality of your account credentials and for all
               activity that occurs under your account. You agree to:
@@ -70,7 +70,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">3. Acceptable Use</h2>
+            <h2 className="macro text-xl mb-3">3. Acceptable Use</h2>
             <p className="mb-3">You agree not to:</p>
             <ul className="list-disc list-inside space-y-2">
               <li>Use the Service for any unlawful purpose or in violation of any applicable laws.</li>
@@ -84,7 +84,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">4. AI-Generated Content</h2>
+            <h2 className="macro text-xl mb-3">4. AI-Generated Content</h2>
             <p className="mb-3">
               PrepStudio uses AI models (including Google Gemini and ElevenLabs) to generate study plans, articles,
               audio lessons, and interview questions. You acknowledge that:
@@ -98,7 +98,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">5. Voice Features</h2>
+            <h2 className="macro text-xl mb-3">5. Voice Features</h2>
             <p>
               When you use audio lessons or voice mock interviews, your voice input is processed by ElevenLabs in
               real time. By enabling these features you consent to this processing and agree to ElevenLabs&rsquo; terms
@@ -108,24 +108,24 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">6. Intellectual Property</h2>
+            <h2 className="macro text-xl mb-3">6. Intellectual Property</h2>
             <p className="mb-3">
-              <strong className="text-slate-200">Our content:</strong> The PrepStudio name, logo, interface design,
+              <strong className="text-ink">Our content:</strong> The PrepStudio name, logo, interface design,
               and underlying code are owned by Mritunjay Pandey and are protected by intellectual property laws.
               You may not copy, modify, or redistribute them without prior written permission.
             </p>
             <p>
-              <strong className="text-slate-200">Your content:</strong> You retain ownership of notes, custom
+              <strong className="text-ink">Your content:</strong> You retain ownership of notes, custom
               inputs, and other content you create. By submitting content to PrepStudio you grant us a limited,
               non-exclusive licence to store and display that content solely to provide the Service to you.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">7. Privacy</h2>
+            <h2 className="macro text-xl mb-3">7. Privacy</h2>
             <p>
               Your use of the Service is also governed by our{" "}
-              <Link href="/privacy" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+              <Link href="/privacy" className="text-hazard hover:text-ink transition-colors">
                 Privacy Policy
               </Link>
               , which is incorporated into these Terms by reference.
@@ -133,7 +133,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">8. Disclaimers</h2>
+            <h2 className="macro text-xl mb-3">8. Disclaimers</h2>
             <p className="mb-3">
               THE SERVICE IS PROVIDED &ldquo;AS IS&rdquo; AND &ldquo;AS AVAILABLE&rdquo; WITHOUT WARRANTIES OF ANY KIND,
               EXPRESS OR IMPLIED. TO THE FULLEST EXTENT PERMITTED BY LAW WE DISCLAIM ALL WARRANTIES, INCLUDING BUT
@@ -147,7 +147,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">9. Limitation of Liability</h2>
+            <h2 className="macro text-xl mb-3">9. Limitation of Liability</h2>
             <p>
               To the maximum extent permitted by applicable law, Mritunjay Pandey and PrepStudio shall not be
               liable for any indirect, incidental, special, consequential, or punitive damages — including loss of
@@ -158,7 +158,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">10. Third-Party Links &amp; Services</h2>
+            <h2 className="macro text-xl mb-3">10. Third-Party Links &amp; Services</h2>
             <p>
               The Service may contain links to third-party websites or integrate third-party services. We are not
               responsible for the content, privacy practices, or availability of those third-party services. Your
@@ -167,7 +167,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">11. Termination</h2>
+            <h2 className="macro text-xl mb-3">11. Termination</h2>
             <p>
               We may suspend or terminate your access to the Service at any time, with or without notice, if you
               violate these Terms or if we discontinue the Service. You may terminate your account at any time by
@@ -176,7 +176,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">12. Changes to These Terms</h2>
+            <h2 className="macro text-xl mb-3">12. Changes to These Terms</h2>
             <p>
               We reserve the right to modify these Terms at any time. We will notify you of material changes by
               updating the &ldquo;Last updated&rdquo; date. Continued use of the Service after changes are posted
@@ -185,7 +185,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">13. Governing Law</h2>
+            <h2 className="macro text-xl mb-3">13. Governing Law</h2>
             <p>
               These Terms are governed by and construed in accordance with the laws of India. Any disputes arising
               from these Terms shall be subject to the exclusive jurisdiction of the competent courts in India.
@@ -193,22 +193,22 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">14. Contact</h2>
+            <h2 className="macro text-xl mb-3">14. Contact</h2>
             <p>Questions about these Terms? Reach us at:</p>
-            <div className="mt-3 bg-white/4 border border-white/6 rounded-xl px-5 py-4 text-sm">
-              <p className="text-slate-200 font-semibold">Mritunjay Pandey</p>
-              <p className="text-slate-500 mt-1">Email: mritunjaypandey0789@gmail.com</p>
-              <p className="text-slate-500">Website: prepstudio.mritunjay.live</p>
+            <div className="mt-3 panel px-5 py-4 text-sm">
+              <p className="text-ink font-semibold">Mritunjay Pandey</p>
+              <p className="text-ink-500 mt-1">Email: mritunjaypandey0789@gmail.com</p>
+              <p className="text-ink-500">Website: prepstudio.mritunjay.live</p>
             </div>
           </section>
 
         </div>
 
-        <div className="mt-16 pt-8 border-t border-white/6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-600">
+        <div className="mt-16 pt-8 border-t border-ink flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink-400">
           <p>&copy; {new Date().getFullYear()} PrepStudio. All rights reserved.</p>
           <div className="flex items-center gap-5">
-            <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
-            <Link href="/" className="hover:text-slate-400 transition-colors">Home</Link>
+            <Link href="/privacy" className="hover:text-hazard transition-colors">Privacy Policy</Link>
+            <Link href="/" className="hover:text-hazard transition-colors">Home</Link>
           </div>
         </div>
       </main>
