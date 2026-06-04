@@ -1,6 +1,6 @@
 # PrepStudio
 
-**PrepStudio** is a full-stack AI-powered study and interview preparation platform, submitted to the ElevenLabs Hackathon #9. It combines a Next.js 14 frontend with a FastAPI async backend to deliver a complete learning experience — from AI-generated curricula to live voice-based mock interviews.
+**PrepStudio** is a full-stack AI-powered study and interview preparation platform. It combines a Next.js 14 frontend with a FastAPI async backend to deliver a complete learning experience — from AI-generated curricula to live voice-based mock interviews.
 
 ---
 

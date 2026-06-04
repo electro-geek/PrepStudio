@@ -1,6 +1,6 @@
 # PrepStudio
 
-**AI-powered study and voice interview preparation platform — built for the ElevenLabs Hackathon 2025.**
+**AI-powered study and voice interview preparation platform.**
 
 PrepStudio takes a topic and a deadline, builds a personalized day-by-day study curriculum, generates deep technical reading material, teaches it to you through an interactive ElevenLabs voice tutor, runs a full voice interview conducted by an AI interviewer, and gives you a detailed performance report — all saved to your account.
 
@@ -227,8 +227,6 @@ Required ElevenLabs API permission: **ElevenAgents → Write**.
 
 ---
 
-## Built for ElevenLabs Hackathon 2025
-
-This project was submitted to [ElevenLabs Hackathon #9](https://hacks.elevenlabs.io/hackathons/9).
+## Why voice
 
 The core thesis: voice makes learning stick. Reading about a topic is passive. Being asked to explain it aloud — under the pressure of a real-sounding interviewer — is how you find out what you actually know.

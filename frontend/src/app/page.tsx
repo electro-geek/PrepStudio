@@ -151,7 +151,7 @@ export default function LandingPage() {
           <div className="border-ink lg:border-r-2 px-5 md:px-8 py-14 md:py-20 flex flex-col justify-center">
             <div className="hero-anim flex items-center gap-3 mb-8 mono-label-sm text-ink-500">
               <span className="bg-hazard text-paper px-2 py-1">REC ●</span>
-              <span>ELEVENLABS HACKATHON №09</span>
+              <span>AI STUDY & VOICE INTERVIEW SYSTEM</span>
               <span className="text-ink-300">/ REV 2.6</span>
             </div>
 
