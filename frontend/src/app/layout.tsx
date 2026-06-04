@@ -45,7 +45,7 @@ export default function RootLayout({
         {/* No-flash theme init — runs before first paint */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('ps-theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('ps-theme');if(t!=='light')document.documentElement.classList.add('dark');}catch(e){}})();`,
           }}
         />
         {children}
