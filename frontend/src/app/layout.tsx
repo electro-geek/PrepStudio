@@ -40,12 +40,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-paper text-ink min-h-screen antialiased noise">
-        {/* No-flash theme init — runs before first paint */}
+    <html lang="en" className="theme-graphite-lab" suppressHydrationWarning>
+      <body className="min-h-screen antialiased">
+        {/* No-flash theme init — runs before first paint.
+            Stored value is one of the .theme-* class names; defaults to graphite-lab. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('ps-theme');if(t!=='light')document.documentElement.classList.add('dark');}catch(e){}})();`,
+            __html: `(function(){try{var THEMES=['theme-paper-lab','theme-graphite-lab','theme-sage-board','theme-high-contrast','theme-paper-brutalist'];var t=localStorage.getItem('ps-theme');if(!THEMES.includes(t))t='theme-graphite-lab';var d=document.documentElement;THEMES.forEach(function(c){d.classList.remove(c);});d.classList.add(t);}catch(e){}})();`,
           }}
         />
         {children}

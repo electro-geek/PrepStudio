@@ -6,21 +6,21 @@ import { useRouter } from "next/navigation";
 import AuthGuard from "../../components/auth/AuthGuard";
 import { useAuthStore } from "../../store/authStore";
 import { Wordmark } from "../../components/BrandLogo";
-import { ThemeToggle } from "../../components/ThemeToggle";
+import { ThemePicker } from "../../components/ThemeToggle";
 import api from "../../lib/api";
 import { Plus, LogOut, ChevronRight, Mic } from "lucide-react";
 
 /* ── Skeleton cell ──────────────────────────────────────── */
 function SkeletonCell() {
   return (
-    <div className="bg-paper px-6 py-7 h-56 flex flex-col justify-between">
+    <div className="card px-6 py-7 h-56 flex flex-col justify-between">
       <div className="space-y-3">
-        <div className="h-2.5 bg-paper-dark ind-pulse w-1/3" />
-        <div className="h-6 bg-paper-dark ind-pulse w-3/4" />
+        <div className="h-2.5 rounded bg-panel ind-pulse w-1/3" />
+        <div className="h-6 rounded bg-panel ind-pulse w-3/4" />
       </div>
       <div className="space-y-3">
-        <div className="h-3 bg-paper-dark ind-pulse w-full" />
-        <div className="h-10 bg-paper-dark ind-pulse" />
+        <div className="h-3 rounded bg-panel ind-pulse w-full" />
+        <div className="h-10 rounded bg-panel ind-pulse" />
       </div>
     </div>
   );
@@ -55,22 +55,22 @@ export default function Dashboard() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-paper text-ink flex flex-col blueprint">
+      <div className="min-h-screen flex flex-col text-foreground">
 
         {/* ── Header ────────────────────────────────────── */}
-        <header className="relative z-30 border-b-2 border-ink bg-paper px-5 md:px-8 h-14 flex items-center justify-between sticky top-0">
+        <header className="nav-glass px-5 md:px-8 h-14 flex items-center justify-between">
           <Wordmark size="md" />
-          <div className="flex items-center gap-3">
-            <span className="mono-label-sm text-ink-500 hidden md:inline">
-              OP / {user?.displayName || user?.email?.split("@")[0] || "LEARNER"}
+          <div className="flex items-center gap-2.5">
+            <span className="section-label hidden md:inline">
+              op / {user?.displayName || user?.email?.split("@")[0] || "learner"}
             </span>
-            <Link href="/new" className="btn-ind px-4 py-2 text-[11px] flex items-center gap-1.5">
-              <Plus className="h-3.5 w-3.5" /> NEW PLAN
+            <Link href="/new" className="btn !py-2 text-sm">
+              <Plus className="h-3.5 w-3.5" /> New plan
             </Link>
-            <ThemeToggle />
+            <ThemePicker />
             <button
               onClick={() => { logout(); router.replace("/"); }}
-              className="btn-outline p-2.5 flex items-center justify-center"
+              className="btn-ghost !p-2.5"
               title="Sign out"
             >
               <LogOut className="h-4 w-4" />
@@ -79,92 +79,88 @@ export default function Dashboard() {
         </header>
 
         {/* ── Page header ───────────────────────────────── */}
-        <div className="border-b-2 border-ink bg-paper-alt">
+        <div className="border-b border-border">
           <div className="max-w-[1400px] w-full mx-auto px-5 md:px-8 py-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <p className="mono-label text-hazard mb-3">[ OPERATOR WORKSPACE ]</p>
-              <h1 className="macro text-[clamp(2.4rem,5vw,4rem)]">STUDY PLANS</h1>
+              <p className="section-label text-primary mb-3">Operator workspace</p>
+              <h1 className="font-display font-extrabold tracking-tight text-[clamp(2.2rem,5vw,3.6rem)]">Study plans</h1>
             </div>
-            <span className="mono-label-sm text-ink-500">
-              {loading ? "LOADING…" : `${plans.length} ACTIVE UNIT${plans.length === 1 ? "" : "S"}`}
+            <span className="section-label">
+              {loading ? "Loading…" : `${plans.length} active unit${plans.length === 1 ? "" : "s"}`}
             </span>
           </div>
         </div>
 
         {/* ── Main ──────────────────────────────────────── */}
-        <main className="relative z-10 flex-grow max-w-[1400px] w-full mx-auto">
+        <main className="flex-grow max-w-[1400px] w-full mx-auto w-full">
 
           {loading ? (
-            <div className="hairline-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 m-5 md:m-8">
-              {[1, 2, 3].map(i => <SkeletonCell key={i} />)}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-5 md:m-8">
+              {[1, 2, 3].map((i) => <SkeletonCell key={i} />)}
             </div>
           ) : plans.length === 0 ? (
 
             /* Empty state */
             <div className="flex flex-col items-center justify-center py-28 px-6 text-center">
-              <div className="panel px-8 py-7 mb-8 hazard-stripes-red">
-                <div className="bg-paper px-6 py-4 border-2 border-ink">
-                  <p className="mono-label text-ink">[ NO UNITS ON RECORD ]</p>
-                </div>
-              </div>
-              <h2 className="macro text-3xl mb-4">CREATE YOUR<br />FIRST PLAN</h2>
-              <p className="text-ink-700 text-sm mb-9 leading-relaxed max-w-sm">
+              <div className="badge mb-7">No units on record</div>
+              <h2 className="font-display font-extrabold tracking-tight text-3xl mb-4 leading-tight">Create your<br />first plan</h2>
+              <p className="text-muted text-sm mb-9 leading-relaxed max-w-sm">
                 Declare what you want to master and your timeline. Gemini builds a
                 complete day-by-day curriculum to specification.
               </p>
-              <Link href="/new" className="btn-hazard px-8 py-4 text-xs flex items-center gap-2">
-                <Plus className="h-4 w-4" /> FORGE FIRST PLAN
+              <Link href="/new" className="btn px-8 py-3.5 text-sm">
+                <Plus className="h-4 w-4" /> Forge first plan
               </Link>
             </div>
 
           ) : (
             /* Plans grid */
-            <div className="hairline-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 m-5 md:m-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-5 md:m-8">
               {plans.map((plan, i) => {
                 const { pct, isDone, total, done } = getPlanStats(plan);
                 return (
-                  <div key={plan.id} className="group bg-paper px-6 py-6 flex flex-col justify-between hover:bg-paper-alt transition-colors">
+                  <div key={plan.id} className="group card card-hover px-6 py-6 flex flex-col justify-between">
                     <div>
                       <div className="flex items-start justify-between mb-5">
-                        <span className="mono-label-sm text-ink-500">
-                          UNIT №{String(i + 1).padStart(2, "0")} / {plan.total_days}D
+                        <span className="font-mono text-[11px] text-muted">
+                          unit №{String(i + 1).padStart(2, "0")} / {plan.total_days}d
                         </span>
-                        <span className={`mono-label-sm px-2 py-1 ${isDone ? "bg-ink text-paper" : "bg-hazard text-paper"}`}>
-                          {isDone ? "COMPLETE" : "ACTIVE"}
+                        <span className={isDone ? "badge-primary" : "badge-secondary"}>
+                          {isDone ? "Complete" : "Active"}
                         </span>
                       </div>
 
-                      <h3 className="macro text-xl leading-tight mb-2 group-hover:text-hazard transition-colors line-clamp-2">
+                      <h3 className="font-display font-bold text-xl leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">
                         {plan.topic}
                       </h3>
-                      <p className="mono-label-sm text-ink-400">
-                        {done} / {total} TOPICS LOGGED
+                      <p className="font-mono text-[11px] text-muted">
+                        {done} / {total} topics logged
                       </p>
                     </div>
 
                     <div className="mt-6 space-y-4">
                       <div className="space-y-1.5">
-                        <div className="flex justify-between mono-label-sm text-ink-500">
-                          <span>PROGRESS</span>
-                          <span className="text-ink">{pct}%</span>
+                        <div className="flex justify-between section-label">
+                          <span>Progress</span>
+                          <span className="text-primary">{pct}%</span>
                         </div>
-                        <div className="h-3 border border-ink halftone">
-                          <div className={`h-full transition-all duration-500 ${isDone ? "bg-ink" : "bg-hazard"}`} style={{ width: `${pct}%` }} />
+                        <div className="h-2.5 rounded-full bg-panel overflow-hidden">
+                          <div className={`h-full rounded-full transition-all duration-500 ${isDone ? "bg-secondary" : "bg-primary"}`} style={{ width: `${pct}%` }} />
                         </div>
                       </div>
 
-                      <div className="flex gap-px bg-ink border border-ink">
+                      <div className="flex gap-2">
                         <Link
                           href={`/plan/${plan.id}`}
-                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-paper hover:bg-ink hover:text-paper mono-label text-ink transition-colors"
+                          className="btn flex-1 !py-2.5 text-sm"
                         >
-                          {isDone ? "REVIEW" : "CONTINUE"}
+                          {isDone ? "Review" : "Continue"}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </Link>
                         <Link
                           href={`/plan/${plan.id}/interview`}
                           title="Voice Interview"
-                          className="w-12 flex items-center justify-center bg-paper hover:bg-hazard hover:text-paper text-ink transition-colors"
+                          className="btn-ghost !p-2.5 w-11"
                         >
                           <Mic className="h-4 w-4" />
                         </Link>

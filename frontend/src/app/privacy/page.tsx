@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Wordmark } from "../../components/BrandLogo";
-import { ThemeToggle } from "../../components/ThemeToggle";
+import { ThemePicker } from "../../components/ThemeToggle";
 
 export const metadata = {
   title: "Privacy Policy — PrepStudio",
@@ -11,25 +11,25 @@ export default function PrivacyPolicyPage() {
   const lastUpdated = "May 28, 2025";
 
   return (
-    <div className="min-h-screen bg-paper text-ink blueprint">
+    <div className="min-h-screen text-foreground">
       {/* Nav */}
-      <nav className="border-b-2 border-ink bg-paper px-5 md:px-8 h-14 flex items-center sticky top-0 z-30">
+      <nav className="nav-glass px-5 md:px-8 h-14 flex items-center">
         <div className="max-w-3xl w-full mx-auto flex items-center justify-between">
           <Link href="/"><Wordmark size="sm" /></Link>
-          <div className="flex items-center gap-4">
-            <Link href="/" className="mono-label-sm text-ink-500 hover:text-hazard transition-colors">
-              ← BACK TO HOME
+          <div className="flex items-center gap-3">
+            <Link href="/" className="section-label hover:text-primary transition-colors">
+              ← Back to home
             </Link>
-            <ThemeToggle className="!p-2" />
+            <ThemePicker />
           </div>
         </div>
       </nav>
 
       <main className="max-w-3xl mx-auto px-5 md:px-8 py-16">
-        <div className="mb-12 border-b-2 border-ink pb-8">
-          <span className="mono-label text-hazard block mb-4">[ LEGAL / DOC-PRIV ]</span>
-          <h1 className="macro text-[clamp(2.4rem,5vw,4rem)] mb-3">PRIVACY POLICY</h1>
-          <p className="mono-label-sm text-ink-500">LAST UPDATED / {lastUpdated.toUpperCase()}</p>
+        <div className="mb-12 border-b border-border pb-8">
+          <span className="section-label text-primary block mb-4">Legal / doc-priv</span>
+          <h1 className="font-display font-extrabold tracking-tight text-[clamp(2.4rem,5vw,4rem)] mb-3">Privacy Policy</h1>
+          <p className="section-label">Last updated / {lastUpdated}</p>
         </div>
 
         <div className="space-y-10 text-ink-700 leading-relaxed">
@@ -168,11 +168,11 @@ export default function PrivacyPolicyPage() {
           </section>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-ink flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink-400">
+        <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted">
           <p>&copy; {new Date().getFullYear()} PrepStudio. All rights reserved.</p>
           <div className="flex items-center gap-5">
-            <Link href="/terms" className="hover:text-hazard transition-colors">Terms &amp; Conditions</Link>
-            <Link href="/" className="hover:text-hazard transition-colors">Home</Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">Terms &amp; Conditions</Link>
+            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
           </div>
         </div>
       </main>
