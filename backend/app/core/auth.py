@@ -8,8 +8,11 @@ from app.core.jwt_utils import decode_access_token
 
 security = HTTPBearer(auto_error=False)
 
-# Initialize Firebase Admin if configured and not bypassed
+# Initialize Firebase Admin if configured and not bypassed.
+# firebase_init_error captures *why* init failed so callers can return a clear
+# "server misconfigured" response instead of a misleading per-token 401.
 firebase_app = None
+firebase_init_error: str | None = None
 if not settings.AUTH_BYPASS:
     try:
         if settings.FIREBASE_PROJECT_ID and settings.FIREBASE_PRIVATE_KEY and settings.FIREBASE_CLIENT_EMAIL:
@@ -22,9 +25,24 @@ if not settings.AUTH_BYPASS:
             })
             firebase_app = firebase_admin.initialize_app(cred)
         else:
-            firebase_app = firebase_admin.initialize_app()
+            missing = [
+                name for name, val in (
+                    ("FIREBASE_PROJECT_ID", settings.FIREBASE_PROJECT_ID),
+                    ("FIREBASE_PRIVATE_KEY", settings.FIREBASE_PRIVATE_KEY),
+                    ("FIREBASE_CLIENT_EMAIL", settings.FIREBASE_CLIENT_EMAIL),
+                ) if not val
+            ]
+            firebase_init_error = f"Missing Firebase credentials: {', '.join(missing)}"
+            raise RuntimeError(firebase_init_error)
     except Exception as e:
-        print(f"Firebase Admin SDK initialization skipped/failed: {e}. Falling back to default auth config.")
+        firebase_init_error = firebase_init_error or str(e)
+        # Loud, unmissable in cold-start logs — this is a fatal misconfiguration
+        # when AUTH_BYPASS is off: every real login will fail until it's fixed.
+        print(
+            f"[PrepStudio] FATAL: Firebase Admin SDK failed to initialize: "
+            f"{firebase_init_error}. All token exchanges will return 503 until "
+            f"FIREBASE_* env vars are corrected."
+        )
 
 
 class UserPayload:

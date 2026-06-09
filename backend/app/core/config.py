@@ -1,6 +1,22 @@
 import os
 
 
+def _normalize_private_key(raw: str) -> str:
+    """
+    Make a FIREBASE_PRIVATE_KEY value robust to how it was stored.
+
+    Hosting dashboards (Vercel etc.) commonly mangle PEM keys in two ways:
+      - newlines are stored as the literal two-character sequence "\\n"
+      - the whole value is pasted *with* surrounding quotes still attached
+    Both break `credentials.Certificate()` with an opaque "Could not
+    deserialize key data" error. Strip quotes first, then un-escape newlines.
+    """
+    key = raw.strip()
+    if len(key) >= 2 and key[0] == key[-1] and key[0] in ("'", '"'):
+        key = key[1:-1]
+    return key.replace("\\n", "\n")
+
+
 class Settings:
     def __init__(self):
         # ── Defaults (local development) ──────────────────────────────────────
@@ -29,7 +45,7 @@ class Settings:
         # SDK can parse the key (matches the config.properties handling below).
         firebase_key_env = os.getenv("FIREBASE_PRIVATE_KEY")
         if firebase_key_env is not None:
-            self.FIREBASE_PRIVATE_KEY = firebase_key_env.replace("\\n", "\n")
+            self.FIREBASE_PRIVATE_KEY = _normalize_private_key(firebase_key_env)
         self.FIREBASE_CLIENT_EMAIL = os.getenv("FIREBASE_CLIENT_EMAIL", self.FIREBASE_CLIENT_EMAIL)
         self.CORS_ORIGINS = os.getenv("CORS_ORIGINS", self.CORS_ORIGINS)
         self.JWT_SECRET = os.getenv("JWT_SECRET", self.JWT_SECRET)
@@ -80,7 +96,7 @@ class Settings:
                     if key == "AUTH_BYPASS":
                         self.AUTH_BYPASS = val.lower() in ("true", "1", "yes")
                     else:
-                        value = val.replace("\\n", "\n") if key == "FIREBASE_PRIVATE_KEY" else val
+                        value = _normalize_private_key(val) if key == "FIREBASE_PRIVATE_KEY" else val
                         setattr(self, key, value)
 
     @property
