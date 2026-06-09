@@ -184,3 +184,5 @@ backend/prepstudio-16c39-firebase-adminsdk-fbsvc-04d14beb33.json
 
 # ── Admin Panel ───────────────────────────────────────────────────────────────
 admin/
+# Local cleanup audit snapshots
+backend/scripts/cleanup_backup_*.json
