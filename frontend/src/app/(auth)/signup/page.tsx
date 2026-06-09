@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signUp, signInWithGoogle, isMock } from "../../../lib/firebase";
+import { forceTokenRefresh } from "../../../store/authStore";
 import { Wordmark } from "../../../components/BrandLogo";
 import { ThemePicker } from "../../../components/ThemeToggle";
 import { Mail, Lock, User, AlertCircle, ArrowRight } from "lucide-react";
@@ -22,7 +23,9 @@ export default function SignupPage() {
     if (password.length < 6) { setError("Password must be at least 6 characters."); return; }
     setError(""); setLoading(true);
     try {
-      await signUp(email, password);
+      await signUp(email, password, name.trim());
+      // Re-exchange the now-updated token so the backend stores the real name.
+      await forceTokenRefresh();
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Signup failed. Please try again.");

@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword as firebaseEmailSignUp,
   signInWithPopup as firebaseSignInWithPopup,
   signOut as firebaseSignOut,
+  updateProfile,
 } from "firebase/auth";
 
 // ── Firebase config ───────────────────────────────────────────────────────────
@@ -74,9 +75,9 @@ function createMockAuth() {
         if (i > -1) listeners.splice(i, 1);
       };
     },
-    async _signIn(email: string) {
+    async _signIn(email: string, name?: string) {
       const uid = "mock-user-" + email.replace(/[^a-zA-Z0-9]/g, "");
-      const displayName = email.split("@")[0];
+      const displayName = name || email.split("@")[0];
       currentUser = makeUser(uid, email, displayName);
       persist(currentUser);
       notify();
@@ -121,11 +122,18 @@ export async function signIn(email: string, password: string) {
   return firebaseEmailSignIn(realAuth, email, password);
 }
 
-export async function signUp(email: string, password: string) {
+export async function signUp(email: string, password: string, name?: string) {
   if (mockAuth) {
-    return mockAuth._signIn(email); // mock: create = sign in
+    return mockAuth._signIn(email, name); // mock: create = sign in
   }
-  return firebaseEmailSignUp(realAuth, email, password);
+  const cred = await firebaseEmailSignUp(realAuth, email, password);
+  if (name) {
+    // Set the Firebase displayName so the ID token carries a `name` claim,
+    // then force-refresh the token so the claim is present for the backend.
+    await updateProfile(cred.user, { displayName: name });
+    await cred.user.getIdToken(true);
+  }
+  return cred;
 }
 
 export async function signInWithGoogle() {

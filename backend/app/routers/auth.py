@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy.ext.asyncio import AsyncSession
 from firebase_admin import auth as firebase_auth
 from app.core.config import settings
+from app.core.database import get_db
 from app.core.jwt_utils import create_access_token
 from app.schemas.all import TokenResponse
+from app.services.user_service import upsert_user
 
 router = APIRouter(tags=["auth"])
 _security = HTTPBearer(auto_error=False)
@@ -12,6 +15,7 @@ _security = HTTPBearer(auto_error=False)
 @router.post("/auth/token", response_model=TokenResponse)
 async def exchange_token(
     credentials: HTTPAuthorizationCredentials = Depends(_security),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Exchange a Firebase ID token (or mock token in AUTH_BYPASS mode) for a
@@ -42,6 +46,11 @@ async def exchange_token(
         uid = decoded.get("uid", "")
         email = decoded.get("email", "")
         name = decoded.get("name", "")
+
+    # Persist (or refresh) the user's profile at login so a row always exists
+    # with their real email/name, independent of whether they create a plan.
+    # get_db commits the session when the request completes.
+    await upsert_user(db, uid=uid, email=email, name=name)
 
     token = create_access_token(uid=uid, email=email, name=name)
     return TokenResponse(
