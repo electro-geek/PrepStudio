@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from firebase_admin import auth as firebase_auth
+from app.core.auth import firebase_app, firebase_init_error
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.jwt_utils import create_access_token
@@ -36,6 +37,14 @@ async def exchange_token(
             uid, email = raw, f"{raw}@prepstudio.app"
         name = email.split("@")[0].capitalize()
     else:
+        # If Firebase Admin never initialized (bad/missing FIREBASE_* config),
+        # this is a server problem, not a bad token — say so with a 503 instead
+        # of a misleading 401 that sends users chasing their own credentials.
+        if firebase_app is None:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Auth is not configured on the server: {firebase_init_error}",
+            )
         try:
             decoded = firebase_auth.verify_id_token(raw)
         except Exception as exc:
