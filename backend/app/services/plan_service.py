@@ -1,19 +1,22 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-from app.models.all import Plan, PlanDay, Topic, User
+from app.models.all import Plan, PlanDay, Topic
 from app.services.gemini_service import gemini
+from app.services.user_service import upsert_user
 
 class PlanService:
-    async def create_plan(self, db: AsyncSession, user_id: str, topic: str, total_days: int) -> Plan:
-        # 1. Ensure user exists in our DB (firebase sync on demand)
-        user_query = await db.execute(select(User).filter(User.id == user_id))
-        user = user_query.scalar_one_or_none()
-        if not user:
-            # Create user on the fly using firebase token information
-            user = User(id=user_id, email=f"{user_id}@learnforge.com", display_name="Learner")
-            db.add(user)
-            await db.flush()
+    async def create_plan(
+        self,
+        db: AsyncSession,
+        user_id: str,
+        topic: str,
+        total_days: int,
+        email: str = "",
+        name: str = "",
+    ) -> Plan:
+        # 1. Ensure the user exists with their real profile info (idempotent).
+        await upsert_user(db, uid=user_id, email=email, name=name)
 
         # 2. Call Gemini service to design the curriculum
         curriculum = await gemini.generate_plan(topic, total_days)

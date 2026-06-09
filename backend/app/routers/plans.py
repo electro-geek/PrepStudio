@@ -22,7 +22,9 @@ async def create_plan(
             db=db,
             user_id=user.uid,
             topic=payload.topic,
-            total_days=payload.total_days
+            total_days=payload.total_days,
+            email=user.email,
+            name=user.name
         )
         return new_plan
     except Exception as e:

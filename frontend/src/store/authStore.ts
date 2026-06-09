@@ -34,6 +34,19 @@ async function exchangeForBackendToken(firebaseToken: string): Promise<{ token: 
   }
 }
 
+// Force a fresh Firebase token + backend exchange. Used right after signup,
+// once the displayName is set, so the backend persists the user's real name.
+export async function forceTokenRefresh(): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    const firebaseToken = await user.getIdToken(true);
+    await exchangeForBackendToken(firebaseToken);
+  } catch {
+    /* best-effort — onAuthStateChanged already did an initial exchange */
+  }
+}
+
 function clearStoredToken() {
   if (typeof window !== "undefined") {
     localStorage.removeItem(TOKEN_KEY);
