@@ -25,7 +25,11 @@ class Settings:
         self.GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", self.GEMINI_API_KEY)
         self.ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", self.ELEVENLABS_API_KEY)
         self.FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID", self.FIREBASE_PROJECT_ID)
-        self.FIREBASE_PRIVATE_KEY = os.getenv("FIREBASE_PRIVATE_KEY", self.FIREBASE_PRIVATE_KEY)
+        # Env-var PEM keys store newlines as literal "\n" — un-escape them so the
+        # SDK can parse the key (matches the config.properties handling below).
+        firebase_key_env = os.getenv("FIREBASE_PRIVATE_KEY")
+        if firebase_key_env is not None:
+            self.FIREBASE_PRIVATE_KEY = firebase_key_env.replace("\\n", "\n")
         self.FIREBASE_CLIENT_EMAIL = os.getenv("FIREBASE_CLIENT_EMAIL", self.FIREBASE_CLIENT_EMAIL)
         self.CORS_ORIGINS = os.getenv("CORS_ORIGINS", self.CORS_ORIGINS)
         self.JWT_SECRET = os.getenv("JWT_SECRET", self.JWT_SECRET)
