@@ -63,7 +63,8 @@ Write a premium-quality tutorial including:
 
 Ensure the content is written in rich Markdown, highly detailed, professional, and comprehensive.
 
-At the very end of your response, output a distinct section starting with "ARTICLE_IDEAS:" followed by a JSON array of 3 creative, distinct blog/article ideas that a student could write based on this content. 
+At the very end of your response, output a distinct section starting with "ARTICLE_IDEAS:" followed by a JSON array of 3 creative, distinct blog/article ideas that a student could write based on this content.
+Each element of the array MUST be a plain string (the article title only) — do NOT use objects with title/description keys.
 For example:
 ARTICLE_IDEAS: ["5 Django ORM tricks every beginner misses", "How Django QuerySets are lazy and why it matters", "Building efficient DB queries in Django"]"""
             
@@ -71,9 +72,10 @@ ARTICLE_IDEAS: ["5 Django ORM tricks every beginner misses", "How Django QuerySe
             full_text = response.text
             
             # Parse ideas
-            ideas = ["How to build projects with " + topic_title, "Advanced guide to " + topic_title, "Mistakes to avoid in " + topic_title]
+            default_ideas = ["How to build projects with " + topic_title, "Advanced guide to " + topic_title, "Mistakes to avoid in " + topic_title]
+            ideas = default_ideas
             content = full_text
-            
+
             if "ARTICLE_IDEAS:" in full_text:
                 parts = full_text.split("ARTICLE_IDEAS:", 1)
                 content = parts[0].strip()
@@ -89,11 +91,28 @@ ARTICLE_IDEAS: ["5 Django ORM tricks every beginner misses", "How Django QuerySe
                             ideas = json.loads(match.group(0))
                         except Exception:
                             pass
-                            
-            return {"content": content, "article_ideas": ideas}
+
+            return {"content": content, "article_ideas": self._normalize_ideas(ideas, default_ideas)}
         except Exception as e:
             print(f"Gemini generate_topic_content failed: {e}. Using mock backup.")
             return self._mock_content(plan_topic, topic_title)
+
+    @staticmethod
+    def _normalize_ideas(raw: Any, fallback: List[str]) -> List[str]:
+        # Gemini sometimes ignores the string-array instruction and returns
+        # objects like {"title": ..., "description": ...}; TopicResponse
+        # declares List[str], so anything else 500s at serialization.
+        if not isinstance(raw, list):
+            return fallback
+        ideas = []
+        for item in raw:
+            if isinstance(item, str) and item.strip():
+                ideas.append(item.strip())
+            elif isinstance(item, dict):
+                title = item.get("title") or item.get("idea") or item.get("name")
+                if isinstance(title, str) and title.strip():
+                    ideas.append(title.strip())
+        return ideas or fallback
 
     async def refine_article(self, raw_text: str, topic_context: str) -> Dict[str, str]:
         if not self.is_configured:

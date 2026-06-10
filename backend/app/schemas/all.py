@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 
@@ -17,6 +17,20 @@ class TopicResponse(BaseModel):
     article_ideas: Optional[List[str]] = None
     is_complete: bool
     created_at: datetime
+
+    @field_validator("article_ideas", mode="before")
+    @classmethod
+    def coerce_idea_objects(cls, v):
+        # Older rows may hold Gemini's {"title", "description"} objects in the
+        # JSON column; coerce them so serialization never 500s.
+        if not isinstance(v, list):
+            return v
+        return [
+            item if isinstance(item, str)
+            else item.get("title") or item.get("idea") or str(item)
+            if isinstance(item, dict) else str(item)
+            for item in v
+        ]
 
     class Config:
         from_attributes = True
