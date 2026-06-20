@@ -47,13 +47,14 @@ class PlanService:
             await db.flush()  # gets the day_record.id
 
             topics_data = day_data.get("topics", [])
-            for topic_data in topics_data:
+            for position, topic_data in enumerate(topics_data):
                 topic_title = topic_data.get("title", "Topic Study")
-                
+
                 topic_record = Topic(
                     day_id=day_record.id,
                     title=topic_title,
-                    is_complete=False
+                    is_complete=False,
+                    position=position,  # preserve Gemini's curriculum order
                 )
                 db.add(topic_record)
         

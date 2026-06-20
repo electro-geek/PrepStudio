@@ -41,7 +41,7 @@ class PlanDay(Base):
     is_complete = Column(Boolean, default=False)
 
     plan = relationship("Plan", back_populates="days")
-    topics = relationship("Topic", back_populates="day", cascade="all, delete-orphan", order_by="Topic.created_at")
+    topics = relationship("Topic", back_populates="day", cascade="all, delete-orphan", order_by="Topic.position")
 
 class Topic(Base):
     __tablename__ = "topics"
@@ -53,6 +53,10 @@ class Topic(Base):
     content = Column(Text, nullable=True)  # Lazy-generated markdown content
     article_ideas = Column(JSON, nullable=True)  # List of article idea strings
     is_complete = Column(Boolean, default=False)
+    # Explicit curriculum order within a day. created_at ties (all topics in a
+    # plan are inserted in one transaction → identical now()), so we sort by an
+    # assigned position instead to keep chapter numbering stable across reloads.
+    position = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     day = relationship("PlanDay", back_populates="topics")
