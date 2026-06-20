@@ -146,6 +146,24 @@ class InterviewResponse(BaseModel):
     class Config:
         from_attributes = True
 
+# ── Waitlist ─────────────────────────────────────────────────────────────────
+
+class WaitlistJoin(BaseModel):
+    email: str
+    name: Optional[str] = None
+    feature: str = "audio_lesson"
+
+class WaitlistResponse(BaseModel):
+    id: str
+    email: str
+    name: Optional[str] = None
+    feature: str
+    created_at: datetime
+    already_joined: bool = False
+
+    class Config:
+        from_attributes = True
+
 # ── ElevenLabs Voice Feature Schemas ────────────────────────────────────────
 
 class LessonSessionResponse(BaseModel):

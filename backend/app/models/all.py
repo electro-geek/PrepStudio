@@ -72,6 +72,17 @@ class Article(Base):
     user = relationship("User", back_populates="articles")
     topic = relationship("Topic", back_populates="articles")
 
+class WaitlistEntry(Base):
+    __tablename__ = "waitlist_entries"
+    __table_args__ = (Index("ix_waitlist_entries_email", "email"),)
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    email = Column(String, nullable=False)
+    name = Column(String, nullable=True)
+    feature = Column(String, default="audio_lesson")  # which premium feature was requested
+    user_id = Column(String, nullable=True)  # Firebase UID if known; nullable, no FK so signups never block
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
 class Interview(Base):
     __tablename__ = "interviews"
     

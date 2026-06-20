@@ -7,10 +7,11 @@ import AuthGuard from "../../../../../../../components/auth/AuthGuard";
 import api from "../../../../../../../lib/api";
 import ReactMarkdown from "react-markdown";
 import {
-  ArrowLeft, PenTool, AlertCircle, RefreshCw, Headphones, StopCircle, Mic,
+  ArrowLeft, PenTool, AlertCircle, RefreshCw, Headphones, StopCircle, Mic, Sparkles,
 } from "lucide-react";
 import { useElevenLabsConversation } from "@/hooks/useElevenLabsConversation";
 import { ThemePicker } from "@/components/ThemeToggle";
+import WaitlistModal from "@/components/WaitlistModal";
 
 export default function TopicView() {
   const { planId, dayId, topicId } = useParams();
@@ -21,6 +22,7 @@ export default function TopicView() {
   const [completing, setCompleting] = useState(false);
   const [error, setError] = useState("");
   const [lessonLoading, setLessonLoading] = useState(false);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   const {
     startWithSignedUrl,
@@ -133,10 +135,11 @@ export default function TopicView() {
           <div className="flex items-center gap-2 shrink-0">
             <ThemePicker />
             {!isLessonActive ? (
-              <button onClick={handleStartLesson} disabled={lessonLoading}
-                      className="btn !py-2 text-sm disabled:opacity-50">
-                {lessonLoading ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Headphones className="h-3.5 w-3.5" />}
-                <span className="hidden sm:inline">{lessonLoading ? "Starting…" : "Audio lesson"}</span>
+              <button onClick={() => setWaitlistOpen(true)}
+                      className="btn !py-2 text-sm">
+                <Headphones className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Audio lesson</span>
+                <Sparkles className="h-3 w-3 text-primary-fg/80" />
               </button>
             ) : (
               <button onClick={handleEndLesson} className="btn-secondary !py-2 text-sm">
@@ -268,6 +271,13 @@ export default function TopicView() {
             </div>
           </div>
         )}
+
+        <WaitlistModal
+          open={waitlistOpen}
+          onClose={() => setWaitlistOpen(false)}
+          feature="audio_lesson"
+          featureLabel="Audio lessons"
+        />
       </div>
     </AuthGuard>
   );
