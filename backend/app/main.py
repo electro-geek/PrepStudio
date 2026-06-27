@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import Base, engine
-from app.routers import plans, topics, articles, interviews, auth, waitlist
+from app.routers import plans, topics, articles, interviews, auth, waitlist, system_design
 
 
 def _run_alembic_upgrade() -> None:
@@ -73,6 +73,7 @@ app.include_router(topics.router)
 app.include_router(articles.router)
 app.include_router(interviews.router)
 app.include_router(waitlist.router)
+app.include_router(system_design.router)
 
 
 @app.get("/")

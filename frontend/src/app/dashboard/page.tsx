@@ -8,7 +8,7 @@ import { useAuthStore } from "../../store/authStore";
 import { Wordmark } from "../../components/BrandLogo";
 import { ThemePicker } from "../../components/ThemeToggle";
 import api from "../../lib/api";
-import { Plus, LogOut, ChevronRight, Mic } from "lucide-react";
+import { Plus, LogOut, ChevronRight, Mic, Network } from "lucide-react";
 
 /* ── Skeleton cell ──────────────────────────────────────── */
 function SkeletonCell() {
@@ -66,6 +66,9 @@ export default function Dashboard() {
             </span>
             <Link href="/new" className="btn !py-2 text-sm">
               <Plus className="h-3.5 w-3.5" /> New plan
+            </Link>
+            <Link href="/system-design/new" className="btn-ghost !py-2 text-sm">
+              <Network className="h-3.5 w-3.5" /> <span className="hidden sm:inline">System design</span>
             </Link>
             <ThemePicker />
             <button

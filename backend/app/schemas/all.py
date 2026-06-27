@@ -195,3 +195,102 @@ class TranscriptEvaluationResponse(BaseModel):
     strengths: List[str]
     improvements: List[str]
     question_feedback: List[QuestionFeedback]
+
+# ── System Design Track ──────────────────────────────────────────────────────
+
+class SystemDesignTrackCreate(BaseModel):
+    total_days: int = Field(..., ge=1, le=30)
+
+class ChallengeSummary(BaseModel):
+    id: str
+    product: str
+    prompt: Optional[str] = None
+    difficulty: str
+    difficulty_rank: int
+    day_number: int
+    is_complete: bool
+
+    class Config:
+        from_attributes = True
+
+class SystemDesignTrackResponse(BaseModel):
+    id: str
+    user_id: str
+    total_days: int
+    status: str
+    created_at: datetime
+    challenges: List[ChallengeSummary] = []
+
+    class Config:
+        from_attributes = True
+
+class SystemDesignTrackSummary(BaseModel):
+    id: str
+    user_id: str
+    total_days: int
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class SubmissionResponse(BaseModel):
+    functional_reqs: Optional[str] = None
+    nonfunctional_reqs: Optional[str] = None
+    hld_image: Optional[str] = None
+    hld_notes: Optional[str] = None
+    lld_text: Optional[str] = None
+    lld_image: Optional[str] = None
+    evaluation: Optional[Dict[str, Any]] = None
+
+    class Config:
+        from_attributes = True
+
+class ChallengeDetailResponse(BaseModel):
+    id: str
+    track_id: str
+    product: str
+    prompt: Optional[str] = None
+    difficulty: str
+    difficulty_rank: int
+    day_number: int
+    is_complete: bool
+    has_model_answer: bool = False
+    submission: Optional[SubmissionResponse] = None
+
+    class Config:
+        from_attributes = True
+
+class SubmissionEvaluateRequest(BaseModel):
+    functional_reqs: str = ""
+    nonfunctional_reqs: str = ""
+    hld_image: Optional[str] = None  # base64 data URL
+    hld_notes: str = ""
+    lld_text: str = ""
+    lld_image: Optional[str] = None  # base64 data URL
+
+class DimensionFeedback(BaseModel):
+    covered: List[str] = []
+    missing: List[str] = []
+
+class SystemDesignEvaluationResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
+    overall_score: int
+    overall_grade: str
+    hld_score: int
+    lld_score: int
+    requirements_score: int
+    summary: str
+    hld_feedback: DimensionFeedback
+    lld_feedback: DimensionFeedback
+    requirements_feedback: DimensionFeedback
+    model_answer_markdown: str
+    model_diagram_mermaid: str
+
+class ModelAnswerResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
+    product: str
+    model_answer_markdown: str
+    model_diagram_mermaid: str

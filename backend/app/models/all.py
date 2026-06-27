@@ -15,6 +15,7 @@ class User(Base):
     plans = relationship("Plan", back_populates="user", cascade="all, delete-orphan")
     articles = relationship("Article", back_populates="user", cascade="all, delete-orphan")
     interviews = relationship("Interview", back_populates="user", cascade="all, delete-orphan")
+    system_design_tracks = relationship("SystemDesignTrack", back_populates="user", cascade="all, delete-orphan")
 
 class Plan(Base):
     __tablename__ = "plans"
@@ -101,3 +102,69 @@ class Interview(Base):
     
     user = relationship("User", back_populates="interviews")
     plan = relationship("Plan", back_populates="interviews")
+
+class SystemDesignTrack(Base):
+    __tablename__ = "system_design_tracks"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("app_users.id", ondelete="CASCADE"), nullable=False)
+    total_days = Column(Integer, nullable=False)
+    status = Column(String, default="active")  # active | complete
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="system_design_tracks")
+    challenges = relationship(
+        "SystemDesignChallenge",
+        back_populates="track",
+        cascade="all, delete-orphan",
+        order_by="SystemDesignChallenge.day_number, SystemDesignChallenge.difficulty_rank",
+    )
+
+class SystemDesignChallenge(Base):
+    __tablename__ = "system_design_challenges"
+    __table_args__ = (Index("ix_system_design_challenges_track_id", "track_id"),)
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    track_id = Column(String, ForeignKey("system_design_tracks.id", ondelete="CASCADE"), nullable=False)
+    product = Column(String, nullable=False)         # e.g. "Design Twitter"
+    prompt = Column(Text, nullable=True)             # what to design / constraints
+    difficulty = Column(String, default="medium")    # easy | medium | hard
+    difficulty_rank = Column(Integer, nullable=False, default=0)  # ordering within a day
+    day_number = Column(Integer, nullable=False, default=1)
+    is_complete = Column(Boolean, default=False)
+    # Lazily generated + cached model answer (mirrors Topic.content pattern)
+    model_answer_markdown = Column(Text, nullable=True)
+    model_diagram_mermaid = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    track = relationship("SystemDesignTrack", back_populates="challenges")
+    submission = relationship(
+        "SystemDesignSubmission",
+        back_populates="challenge",
+        cascade="all, delete-orphan",
+        uselist=False,
+    )
+
+class SystemDesignSubmission(Base):
+    __tablename__ = "system_design_submissions"
+    __table_args__ = (Index("ix_system_design_submissions_challenge_id", "challenge_id"),)
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    challenge_id = Column(
+        String,
+        ForeignKey("system_design_challenges.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
+    user_id = Column(String, ForeignKey("app_users.id", ondelete="CASCADE"), nullable=False)
+    functional_reqs = Column(Text, nullable=True)
+    nonfunctional_reqs = Column(Text, nullable=True)
+    hld_image = Column(Text, nullable=True)   # base64 data URL of uploaded diagram
+    hld_notes = Column(Text, nullable=True)
+    lld_text = Column(Text, nullable=True)    # API / DB schema / class design
+    lld_image = Column(Text, nullable=True)   # optional base64 data URL
+    evaluation = Column(JSON, nullable=True)  # full structured evaluation result
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    challenge = relationship("SystemDesignChallenge", back_populates="submission")

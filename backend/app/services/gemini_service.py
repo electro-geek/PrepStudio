@@ -1,7 +1,8 @@
 import json
 import re
+import base64
 import google.generativeai as genai
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional, Tuple
 from app.core.config import settings
 
 class GeminiService:
@@ -545,5 +546,341 @@ Adopting these architectural principles immediately impacts user experience, dec
                 "improvements": improvements
             }
         }
+
+    # ── System Design ────────────────────────────────────────────────────────
+
+    @staticmethod
+    def decode_data_url(data_url: Optional[str]) -> Optional[Tuple[str, bytes]]:
+        """Turn a 'data:image/png;base64,....' string into (mime_type, raw_bytes).
+        Returns None for empty/invalid input so callers can skip the image part."""
+        if not data_url or not isinstance(data_url, str):
+            return None
+        try:
+            if data_url.startswith("data:"):
+                header, b64 = data_url.split(",", 1)
+                mime = header[5:].split(";")[0] or "image/png"
+            else:
+                # Bare base64 with no header — assume PNG.
+                b64, mime = data_url, "image/png"
+            return mime, base64.b64decode(b64)
+        except Exception:
+            return None
+
+    async def generate_system_design_challenges(self, days: int) -> Dict[str, Any]:
+        if not self.is_configured:
+            return self._mock_system_design_challenges(days)
+        try:
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            prompt = f"""You are a senior staff engineer designing a system-design practice curriculum.
+Create a progressive set of well-known product system-design challenges spread across {days} day(s).
+
+Rules:
+- Distribute roughly 1-2 challenges per day (total ~{max(days, days * 2 // 2)} challenges, scale sensibly with the day count).
+- Order the curriculum so difficulty escalates from "easy" early days to "hard" later days.
+- Use classic, recognizable problems (e.g. URL shortener, pastebin, rate limiter, Twitter timeline, WhatsApp chat, Instagram, Uber, Netflix CDN, Google Drive, payment system, distributed cache, search autocomplete, notification system).
+- "product" is a short title like "Design a URL Shortener".
+- "prompt" is 1-2 sentences describing what to design and the key constraints/scale to consider.
+- "difficulty" is one of "easy", "medium", "hard".
+- "difficulty_rank" is an integer 0,1,2 for easy,medium,hard respectively.
+
+Return JSON only, matching this exact structure:
+{{
+  "challenges": [
+    {{ "product": "Design a URL Shortener", "prompt": "Design a service that shortens long URLs and redirects users, handling ~100M URLs and high read throughput.", "difficulty": "easy", "difficulty_rank": 0, "day_number": 1 }}
+  ]
+}}"""
+            response = model.generate_content(
+                prompt,
+                generation_config={"response_mime_type": "application/json"},
+            )
+            data = json.loads(response.text)
+            if not data.get("challenges"):
+                return self._mock_system_design_challenges(days)
+            return data
+        except Exception as e:
+            print(f"Gemini generate_system_design_challenges failed: {e}. Using mock backup.")
+            return self._mock_system_design_challenges(days)
+
+    async def evaluate_system_design(
+        self,
+        product: str,
+        prompt: str,
+        functional: str,
+        nonfunctional: str,
+        hld_image: Optional[str],
+        hld_notes: str,
+        lld_text: str,
+        lld_image: Optional[str],
+    ) -> Dict[str, Any]:
+        if not self.is_configured:
+            return self._mock_system_design_evaluation(product)
+        try:
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            text_prompt = f"""You are a strict but constructive senior systems architect (FAANG-level interviewer)
+evaluating a candidate's system-design submission for the problem: "{product}".
+Problem brief: {prompt}
+
+The candidate provided the following. One or two images may also be attached:
+- The first attached image (if any) is the candidate's HIGH-LEVEL DESIGN (HLD) architecture diagram.
+- A second attached image (if any) is supplementary LOW-LEVEL DESIGN (LLD) detail.
+
+FUNCTIONAL REQUIREMENTS (candidate):
+{functional or "(none provided)"}
+
+NON-FUNCTIONAL REQUIREMENTS (candidate):
+{nonfunctional or "(none provided)"}
+
+HLD NOTES (candidate):
+{hld_notes or "(none provided)"}
+
+LOW-LEVEL DESIGN — APIs / DB schema / classes (candidate):
+{lld_text or "(none provided)"}
+
+Carefully read any attached diagram image(s) and the text. Evaluate the submission on three dimensions:
+1. requirements — completeness/correctness of functional & non-functional requirements.
+2. hld — high-level architecture: components, data flow, scalability, load balancing, caching, storage choices, partitioning/sharding, replication, CAP/consistency tradeoffs. Use the HLD diagram image if present.
+3. lld — low-level design: API contracts, database schema, key data structures/algorithms, class design.
+
+For each dimension list what was COVERED well and what was MISSING/incorrect.
+
+Respond in THREE sections separated by sentinel lines (this avoids JSON escaping issues):
+
+SECTION 1 — a single JSON object with ONLY the scored fields (keep strings short, one sentence each):
+{{
+  "overall_score": <int 0-100>,
+  "overall_grade": "<letter grade e.g. A, B+, C->",
+  "hld_score": <int 0-100>,
+  "lld_score": <int 0-100>,
+  "requirements_score": <int 0-100>,
+  "summary": "<2-3 sentence overall assessment>",
+  "requirements_feedback": {{ "covered": ["..."], "missing": ["..."] }},
+  "hld_feedback": {{ "covered": ["..."], "missing": ["..."] }},
+  "lld_feedback": {{ "covered": ["..."], "missing": ["..."] }}
+}}
+Then a line containing exactly "---ANSWER---"
+SECTION 2 — a corrected REFERENCE model answer in markdown (concise but complete).
+Then a line containing exactly "---MERMAID---"
+SECTION 3 — a valid Mermaid 'graph TD' (or 'flowchart TD') diagram of the ideal architecture, NO markdown fences."""
+
+            parts: List[Any] = [text_prompt]
+            hld_blob = self.decode_data_url(hld_image)
+            if hld_blob:
+                parts.append({"mime_type": hld_blob[0], "data": hld_blob[1]})
+            lld_blob = self.decode_data_url(lld_image)
+            if lld_blob:
+                parts.append({"mime_type": lld_blob[0], "data": lld_blob[1]})
+
+            response = model.generate_content(parts)
+            full = response.text or ""
+
+            json_part, _, rest = full.partition("---ANSWER---")
+            answer_part, _, mermaid_part = rest.partition("---MERMAID---")
+
+            # The JSON section is small now, so parsing is reliable. Strip fences.
+            json_text = re.sub(r"^```(?:json)?\s*", "", json_part.strip())
+            json_text = re.sub(r"\s*```$", "", json_text).strip()
+            match = re.search(r"\{.*\}", json_text, re.DOTALL)
+            data = json.loads(match.group(0) if match else json_text)
+
+            if answer_part.strip():
+                data["model_answer_markdown"] = answer_part.strip()
+            if mermaid_part.strip():
+                data["model_diagram_mermaid"] = self._clean_mermaid(mermaid_part)
+            return self._normalize_sd_evaluation(data, product)
+        except Exception as e:
+            print(f"Gemini evaluate_system_design failed: {e}. Using mock backup.")
+            return self._mock_system_design_evaluation(product)
+
+    async def generate_system_design_solution(self, product: str, prompt: str) -> Dict[str, str]:
+        if not self.is_configured:
+            mock = self._mock_system_design_evaluation(product)
+            return {
+                "model_answer_markdown": mock["model_answer_markdown"],
+                "model_diagram_mermaid": mock["model_diagram_mermaid"],
+            }
+        try:
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            # Plain-text + delimiter (NOT JSON mode): large markdown answers
+            # routinely break JSON escaping, so we split on a sentinel instead.
+            text_prompt = f"""You are a senior systems architect. Write the ideal model answer for the
+system-design problem "{product}". Problem brief: {prompt}
+
+Produce a complete, well-structured markdown solution covering:
+- Functional & non-functional requirements
+- Capacity / back-of-envelope estimates
+- High-Level Design (components, data flow, scaling, caching, load balancing, storage)
+- Low-Level Design (API contracts, database schema, key data structures, class design)
+- Bottlenecks, tradeoffs, and how to scale further
+
+After the markdown solution, output a line containing exactly "---MERMAID---" and then a
+valid Mermaid 'graph TD' (or 'flowchart TD') architecture diagram with NO markdown fences."""
+            response = model.generate_content(text_prompt)
+            full = response.text or ""
+            fallback = self._mock_system_design_evaluation(product)
+            if "---MERMAID---" in full:
+                answer, _, mermaid = full.partition("---MERMAID---")
+            else:
+                answer, mermaid = full, ""
+            return {
+                "model_answer_markdown": answer.strip() or fallback["model_answer_markdown"],
+                "model_diagram_mermaid": self._clean_mermaid(mermaid) or fallback["model_diagram_mermaid"],
+            }
+        except Exception as e:
+            print(f"Gemini generate_system_design_solution failed: {e}. Using mock backup.")
+            mock = self._mock_system_design_evaluation(product)
+            return {
+                "model_answer_markdown": mock["model_answer_markdown"],
+                "model_diagram_mermaid": mock["model_diagram_mermaid"],
+            }
+
+    @staticmethod
+    def _clean_mermaid(raw: Any) -> str:
+        # Strip accidental ```mermaid fences the model sometimes adds.
+        if not isinstance(raw, str):
+            return ""
+        text = raw.strip()
+        text = re.sub(r"^```(?:mermaid)?\s*", "", text)
+        text = re.sub(r"\s*```$", "", text)
+        return text.strip()
+
+    @classmethod
+    def _normalize_sd_evaluation(cls, data: Dict[str, Any], product: str) -> Dict[str, Any]:
+        fallback = cls._mock_system_design_evaluation_static(product)
+
+        def dim(key):
+            d = data.get(key) or {}
+            if not isinstance(d, dict):
+                return {"covered": [], "missing": []}
+            covered = d.get("covered") or []
+            missing = d.get("missing") or []
+            return {
+                "covered": [str(x) for x in covered if x],
+                "missing": [str(x) for x in missing if x],
+            }
+
+        def score(key):
+            try:
+                return max(0, min(100, int(data.get(key, fallback[key]))))
+            except (TypeError, ValueError):
+                return fallback[key]
+
+        mermaid = cls._clean_mermaid(data.get("model_diagram_mermaid", "")) or fallback["model_diagram_mermaid"]
+        return {
+            "overall_score": score("overall_score"),
+            "overall_grade": str(data.get("overall_grade") or fallback["overall_grade"]),
+            "hld_score": score("hld_score"),
+            "lld_score": score("lld_score"),
+            "requirements_score": score("requirements_score"),
+            "summary": str(data.get("summary") or fallback["summary"]),
+            "requirements_feedback": dim("requirements_feedback"),
+            "hld_feedback": dim("hld_feedback"),
+            "lld_feedback": dim("lld_feedback"),
+            "model_answer_markdown": str(data.get("model_answer_markdown") or fallback["model_answer_markdown"]),
+            "model_diagram_mermaid": mermaid,
+        }
+
+    # --- System Design Mocks ---
+
+    def _mock_system_design_challenges(self, days: int) -> Dict[str, Any]:
+        ladder = [
+            ("Design a URL Shortener", "Shorten long URLs and redirect users; handle ~100M URLs and read-heavy traffic.", "easy", 0),
+            ("Design Pastebin", "Store and serve text snippets with expiry and public/private access.", "easy", 0),
+            ("Design a Rate Limiter", "Throttle API requests per user/IP using token-bucket or sliding-window at scale.", "medium", 1),
+            ("Design a Notification System", "Deliver push/email/SMS notifications with fan-out and retries.", "medium", 1),
+            ("Design Twitter Timeline", "Design tweet posting and home-timeline fan-out for millions of users.", "medium", 1),
+            ("Design WhatsApp / Chat", "Real-time 1:1 and group messaging with delivery/read receipts and presence.", "hard", 2),
+            ("Design Uber", "Match riders to drivers in real time with geospatial indexing and surge pricing.", "hard", 2),
+            ("Design Netflix CDN", "Stream video globally with adaptive bitrate, caching and a CDN strategy.", "hard", 2),
+        ]
+        challenges = []
+        # Spread the ladder across the requested days, escalating difficulty.
+        per_day = max(1, (len(ladder) + days - 1) // days) if days else 1
+        idx = 0
+        for day in range(1, days + 1):
+            for _ in range(per_day):
+                if idx >= len(ladder):
+                    break
+                product, prompt, difficulty, rank = ladder[idx]
+                challenges.append({
+                    "product": product,
+                    "prompt": prompt,
+                    "difficulty": difficulty,
+                    "difficulty_rank": rank,
+                    "day_number": day,
+                })
+                idx += 1
+        # Ensure at least one challenge per day if the ladder ran out.
+        while len(challenges) < days:
+            day = len(challenges) + 1
+            product, prompt, difficulty, rank = ladder[(day - 1) % len(ladder)]
+            challenges.append({
+                "product": product,
+                "prompt": prompt,
+                "difficulty": difficulty,
+                "difficulty_rank": rank,
+                "day_number": day,
+            })
+        return {"challenges": challenges}
+
+    @staticmethod
+    def _mock_system_design_evaluation_static(product: str) -> Dict[str, Any]:
+        diagram = (
+            "graph TD\n"
+            "  Client[Client Apps] --> LB[Load Balancer]\n"
+            "  LB --> API[API / App Servers]\n"
+            "  API --> Cache[(Redis Cache)]\n"
+            "  API --> DB[(Primary DB)]\n"
+            "  DB --> Replica[(Read Replicas)]\n"
+            "  API --> Queue[Message Queue]\n"
+            "  Queue --> Workers[Async Workers]\n"
+            "  API --> Blob[(Object Storage / CDN)]"
+        )
+        answer = f"""# Reference Solution: {product}
+
+## 1. Requirements
+- **Functional**: core read/write operations, the primary user journeys, and supporting flows.
+- **Non-functional**: high availability, low latency (p99), horizontal scalability, durability, and security.
+
+## 2. High-Level Design
+A stateless API tier behind a load balancer, a caching layer for hot reads, a primary datastore with read replicas, an async message queue for heavy/decoupled work, and object storage/CDN for large blobs.
+
+## 3. Low-Level Design
+- **APIs**: clear REST/gRPC contracts with pagination and idempotency keys for writes.
+- **Schema**: normalized core entities with indexes on hot lookup paths; consider sharding by a high-cardinality key.
+- **Data structures**: hashing for partitioning, queues for fan-out.
+
+## 4. Scaling & Tradeoffs
+- Cache-aside for reads, write-through where consistency matters.
+- Shard/partition the datastore; replicate for read scaling and failover.
+- Watch the hot-partition and thundering-herd problems; add backpressure and rate limiting.
+"""
+        return {
+            "overall_score": 72,
+            "overall_grade": "B",
+            "hld_score": 75,
+            "lld_score": 64,
+            "requirements_score": 78,
+            "summary": (
+                f"Solid foundational design for {product} with a reasonable high-level architecture. "
+                "The low-level design needs more concrete API and schema detail, and a few scaling concerns are unaddressed."
+            ),
+            "requirements_feedback": {
+                "covered": ["Captured the core functional requirements", "Identified key non-functional goals"],
+                "missing": ["Quantify scale (QPS, storage, read:write ratio)", "Clarify consistency vs availability priorities"],
+            },
+            "hld_feedback": {
+                "covered": ["Clear separation of API, cache, and storage tiers", "Included a load balancer"],
+                "missing": ["Partitioning/sharding strategy", "Replication & failover details", "CDN/edge for large or static assets"],
+            },
+            "lld_feedback": {
+                "covered": ["Outlined the main entities"],
+                "missing": ["Concrete API contracts (methods, params, responses)", "Database schema with indexes", "Idempotency for writes"],
+            },
+            "model_answer_markdown": answer,
+            "model_diagram_mermaid": diagram,
+        }
+
+    def _mock_system_design_evaluation(self, product: str) -> Dict[str, Any]:
+        return self._mock_system_design_evaluation_static(product)
 
 gemini = GeminiService()
