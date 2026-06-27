@@ -12,6 +12,7 @@ const TICKER = [
   "AI STUDY PLANS", "ELEVENLABS VOICE AI", "AUDIO LESSONS",
   "GEMINI 2.5 FLASH", "VOICE MOCK INTERVIEWS", "SCORE REPORTS",
   "DAY-BY-DAY CURRICULUM", "ARTICLE REFINER", "REAL-TIME FEEDBACK",
+  "SYSTEM DESIGN STUDIO", "DRAW-TO-EVALUATE CANVAS", "HLD / LLD SCORING",
 ];
 
 const SYSTEMS = [
@@ -38,6 +39,12 @@ const SYSTEMS = [
     code: "sys / eval",
     title: "Voice Interviews",
     body: "Interviewer agent ALEX asks technical questions by voice, one at a time. Gemini scores every answer and issues a report.",
+  },
+  {
+    idx: "05",
+    code: "sys / design",
+    title: "System Design Studio",
+    body: "Tackle real product design challenges, easy to hard. Draw your architecture on an interactive canvas — Gemini scores your HLD and LLD, flags what's missing, and returns the ideal diagram.",
   },
 ];
 
@@ -236,7 +243,7 @@ export default function LandingPage() {
       <section id="features" className="max-w-[1400px] mx-auto px-5 md:px-8 py-16 md:py-24">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <h2 className="font-display font-extrabold tracking-tight text-[clamp(2.2rem,5vw,4rem)] leading-[1.02]">
-            Four systems.<br />One apparatus.
+            Five systems.<br />One apparatus.
           </h2>
           <span className="section-label">Fig. A — subsystem index</span>
         </div>
