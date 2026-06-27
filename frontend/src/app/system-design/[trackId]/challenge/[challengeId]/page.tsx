@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import AuthGuard from "../../../../../components/auth/AuthGuard";
 import { Wordmark } from "../../../../../components/BrandLogo";
@@ -10,11 +11,15 @@ import MermaidDiagram from "../../../../../components/MermaidDiagram";
 import api from "../../../../../lib/api";
 import ReactMarkdown from "react-markdown";
 import {
-  ArrowLeft, AlertCircle, ImagePlus, X, Sparkles, Eye, Loader2,
+  ArrowLeft, AlertCircle, Sparkles, Eye, Loader2,
   CheckCircle2, XCircle,
 } from "lucide-react";
 
-const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4MB
+// tldraw is browser-only and heavy — load it client-side, on demand.
+const DesignCanvas = dynamic(
+  () => import("../../../../../components/DesignCanvas"),
+  { ssr: false, loading: () => <div className="h-[460px] card ind-pulse" /> },
+);
 
 const md = {
   h1: (p: any) => <h1 className="font-display font-extrabold text-2xl border-b border-border pb-2 mb-4" {...p} />,
@@ -76,60 +81,6 @@ function FeedbackBlock({ title, data }: { title: string; data: any }) {
   );
 }
 
-function ImageUpload({
-  label, value, onChange,
-}: { label: string; value: string | null; onChange: (v: string | null) => void }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [err, setErr] = useState("");
-
-  const handleFile = (file?: File) => {
-    setErr("");
-    if (!file) return;
-    if (!file.type.startsWith("image/")) { setErr("Please upload an image file."); return; }
-    if (file.size > MAX_IMAGE_BYTES) { setErr("Image too large (max 4MB)."); return; }
-    const reader = new FileReader();
-    reader.onload = () => onChange(reader.result as string);
-    reader.readAsDataURL(file);
-  };
-
-  return (
-    <div>
-      <label className="section-label block mb-2">{label}</label>
-      {value ? (
-        <div className="relative card overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="diagram" className="w-full max-h-72 object-contain bg-panel" />
-          <button
-            type="button"
-            onClick={() => onChange(null)}
-            className="absolute top-2 right-2 btn-secondary !p-1.5"
-            title="Remove"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="card card-hover w-full py-8 flex flex-col items-center justify-center gap-2 text-muted"
-        >
-          <ImagePlus className="h-6 w-6" />
-          <span className="text-sm">Click to upload diagram (PNG/JPG, max 4MB)</span>
-        </button>
-      )}
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => handleFile(e.target.files?.[0])}
-      />
-      {err && <p className="text-xs text-secondary mt-1.5">{err}</p>}
-    </div>
-  );
-}
-
 export default function ChallengeWorkspace() {
   const { trackId, challengeId } = useParams();
 
@@ -139,10 +90,12 @@ export default function ChallengeWorkspace() {
 
   const [functional, setFunctional] = useState("");
   const [nonfunctional, setNonfunctional] = useState("");
-  const [hldImage, setHldImage] = useState<string | null>(null);
   const [hldNotes, setHldNotes] = useState("");
   const [lldText, setLldText] = useState("");
-  const [lldImage, setLldImage] = useState<string | null>(null);
+  const [initialHld, setInitialHld] = useState<any>(null);
+  const [initialLld, setInitialLld] = useState<any>(null);
+  const hldEditorRef = useRef<any>(null);
+  const lldEditorRef = useRef<any>(null);
 
   const [evaluating, setEvaluating] = useState(false);
   const [evaluation, setEvaluation] = useState<any>(null);
@@ -159,10 +112,10 @@ export default function ChallengeWorkspace() {
         if (s) {
           setFunctional(s.functional_reqs || "");
           setNonfunctional(s.nonfunctional_reqs || "");
-          setHldImage(s.hld_image || null);
           setHldNotes(s.hld_notes || "");
           setLldText(s.lld_text || "");
-          setLldImage(s.lld_image || null);
+          setInitialHld(s.hld_scene || null);
+          setInitialLld(s.lld_scene || null);
           if (s.evaluation) setEvaluation(s.evaluation);
         }
       } catch {
@@ -178,13 +131,24 @@ export default function ChallengeWorkspace() {
     setEvaluating(true);
     setError("");
     try {
+      // Lazy-import keeps tldraw off the server bundle; export both canvases.
+      const { exportCanvas } = await import("../../../../../components/DesignCanvas");
+      const hld = hldEditorRef.current
+        ? await exportCanvas(hldEditorRef.current)
+        : { document: null, image: null };
+      const lld = lldEditorRef.current
+        ? await exportCanvas(lldEditorRef.current)
+        : { document: null, image: null };
+
       const res = await api.post(`/system-design/challenges/${challengeId}/evaluate`, {
         functional_reqs: functional,
         nonfunctional_reqs: nonfunctional,
-        hld_image: hldImage,
+        hld_image: hld.image,
         hld_notes: hldNotes,
+        hld_scene: hld.document,
         lld_text: lldText,
-        lld_image: lldImage,
+        lld_image: lld.image,
+        lld_scene: lld.document,
       });
       setEvaluation(res.data);
       document.getElementById("sd-results")?.scrollIntoView({ behavior: "smooth" });
@@ -288,7 +252,10 @@ export default function ChallengeWorkspace() {
           {/* HLD */}
           <div className="card p-5 space-y-4">
             <p className="section-label text-primary">High-level design (HLD)</p>
-            <ImageUpload label="Architecture diagram" value={hldImage} onChange={setHldImage} />
+            <div>
+              <label className="section-label block mb-2">Architecture diagram — draw it</label>
+              <DesignCanvas initialScene={initialHld} onEditor={(e) => (hldEditorRef.current = e)} />
+            </div>
             <div>
               <label className="section-label block mb-2">HLD notes (optional)</label>
               <textarea
@@ -304,14 +271,20 @@ export default function ChallengeWorkspace() {
           {/* LLD */}
           <div className="card p-5 space-y-4">
             <p className="section-label text-primary">Low-level design (LLD)</p>
-            <textarea
-              value={lldText}
-              onChange={(e) => setLldText(e.target.value)}
-              rows={6}
-              placeholder="API contracts, database schema, key classes / data structures…"
-              className="field w-full px-3 py-2.5 text-sm resize-y font-mono"
-            />
-            <ImageUpload label="Class/schema diagram (optional)" value={lldImage} onChange={setLldImage} />
+            <div>
+              <label className="section-label block mb-2">Class / schema diagram — draw it</label>
+              <DesignCanvas initialScene={initialLld} onEditor={(e) => (lldEditorRef.current = e)} />
+            </div>
+            <div>
+              <label className="section-label block mb-2">API contracts &amp; schema notes (optional)</label>
+              <textarea
+                value={lldText}
+                onChange={(e) => setLldText(e.target.value)}
+                rows={6}
+                placeholder="API contracts, database schema, key classes / data structures…"
+                className="field w-full px-3 py-2.5 text-sm resize-y font-mono"
+              />
+            </div>
           </div>
 
           {/* Actions */}

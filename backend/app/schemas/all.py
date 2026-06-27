@@ -239,8 +239,10 @@ class SubmissionResponse(BaseModel):
     nonfunctional_reqs: Optional[str] = None
     hld_image: Optional[str] = None
     hld_notes: Optional[str] = None
+    hld_scene: Optional[Any] = None
     lld_text: Optional[str] = None
     lld_image: Optional[str] = None
+    lld_scene: Optional[Any] = None
     evaluation: Optional[Dict[str, Any]] = None
 
     class Config:
@@ -264,10 +266,12 @@ class ChallengeDetailResponse(BaseModel):
 class SubmissionEvaluateRequest(BaseModel):
     functional_reqs: str = ""
     nonfunctional_reqs: str = ""
-    hld_image: Optional[str] = None  # base64 data URL
+    hld_image: Optional[str] = None  # base64 PNG exported from the HLD canvas
     hld_notes: str = ""
+    hld_scene: Optional[Any] = None  # re-editable tldraw document snapshot (HLD)
     lld_text: str = ""
-    lld_image: Optional[str] = None  # base64 data URL
+    lld_image: Optional[str] = None  # base64 PNG exported from the LLD canvas
+    lld_scene: Optional[Any] = None  # re-editable tldraw document snapshot (LLD)
 
 class DimensionFeedback(BaseModel):
     covered: List[str] = []

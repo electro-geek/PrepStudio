@@ -159,10 +159,12 @@ class SystemDesignSubmission(Base):
     user_id = Column(String, ForeignKey("app_users.id", ondelete="CASCADE"), nullable=False)
     functional_reqs = Column(Text, nullable=True)
     nonfunctional_reqs = Column(Text, nullable=True)
-    hld_image = Column(Text, nullable=True)   # base64 data URL of uploaded diagram
+    hld_image = Column(Text, nullable=True)   # base64 PNG exported from the HLD canvas
     hld_notes = Column(Text, nullable=True)
+    hld_scene = Column(JSON, nullable=True)   # re-editable tldraw document snapshot (HLD)
     lld_text = Column(Text, nullable=True)    # API / DB schema / class design
-    lld_image = Column(Text, nullable=True)   # optional base64 data URL
+    lld_image = Column(Text, nullable=True)   # base64 PNG exported from the LLD canvas
+    lld_scene = Column(JSON, nullable=True)   # re-editable tldraw document snapshot (LLD)
     evaluation = Column(JSON, nullable=True)  # full structured evaluation result
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

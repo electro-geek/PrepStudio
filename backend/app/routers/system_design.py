@@ -143,8 +143,10 @@ async def evaluate_challenge(
     submission.nonfunctional_reqs = payload.nonfunctional_reqs
     submission.hld_image = payload.hld_image
     submission.hld_notes = payload.hld_notes
+    submission.hld_scene = payload.hld_scene
     submission.lld_text = payload.lld_text
     submission.lld_image = payload.lld_image
+    submission.lld_scene = payload.lld_scene
     submission.evaluation = evaluation
 
     # Cache the model answer on the challenge + mark complete.
