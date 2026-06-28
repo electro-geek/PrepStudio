@@ -170,6 +170,41 @@
   --viz-path-bg:    122 168 205; --viz-path-fg:    26 26 26;
 }
 
+/* ── Theme 6 · 🟦 Neo Brutalist — off-white, teal/orange/amber, hard shadows ── */
+.theme-neo-brutalist {
+  --background: 254 253 251;       /* #fefdfb off-white */
+  --foreground: 17 24 39;          /* gray-900 ink */
+  --surface: 255 255 255;          /* white card surfaces */
+  --panel: 245 245 244;            /* stone-100 */
+  --muted: 75 85 99;               /* gray-600 */
+  --primary: 45 212 191;           /* teal-400 */
+  --primary-hover: 20 184 166;     /* teal-500 */
+  --primary-fg: 17 24 39;          /* dark text on teal */
+  --secondary: 251 146 60;         /* orange-400 */
+  --border: 17 24 39;              /* ink */
+  --ring: 45 212 191;
+  --surface-glass: rgba(255, 255, 255, 0.92);
+  --primary-soft: rgba(45, 212, 191, 0.20);
+  --paper-line: transparent;       /* flat off-white — no graph grid */
+  --paper-wash: transparent;
+  --shadow-glow: 8px 8px 0 0 rgba(17, 24, 39, 1);
+
+  /* neo-brutalist-only design tokens */
+  --nb-ink: #111827;
+  --nb-amber: #fbbf24;
+  --nb-sh-sm: 4px 4px 0 0 rgba(17, 24, 39, 1);
+  --nb-sh:    5px 5px 0 0 rgba(17, 24, 39, 1);
+  --nb-sh-lg: 8px 8px 0 0 rgba(17, 24, 39, 1);
+  --nb-sh-press: 2px 2px 0 0 rgba(17, 24, 39, 1);
+
+  --viz-current-bg: 45 212 191;  --viz-current-fg: 17 24 39;
+  --viz-success-bg: 167 243 208; --viz-success-fg: 6 78 59;
+  --viz-error-bg:   254 202 202; --viz-error-fg:   127 29 29;
+  --viz-compare-bg: 253 230 138; --viz-compare-fg: 120 53 15;
+  --viz-swap-bg:    221 214 254; --viz-swap-fg:    76 29 149;
+  --viz-path-bg:    191 219 254; --viz-path-fg:    30 58 138;
+}
+
 /* ════════════════════════════════════════════════════════════
    BASE
    ════════════════════════════════════════════════════════════ */
@@ -762,3 +797,134 @@ h1, h2, h3, h4 {
 .theme-paper-brutalist .px.px-programs  { background: var(--c-programs); }
 .theme-paper-brutalist .px.px-ink       { background: var(--ink); }
 .theme-paper-brutalist .px.px-white     { background: var(--paper); }
+
+/* ════════════════════════════════════════════════════════════
+   🟦 NEO BRUTALIST — structural overrides
+   When .theme-neo-brutalist is on <html>, the shared component
+   vocabulary (.btn/.card/.field/.badge/.nav-glass…) re-skins to
+   thick ink borders, soft rounded corners, hard zero-blur offset
+   shadows, and an up-left hover lift. Higher specificity wins, so
+   the base component rules stay untouched.
+   ════════════════════════════════════════════════════════════ */
+
+/* Flat off-white page — drop the graph-paper grid */
+.theme-neo-brutalist body { background-image: none; }
+
+/* Heavier display weight for the bold brutalist tone */
+.theme-neo-brutalist h1,
+.theme-neo-brutalist h2,
+.theme-neo-brutalist h3,
+.theme-neo-brutalist .font-display,
+.theme-neo-brutalist .macro,
+.theme-neo-brutalist .stat-num {
+  letter-spacing: -0.03em;
+}
+
+/* Soft corners on brutal edges */
+.theme-neo-brutalist .btn,
+.theme-neo-brutalist .btn-secondary,
+.theme-neo-brutalist .btn-ghost,
+.theme-neo-brutalist .btn-ind,
+.theme-neo-brutalist .btn-hazard,
+.theme-neo-brutalist .btn-outline,
+.theme-neo-brutalist .card,
+.theme-neo-brutalist .panel,
+.theme-neo-brutalist .panel-alt,
+.theme-neo-brutalist .term-surface {
+  border-radius: 16px;
+}
+.theme-neo-brutalist .field,
+.theme-neo-brutalist .field-ind { border-radius: 12px; }
+
+/* Buttons — thick ink border, hard offset shadow, press motion */
+.theme-neo-brutalist .btn,
+.theme-neo-brutalist .btn-secondary,
+.theme-neo-brutalist .btn-ghost,
+.theme-neo-brutalist .btn-ind,
+.theme-neo-brutalist .btn-hazard,
+.theme-neo-brutalist .btn-outline {
+  border-width: 3px;
+  border-color: var(--nb-ink);
+  font-weight: 800;
+  box-shadow: var(--nb-sh-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.theme-neo-brutalist .btn:hover,
+.theme-neo-brutalist .btn-secondary:hover,
+.theme-neo-brutalist .btn-ghost:hover,
+.theme-neo-brutalist .btn-ind:hover,
+.theme-neo-brutalist .btn-hazard:hover,
+.theme-neo-brutalist .btn-outline:hover {
+  border-color: var(--nb-ink);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--nb-sh-lg);
+}
+.theme-neo-brutalist .btn:active,
+.theme-neo-brutalist .btn-secondary:active,
+.theme-neo-brutalist .btn-ghost:active,
+.theme-neo-brutalist .btn-ind:active,
+.theme-neo-brutalist .btn-hazard:active,
+.theme-neo-brutalist .btn-outline:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--nb-sh-press);
+}
+.theme-neo-brutalist .btn-secondary { color: var(--nb-ink); }
+
+/* Cards / panels — hard offset shadow + lift on hover */
+.theme-neo-brutalist .card,
+.theme-neo-brutalist .panel,
+.theme-neo-brutalist .panel-alt,
+.theme-neo-brutalist .term-surface {
+  border-width: 3px;
+  border-color: var(--nb-ink);
+  box-shadow: var(--nb-sh);
+}
+.theme-neo-brutalist .card-hover { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.theme-neo-brutalist .card-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--nb-sh-lg);
+  border-color: var(--nb-ink);
+}
+
+/* Inputs — thick ink border, hard shadow, lift on focus */
+.theme-neo-brutalist .field,
+.theme-neo-brutalist .field-ind {
+  border-width: 3px;
+  border-color: var(--nb-ink);
+  box-shadow: var(--nb-sh-sm);
+  transition: box-shadow 0.12s ease, transform 0.12s ease;
+}
+.theme-neo-brutalist .field:focus,
+.theme-neo-brutalist .field-ind:focus {
+  border-color: var(--nb-ink);
+  box-shadow: var(--nb-sh);
+  transform: translate(-2px, -2px);
+}
+
+/* Badges — vivid fill, ink border, kept as rounded pills */
+.theme-neo-brutalist .badge {
+  border-width: 2px;
+  border-color: var(--nb-ink);
+  font-weight: 800;
+}
+.theme-neo-brutalist .badge-primary {
+  background: rgb(var(--primary)); color: var(--nb-ink); border-color: var(--nb-ink);
+}
+.theme-neo-brutalist .badge-secondary {
+  background: rgb(var(--secondary)); color: var(--nb-ink); border-color: var(--nb-ink);
+}
+
+/* Nav — opaque, hard 3px bottom rule (no glass blur) */
+.theme-neo-brutalist .nav-glass {
+  background: rgb(var(--background));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom-width: 3px;
+  border-bottom-color: var(--nb-ink);
+}
+
+/* Marquee divider rules read as bold ink bands */
+.theme-neo-brutalist .animate-marquee { font-weight: 700; }
+
+/* Scrollbar — chunky ink thumb */
+.theme-neo-brutalist ::-webkit-scrollbar-thumb { background: var(--nb-ink); }

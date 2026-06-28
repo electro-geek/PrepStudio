@@ -17,6 +17,7 @@ type Theme = {
 };
 
 const THEMES: Theme[] = [
+  { id: "theme-neo-brutalist", icon: "🟦", label: "Neo Brutalist", desc: "Teal + ink, hard shadows", swatches: ["#fefdfb", "#2dd4bf", "#fb923c"] },
   { id: "theme-graphite-lab", icon: "🌑", label: "Carbon Studio", desc: "Charcoal + teal signal", swatches: ["#191f1c", "#32b8a6", "#d99d43"] },
   { id: "theme-high-contrast",icon: "⚡", label: "Daylight",      desc: "Crisp blue + orange",     swatches: ["#ffffff", "#0048ff", "#c74700"] },
   { id: "theme-paper-brutalist",icon: "🧱", label: "Paper Brutalist", desc: "Mono, ink, terracotta", swatches: ["#f4f1ea", "#1a1a1a", "#d88060"] },
@@ -28,6 +29,7 @@ const THEMES: Theme[] = [
 // All theme classes that may exist on <html> (incl. hidden ones) — used to
 // fully clear before applying a new theme. Keep in sync with globals.css.
 const ALL = [
+  "theme-neo-brutalist",
   "theme-graphite-lab",
   "theme-high-contrast",
   "theme-paper-brutalist",
@@ -36,7 +38,7 @@ const ALL = [
 ];
 
 export function ThemePicker({ className = "" }: { className?: string }) {
-  const [active, setActive] = useState("theme-graphite-lab");
+  const [active, setActive] = useState("theme-neo-brutalist");
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
