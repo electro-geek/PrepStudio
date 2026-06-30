@@ -6,8 +6,9 @@ let _initialized = false;
 
 /**
  * Renders a Mermaid diagram definition as inline SVG.
- * Gemini occasionally emits invalid Mermaid, so render is wrapped in try/catch
- * and falls back to showing the raw definition — the page never crashes.
+ * Gemini occasionally emits invalid Mermaid, so we validate with mermaid.parse()
+ * first and disable Mermaid's own error graphic — on failure we fall back to
+ * showing the raw definition instead of Mermaid's "bomb" error SVG.
  */
 export default function MermaidDiagram({ chart }: { chart: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -20,7 +21,8 @@ export default function MermaidDiagram({ chart }: { chart: string }) {
     let cancelled = false;
 
     async function render() {
-      if (!chart || !chart.trim()) return;
+      const def = (chart || "").trim();
+      if (!def) return;
       try {
         const mermaid = (await import("mermaid")).default;
         if (!_initialized) {
@@ -29,10 +31,21 @@ export default function MermaidDiagram({ chart }: { chart: string }) {
             theme: "neutral",
             securityLevel: "strict",
             fontFamily: "inherit",
+            // Never let Mermaid inject its own error ("bomb") SVG into the page.
+            suppressErrorRendering: true,
           });
           _initialized = true;
         }
-        const { svg } = await mermaid.render(id, chart.trim());
+
+        // Validate first — suppressErrors makes this return false instead of
+        // throwing, so a bad definition never reaches render().
+        const valid = await mermaid.parse(def, { suppressErrors: true });
+        if (!valid) {
+          if (!cancelled) setFailed(true);
+          return;
+        }
+
+        const { svg } = await mermaid.render(id, def);
         if (!cancelled && ref.current) {
           ref.current.innerHTML = svg;
           setFailed(false);
@@ -51,9 +64,12 @@ export default function MermaidDiagram({ chart }: { chart: string }) {
 
   if (failed) {
     return (
-      <pre className="term-surface p-4 overflow-x-auto text-xs font-mono leading-relaxed whitespace-pre-wrap">
-        {chart}
-      </pre>
+      <div className="space-y-2">
+        <p className="section-label text-muted">Diagram couldn&apos;t render — showing definition</p>
+        <pre className="term-surface p-4 overflow-x-auto text-xs font-mono leading-relaxed whitespace-pre-wrap">
+          {chart}
+        </pre>
+      </div>
     );
   }
 
